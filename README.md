@@ -9,6 +9,9 @@ In regular intervals (approx. 3 weeks) the participants have to submit their pro
 - Julio Cesar Perez Duran
 - TBA
 
+**HINT**: *Every user has it's own branch.  
+Let's use the `main` branch for final submissions!*
+
 ### Server Access (via SSH):
 - Host: `aba02.akt.tu-berlin.de`
 - Port: 22 (Standard SSH-Port)
