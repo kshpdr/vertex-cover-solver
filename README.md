@@ -7,7 +7,7 @@ In regular intervals (approx. 3 weeks) the participants have to submit their pro
 ### Members (Team-02):
 - Julian Fechner
 - Julio Cesar Perez Duran
-- TBA
+- Denis Koshelev
 
 **HINT**: *Every user has it's own branch.  
 Let's use the `main` branch for final submissions!*
