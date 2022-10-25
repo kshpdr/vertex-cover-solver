@@ -1,20 +1,27 @@
 // Very bad implementation of vertex cover algorithm using bad data structure for graphs and using deep copies for recursion.
 // To see the results of the benchmark script look for file results.csv. Many of the tests could not be finished in the time constraint
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         // Scan the stdin and put it in a Hashmap
 
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
+//        Scanner scanner = new Scanner(System.in);
+//        scanner.nextLine();
 
+
+        // Use buffer reader since the input does not require validation, and it is much faster
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        bi.readLine();
         // TODO implement graph with an incidence list
 
         HashMap<String,LinkedList<String>> graph = new HashMap<>();
-        while (scanner.hasNextLine()){
-            String line = scanner.nextLine();
+        String line;
+        while ((line = bi.readLine()) !=null){
             String[] nodes = line.split(" ");
             if (!graph.containsKey(nodes[0])){
                 graph.put(nodes[0],new LinkedList<>());
@@ -26,12 +33,20 @@ public class Solver {
 
         // storing the results in a LinkedList
         LinkedList<String> result = vc(graph);
+
+        // Putting it all together in one String to only use one I/O operation
+
+        StringBuilder sb = new StringBuilder();
+
         if (!result.isEmpty()){
             for (String s : result) {
 
-                System.out.println(s);
+                sb.append(s).append("\n");
             }
         }
+
+        String resultStr = sb.toString();
+        System.out.print(resultStr);
     }
 
     static LinkedList<String> vc_branch(HashMap<String,LinkedList<String>> graph,int k){
@@ -73,7 +88,7 @@ public class Solver {
             LinkedList<String> list = graph.get(v);
             for (int i = 0; i <list.size() ; i++) {
 
-                    list.remove(vertex);
+                list.remove(vertex);
             }
             if (list.isEmpty()){
                 iterator.remove();
