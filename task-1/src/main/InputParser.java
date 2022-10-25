@@ -1,4 +1,4 @@
-package task1;
+package main;
 
 import java.io.File;  // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
@@ -11,10 +11,6 @@ public class InputParser {
 
     public InputParser(String fileName) throws FileNotFoundException {
         this.scanner = new Scanner(new File(fileName));
-    }
-
-    public int parseVerticesAmount() {
-        return Character.getNumericValue((this.scanner.nextLine().charAt(2)));
     }
 
     public List<String> parseEdges() {
