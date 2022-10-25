@@ -8,13 +8,8 @@ import java.util.*;
 public class Solver {
     public static void main(String[] args) throws IOException {
 
-        // Scan the stdin and put it in a Hashmap
 
-//        Scanner scanner = new Scanner(System.in);
-//        scanner.nextLine();
-
-
-        // Use buffer reader since the input does not require validation, and it is much faster
+        // Use buffer reader for stdin since the input does not require validation, and it is much faster
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
         bi.readLine();
         // TODO implement graph with an incidence list
@@ -114,13 +109,10 @@ public class Solver {
     // main function which increases the cover vertex size k every iteration
 
     public static LinkedList<String> vc(HashMap<String,LinkedList<String>> graph){
+        LinkedList<String> s;
         int k = 0;
-        while (true){
-            LinkedList<String> s = vc_branch(graph,k);
-            if (s!=null) return s;
-            k++;
-
-        }
+        while ((s = vc_branch(graph,k++))==null);
+        return s;
     }
 
 }
