@@ -1,5 +1,3 @@
-// Very bad implementation of vertex cover algorithm using bad data structure for graphs and using deep copies for recursion.
-// To see the results of the benchmark script look for file results.csv. Many of the tests could not be finished in the time constraint
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
