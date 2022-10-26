@@ -43,7 +43,6 @@ public class Solver {
         System.out.print(resultStr);
     }
 
-//    public static HashSet<String> memoryRemovedVertex = new HashSet<String>();
 
     static LinkedList<String> vc_branch(HashMap<String,HashSet<String>> graph,int k){
 
@@ -52,13 +51,18 @@ public class Solver {
         String firstVertex = graph.keySet().stream().findFirst().get();
         String secondVertex = graph.get(firstVertex).toArray(new String[0])[0];
 
-        LinkedList<String> s = vc_branch(eliminateVertex(copyGraph(graph),firstVertex),k-1);
+        // HashSet to store eliminated vertices to add them after the recursive call and avoid copying the graph
+        HashSet<String> eliminatedVertices = eliminateVertex(graph,firstVertex);
+        LinkedList<String> s = vc_branch(graph,k-1);
+        graph.put(firstVertex,eliminatedVertices);
         if (s != null) {
             s.add(firstVertex);
             return s;
         }
 
-        s = vc_branch(eliminateVertex(copyGraph(graph),secondVertex),k-1);
+        eliminatedVertices = eliminateVertex(graph,secondVertex);
+        s = vc_branch(graph,k-1);
+        graph.put(secondVertex,eliminatedVertices);
         if (s != null) {
             s.add(secondVertex);
             return s;
@@ -73,36 +77,27 @@ public class Solver {
 
     // Function to eliminate a given vertex of a graph, removing the vertex is just O(1) but looking for the appearances of the vertex is O (E), being E edges
 
-    static HashMap<String,HashSet<String>> eliminateVertex(HashMap<String,HashSet<String>> graph, String vertex){
+    static HashSet<String> eliminateVertex(HashMap<String,HashSet<String>> graph, String vertex){
 
-        graph.remove(vertex);
+        // HashSet to store the vertices we remove to put them back after the recursive call in vc_branch ends
+        HashSet<String> removedVertices = new HashSet<>();
+        HashSet<String> removedHashSet = graph.remove(vertex);
+        if(removedHashSet !=null) removedVertices.addAll(removedHashSet);
 
         Set<String> set = graph.keySet();
         Iterator<String> iterator = set.iterator();
 
         while(iterator.hasNext()){
-            Object v = iterator.next();
+            String v = iterator.next();
             HashSet<String> list = graph.get(v);
-            list.remove(vertex);
+            if(list.remove(vertex)) removedVertices.add(v);
             if (list.isEmpty()){
                 iterator.remove();
             }
         }
 
-        return graph;
+        return removedVertices;
 
-    }
-
-    // Create a deep copy of the graph to pass it to the recursive function (Worst implementation ever since it has to loop every time to copy the Hashmap. Todo: Find a way to remove and restore a previous state of graph without copying
-
-    public static HashMap<String,HashSet<String>> copyGraph(HashMap<String,HashSet<String>> original){
-        HashMap<String, HashSet<String>> copy = new HashMap<>();
-        for (Map.Entry<String, HashSet<String>> entry : original.entrySet())
-        {
-            copy.put(entry.getKey(),
-                    new HashSet<>(entry.getValue()));
-        }
-        return copy;
     }
 
     // main function which increases the cover vertex size k every iteration
@@ -114,15 +109,5 @@ public class Solver {
         return s;
     }
 
-//    public static String getFirstUnremovedVertex(HashMap<String,HashSet<String>> graph,HashSet<String> removedVertexList){
-//
-//        for (String key : graph.keySet()) {
-//            if(!removedVertexList.contains(key)) return key;
-//        }
-//
-//        return null;
-//
-//
-//    }
-
 }
+
