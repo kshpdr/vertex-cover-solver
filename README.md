@@ -13,11 +13,13 @@ In regular intervals (approx. 3 weeks) the participants have to submit their pro
 Let's use the `main` branch for final submissions!*
 
 ### Server Access (via SSH):
-- Host: `aba02.akt.tu-berlin.de`
+- Host: `aba06.akt.tu-berlin.de`
 - Port: 22 (Standard SSH-Port)
 - Login Credentials:
-    - User: `TBA`
-    - Pwd: `TBA`
+    - User: `algeng-ws2223-team2`
+    - Pwd: `xkcNqnUMG6`
+- Example SSH-Call: `ssh algeng-ws2223-team2@aba06.akt.tu-berlin.de`
+- Every user has it's own subdirectory `/home/algeng-ws2223-team2/<USER>` with it's own copy of this GIT-Repo `algorithm-engineering`
 
 ### Usefull Links:
 - [ISIS Course](https://isis.tu-berlin.de/mod/forum/discuss.php?d=484841)
