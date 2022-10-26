@@ -7,10 +7,12 @@ public class Solver {
     public static void main(String[] args) throws IOException {
 
 
-        // Use buffer reader for stdin since the input does not require validation, and it is much faster
+        // Use buffer reader for stdin since the input does not require validation, and it is much faster than scanner
+
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
         bi.readLine();
-        // TODO implement graph with an incidence list
+
+        //Data structure used to store graph
 
         HashMap<String,HashSet<String>> graph = new HashMap<>();
         String line;
@@ -46,12 +48,19 @@ public class Solver {
 
         if (k<0) return null;
         if (graph.isEmpty()) return new LinkedList<>();
-        String firstVertex = graph.keySet().stream().findFirst().get();
-        String secondVertex = graph.get(firstVertex).toArray(new String[0])[0];
+
+        // Get random vertex and random neighbor (not some random since it is the first one :)
+
+        String firstVertex = graph.keySet().iterator().next();
+        String secondVertex = graph.get(firstVertex).iterator().next();
 
         // HashSet to store eliminated vertices to add them after the recursive call and avoid copying the graph
         HashSet<String> eliminatedVertices = eliminateVertex(graph,firstVertex);
         LinkedList<String> s = vc_branch(graph,k-1);
+
+
+        //Putting back the eliminated vertices
+
         graph.put(firstVertex,eliminatedVertices);
         if (s != null) {
             s.add(firstVertex);
@@ -60,6 +69,9 @@ public class Solver {
 
         eliminatedVertices = eliminateVertex(graph,secondVertex);
         s = vc_branch(graph,k-1);
+
+        //Putting back the eliminated vertices
+
         graph.put(secondVertex,eliminatedVertices);
         if (s != null) {
             s.add(secondVertex);
@@ -71,9 +83,7 @@ public class Solver {
 
     }
 
-    // TODO Find a way to eliminateVertex and return graphs to original state efficiently
-
-    // Function to eliminate a given vertex of a graph, removing the vertex is just O(1) but looking for the appearances of the vertex is O (E), being E edges
+    // Function to eliminate a given vertex of a graph in O(E) It outputs a hashset with all removed vertices
 
     static HashSet<String> eliminateVertex(HashMap<String,HashSet<String>> graph, String vertex){
 
@@ -108,4 +118,5 @@ public class Solver {
     }
 
 }
+
 
