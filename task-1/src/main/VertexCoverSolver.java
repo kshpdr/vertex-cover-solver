@@ -1,7 +1,6 @@
 package main;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class VertexCoverSolver {
@@ -11,7 +10,7 @@ public class VertexCoverSolver {
         while(true){
             List<Vertex> solution = solveVertexCover(G, k);
             if (solution != null){
-//                System.out.println(solution);
+                System.out.println(solution);
                 return solution;
             }
             k++;
@@ -40,7 +39,7 @@ public class VertexCoverSolver {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        InputParser inputParser = new InputParser(args[0]);
+        InputParser inputParser = new InputParser("example-input.txt");
 
         List<String> stringEdges = inputParser.parseEdges();
 
@@ -52,13 +51,10 @@ public class VertexCoverSolver {
 
         Graph graph = new Graph(edges);
 
-//        System.out.println(graph);
-//        System.out.println(graph.getRandomEdge());
-//
-//        System.out.println(findMinimalVertexCover(graph).size());
-        List<Vertex> solution = solveVertexCover(graph, findMinimalVertexCover(graph).size());
-        for (Vertex vertex : solution){
-            System.out.println(vertex);
-        }
+        System.out.println(graph);
+        System.out.println(graph.getRandomEdge());
+
+        System.out.println(findMinimalVertexCover(graph).size());
+        System.out.println(solveVertexCover(graph, findMinimalVertexCover(graph).size()));
     }
 }
