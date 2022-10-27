@@ -10,18 +10,22 @@ public class Solver {
         // Use buffer reader for stdin since the input does not require validation, and it is much faster than scanner
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
-        bi.readLine();
 
         //Data structure used to store graph
 
         HashMap<String,HashSet<String>> graph = new HashMap<>();
         String line;
-        while ((line = bi.readLine()) !=null){
-            String[] nodes = line.split(" ");
-            if (!graph.containsKey(nodes[0])){
-                graph.put(nodes[0],new HashSet<>());
+        while (((line = bi.readLine()) !=null)){
+
+
+            if (!line.contains("#") && !line.isEmpty()){
+                String[] nodes = line.split(" ");
+                if (!graph.containsKey(nodes[0])){
+                    graph.put(nodes[0],new HashSet<>());
+                }
+                graph.get(nodes[0]).add(nodes[1]);
             }
-            graph.get(nodes[0]).add(nodes[1]);
+
 
         }
 
