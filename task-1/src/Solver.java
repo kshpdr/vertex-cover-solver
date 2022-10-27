@@ -14,12 +14,18 @@ public class Solver {
         //Data structure used to store graph
 
         HashMap<String,HashSet<String>> graph = new HashMap<>();
+
         String line;
         while (((line = bi.readLine()) !=null)){
 
+            // Ignore lines starting with # and empty lines
 
             if (!line.contains("#") && !line.isEmpty()){
-                String[] nodes = line.split(" ");
+
+                //Striping line from whitespaces
+
+                String[] nodes = line.split("\\s+");
+
                 if (!graph.containsKey(nodes[0])){
                     graph.put(nodes[0],new HashSet<>());
                 }
@@ -30,6 +36,7 @@ public class Solver {
         }
 
         // storing the results in a LinkedList
+
         LinkedList<String> result = vc(graph);
 
         // Putting it all together in one String to only use one I/O operation
@@ -59,6 +66,7 @@ public class Solver {
         String secondVertex = graph.get(firstVertex).iterator().next();
 
         // HashSet to store eliminated vertices to add them after the recursive call and avoid copying the graph
+
         HashSet<String> eliminatedVertices = eliminateVertex(graph,firstVertex);
         LinkedList<String> s = vc_branch(graph,k-1);
 
