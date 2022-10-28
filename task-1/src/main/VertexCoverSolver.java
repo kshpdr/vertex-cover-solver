@@ -56,9 +56,12 @@ public class VertexCoverSolver {
 //
 //        System.out.println(findMinimalVertexCover(graph).size());
         List<Vertex> solution = solveVertexCover(graph, findMinimalVertexCover(graph).size());
-        for (Vertex vertex : solution){
-            System.out.println(vertex);
+        if (solution != null){
+            System.out.println(solution.size());
         }
+//        for (Vertex vertex : solution){
+//            System.out.println(vertex);
+//        }
 
     }
 }
