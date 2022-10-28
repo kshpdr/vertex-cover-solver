@@ -20,7 +20,7 @@ public class VertexCoverSolver {
     public static List<Vertex> solveVertexCover(Graph graph, int k){
         List<Vertex> solution = new ArrayList<>();
         if (k < 0){ return null; }
-        if (!graph.hasEdges()) { return new ArrayList<>(); }
+        if (!graph.hasEdges()) { return solution; }
         Edge randomEdge = graph.getRandomEdge();
 
         solution = solveVertexCover(new Graph(graph).deleteVertex(randomEdge.getFirstVertex()), k-1);
@@ -45,7 +45,8 @@ public class VertexCoverSolver {
 
         ArrayList<Edge> edges = new ArrayList<>();
         for (String stringEdge : stringEdges){
-            Edge edge = new Edge(new Vertex(stringEdge.substring(0, 1)), new Vertex(stringEdge.substring(2,3)));
+            String[] stringVertices = stringEdge.split(" ");
+            Edge edge = new Edge(new Vertex(stringVertices[0]), new Vertex(stringVertices[1]));
             edges.add(edge);
         }
 
