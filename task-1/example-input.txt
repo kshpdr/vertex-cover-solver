@@ -1,5 +1,4 @@
-# 6 vertices
-# 6 edges
+#6 6
 a b
 a d
 c e
