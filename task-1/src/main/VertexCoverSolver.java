@@ -24,13 +24,17 @@ public class VertexCoverSolver {
         if (!graph.hasEdges()) { return solution; }
         Edge randomEdge = graph.getRandomEdge();
 
-        solution = solveVertexCover(new HashMapGraph(graph).deleteVertex(randomEdge.getFirstVertex()), k-1);
+        ArrayList<Vertex> edgesForFirstVertex = graph.edges.get(randomEdge.getFirstVertex());
+        solution = solveVertexCover(graph.deleteVertex(randomEdge.getFirstVertex()), k-1);
+        graph.addEdges(randomEdge.getFirstVertex(), edgesForFirstVertex);
         if (solution != null) {
             solution.add(randomEdge.getFirstVertex());
             return solution;
         }
 
-        solution = solveVertexCover(new HashMapGraph(graph).deleteVertex(randomEdge.getSecondVertex()), k-1);
+        ArrayList<Vertex> edgesForSecondVertex = graph.edges.get(randomEdge.getSecondVertex());
+        solution = solveVertexCover(graph.deleteVertex(randomEdge.getSecondVertex()), k-1);
+        graph.addEdges(randomEdge.getSecondVertex(), edgesForSecondVertex);
         if (solution != null) {
             solution.add(randomEdge.getSecondVertex());
             return solution;

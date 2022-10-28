@@ -51,13 +51,24 @@ public class HashMapGraph {
     public HashMap<Vertex, ArrayList<Vertex>> getHashmapFromList(List<Vertex> vertices, ArrayList<Edge> edges){
         HashMap<Vertex, ArrayList<Vertex>> mapEdges = new HashMap<>();
 
-        for (Vertex vertex : vertices) {
-            mapEdges.put(vertex, new ArrayList<>());
-        }
-
         for (Edge edge : edges){
-            mapEdges.get(edge.getFirstVertex()).add(edge.getSecondVertex());
-            mapEdges.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+            if (!mapEdges.containsKey(edge.getFirstVertex())){
+                ArrayList<Vertex> adjacentList = new ArrayList<>();
+                adjacentList.add(edge.getSecondVertex());
+                mapEdges.put(edge.getFirstVertex(), adjacentList);
+            }
+            else{
+                mapEdges.get(edge.getFirstVertex()).add(edge.getSecondVertex());
+            }
+
+            if (!mapEdges.containsKey(edge.getSecondVertex())){
+                ArrayList<Vertex> adjacentList = new ArrayList<>();
+                adjacentList.add(edge.getFirstVertex());
+                mapEdges.put(edge.getSecondVertex(), adjacentList);
+            }
+            else{
+                mapEdges.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+            }
         }
 
         return mapEdges;
@@ -74,12 +85,12 @@ public class HashMapGraph {
 
     public HashMapGraph deleteVertex(Vertex vertexToDelete){
         vertices.remove(vertexToDelete);
-        edges.remove(vertexToDelete);
-        for (Vertex vertex : vertices){
+        for (Vertex vertex : edges.get(vertexToDelete)){
             if (edges.get(vertex).contains(vertexToDelete)){
                 edges.get(vertex).remove(vertexToDelete);
             }
         }
+        edges.remove(vertexToDelete);
         return this;
     }
 
@@ -98,6 +109,16 @@ public class HashMapGraph {
                     new ArrayList<Vertex>(entry.getValue()));
         }
         return copy;
+    }
+
+    public void addEdges(Vertex vertexToAdd, ArrayList<Vertex> edgesToAdd){
+        if (!vertices.contains(vertexToAdd)){
+            vertices.add(vertexToAdd);
+        }
+        edges.put(vertexToAdd, edgesToAdd);
+        for (Vertex vertex : edgesToAdd){
+            edges.get(vertex).add(vertexToAdd);
+        }
     }
 
 }
