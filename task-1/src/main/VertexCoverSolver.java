@@ -2,14 +2,15 @@ package main;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class VertexCoverSolver {
 
-    public static List<Vertex> findMinimalVertexCover(Graph G){
+    public static List<Vertex> findMinimalVertexCover(HashMapGraph G){
         int k = 0;
         while(true){
-            List<Vertex> solution = solveVertexCover(G, k);
+            List<Vertex> solution = solveVertexCover(new HashMapGraph(G), k);
             if (solution != null){
                 return solution;
             }
@@ -17,19 +18,19 @@ public class VertexCoverSolver {
         }
     }
 
-    public static List<Vertex> solveVertexCover(Graph graph, int k){
+    public static List<Vertex> solveVertexCover(HashMapGraph graph, int k){
         List<Vertex> solution = new ArrayList<>();
         if (k < 0){ return null; }
         if (!graph.hasEdges()) { return solution; }
         Edge randomEdge = graph.getRandomEdge();
 
-        solution = solveVertexCover(new Graph(graph).deleteVertex(randomEdge.getFirstVertex()), k-1);
+        solution = solveVertexCover(new HashMapGraph(graph).deleteVertex(randomEdge.getFirstVertex()), k-1);
         if (solution != null) {
             solution.add(randomEdge.getFirstVertex());
             return solution;
         }
 
-        solution = solveVertexCover(new Graph(graph).deleteVertex(randomEdge.getSecondVertex()), k-1);
+        solution = solveVertexCover(new HashMapGraph(graph).deleteVertex(randomEdge.getSecondVertex()), k-1);
         if (solution != null) {
             solution.add(randomEdge.getSecondVertex());
             return solution;
@@ -50,12 +51,8 @@ public class VertexCoverSolver {
             edges.add(edge);
         }
 
-        Graph graph = new Graph(edges);
+        HashMapGraph graph = new HashMapGraph(edges);
 
-//        System.out.println(graph);
-//        System.out.println(graph.getRandomEdge());
-//
-//        System.out.println(findMinimalVertexCover(graph).size());
         List<Vertex> solution = solveVertexCover(graph, findMinimalVertexCover(graph).size());
         for (Vertex vertex : solution){
             System.out.println(vertex);
