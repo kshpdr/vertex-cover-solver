@@ -3,7 +3,6 @@ package main;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner; // Import the Scanner class to read text files
 
 public class InputParser {
     public BufferedReader reader;
@@ -14,12 +13,13 @@ public class InputParser {
 
     public List<String> parseEdges() throws IOException {
         List<String> stringEdges = new ArrayList<>();
-        String line;
+        String[] line;
+        line = this.reader.readLine().substring(1).split(" ");
+        int vertices_num = Integer.parseInt(line[0]);
+        int edges_num = Integer.parseInt(line[1]);
 
-        while ((!(line = this.reader.readLine()).isEmpty())){
-            if (!line.contains("#")){
-                stringEdges.add(line);
-            }
+        for (int i = 0; i < edges_num; i++) {
+            stringEdges.add(this.reader.readLine());
         }
         return stringEdges;
     }
