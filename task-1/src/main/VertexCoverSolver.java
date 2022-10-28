@@ -1,5 +1,6 @@
 package main;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class VertexCoverSolver {
         return null;
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        InputParser inputParser = new InputParser(args[0]);
+    public static void main(String[] args) throws IOException {
+        InputParser inputParser = new InputParser();
 
         List<String> stringEdges = inputParser.parseEdges();
 

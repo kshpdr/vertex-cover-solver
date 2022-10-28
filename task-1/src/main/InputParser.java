@@ -1,25 +1,25 @@
 package main;
 
-import java.io.File;  // Import the File class
-import java.io.FileNotFoundException;  // Import this class to handle errors
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner; // Import the Scanner class to read text files
 
 public class InputParser {
-    public Scanner scanner;
+    public BufferedReader reader;
 
-    public InputParser(String fileName) throws FileNotFoundException {
-        this.scanner = new Scanner(new File(fileName));
+    public InputParser() {
+        this.reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    public List<String> parseEdges() {
+    public List<String> parseEdges() throws IOException {
         List<String> stringEdges = new ArrayList<>();
-        String firstLine = scanner.nextLine();
-        String secondLine = scanner.nextLine();
-        while (scanner.hasNextLine()) {
-            String data = scanner.nextLine();
-            stringEdges.add(data);
+        String line;
+
+        while ((!(line = this.reader.readLine()).isEmpty())){
+            if (!line.contains("#")){
+                stringEdges.add(line);
+            }
         }
         return stringEdges;
     }
