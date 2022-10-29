@@ -37,61 +37,69 @@ public class Solver {
 
         // storing the results in a LinkedList
 
-        LinkedList<String> result = vc(graph);
+        SolverResult result = vc(graph);
 
         // Putting it all together in one String to only use one I/O operation
 
         StringBuilder sb = new StringBuilder();
 
-        if (!result.isEmpty()){
-            for (String s : result) {
+        if (!result.resultsList.isEmpty()){
+            for (String s : result.resultsList) {
 
                 sb.append(s).append("\n");
             }
         }
+
+        sb.append("#recursive steps: ").append(result.recursiveSteps).append("\n");
 
         String resultStr = sb.toString();
         System.out.print(resultStr);
     }
 
 
-    static LinkedList<String> vc_branch(HashMap<String,HashSet<String>> graph,int k){
+    static SolverResult vc_branch(HashMap<String,HashSet<String>> graph, int k, SolverResult solverResult){
+        if (k<0) return solverResult;
+        if (graph.isEmpty()){
+            solverResult.setEmptyResultsList();
+            return solverResult;
+        }
 
-        if (k<0) return null;
-        if (graph.isEmpty()) return new LinkedList<>();
+        solverResult.increaseRecursiveSteps();
 
         // Get random vertex and random neighbor (not some random since it is the first one :)
 
         String firstVertex = graph.keySet().iterator().next();
         String secondVertex = graph.get(firstVertex).iterator().next();
 
+
+
         // HashSet to store eliminated vertices to add them after the recursive call and avoid copying the graph
 
         HashSet<String> eliminatedVertices = eliminateVertex(graph,firstVertex);
-        LinkedList<String> s = vc_branch(graph,k-1);
+        SolverResult s = vc_branch(graph,k-1, solverResult);
 
 
         //Putting back the eliminated vertices
 
         graph.put(firstVertex,eliminatedVertices);
-        if (s != null) {
-            s.add(firstVertex);
+        if (s.resultsList != null) {
+            s.addVertexToResult(firstVertex);
             return s;
         }
 
         eliminatedVertices = eliminateVertex(graph,secondVertex);
-        s = vc_branch(graph,k-1);
+        s = vc_branch(graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
 
         graph.put(secondVertex,eliminatedVertices);
-        if (s != null) {
-            s.add(secondVertex);
-            return s;
+        if (s.resultsList != null) {
+            solverResult.addVertexToResult(secondVertex);
+            return solverResult;
         }
 
 
-        return null;
+        return new SolverResult();
 
     }
 
@@ -122,13 +130,34 @@ public class Solver {
 
     // main function which increases the cover vertex size k every iteration
 
-    public static LinkedList<String> vc(HashMap<String,HashSet<String>> graph){
-        LinkedList<String> s;
+    public static SolverResult vc(HashMap<String,HashSet<String>> graph){
+        SolverResult  s;
         int k = 0;
-        while ((s = vc_branch(graph,k++))==null);
+        while ((s = vc_branch(graph,k++,new SolverResult())).resultsList==null);
         return s;
     }
 
+    static class SolverResult{
+        private LinkedList<String> resultsList = null;
+        private int recursiveSteps;
+
+        SolverResult() {
+
+        }
+
+        private void addVertexToResult(String vertexToAdd){
+        this.resultsList.add(vertexToAdd);
+       }
+
+       private void increaseRecursiveSteps(){
+            this.recursiveSteps++;
+       }
+
+        private void setEmptyResultsList(){
+            this.resultsList = new LinkedList<>();
+        }
+
+    }
 }
 
 
