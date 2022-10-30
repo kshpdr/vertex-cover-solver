@@ -6,7 +6,6 @@ import java.util.*;
 public class Solver {
     public static void main(String[] args) throws IOException {
 
-
         // Use buffer reader for stdin since the input does not require validation, and it is much faster than scanner
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
@@ -57,7 +56,7 @@ public class Solver {
     }
 
 
-    static SolverResult vc_branch(HashMap<String,HashSet<String>> graph, int k, SolverResult solverResult){
+    static SolverResult vc_branch(HashMap<String,SolverResult> MEM, HashMap<String,HashSet<String>> graph, int k, SolverResult solverResult){
         if (k<0) return solverResult;
         if (graph.isEmpty()){
             solverResult.setEmptyResultsList();
@@ -76,7 +75,8 @@ public class Solver {
         // HashSet to store eliminated vertices to add them after the recursive call and avoid copying the graph
 
         HashSet<String> eliminatedVertices = eliminateVertex(graph,firstVertex);
-        SolverResult s = vc_branch(graph,k-1, solverResult);
+        SolverResult s = memorization(MEM,graph,k-1, solverResult);
+        //SolverResult s = vc_branch(graph,k-1, solverResult);
 
 
         //Putting back the eliminated vertices
@@ -88,7 +88,8 @@ public class Solver {
         }
 
         eliminatedVertices = eliminateVertex(graph,secondVertex);
-        s = vc_branch(graph,k-1, solverResult);
+        s = memorization(MEM,graph,k-1, solverResult);
+        //s = vc_branch(graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
 
@@ -128,12 +129,44 @@ public class Solver {
 
     }
 
+    // Memorization method stores (some) partial results instead of recomputing them again
+    public static SolverResult memorization(HashMap<String,SolverResult> MEM, HashMap<String,HashSet<String>> graph, int k, SolverResult r){
+        String id = encodeGraph(graph,k);
+        SolverResult s = MEM.get(id);
+        if (s == null){
+            s = vc_branch(MEM,graph, k, r);
+            MEM.put(id,s);
+        }
+        return s;
+    }
+
+    // Encode (G,k) as String for memorization
+    public static String encodeGraph(HashMap<String,HashSet<String>> graph, int k){
+        StringBuilder sb = new StringBuilder();
+        ArrayList<String> V = new ArrayList<String>(graph.keySet());
+        Collections.sort(V);
+        for (String v : V){
+            sb.append(v);
+            sb.append(":");
+            ArrayList<String> neighbours = new ArrayList<String>(graph.get(v));
+            Collections.sort(neighbours);
+            for (String v2 : neighbours){
+                sb.append(v2);
+                sb.append("-");
+            }
+            sb.append(",");
+        }
+        sb.append("#"+k);
+        return sb.toString();
+    }
+
     // main function which increases the cover vertex size k every iteration
 
     public static SolverResult vc(HashMap<String,HashSet<String>> graph){
         SolverResult  s;
         int k = 0;
-        while ((s = vc_branch(graph,k++,new SolverResult())).resultsList==null);
+        HashMap<String,SolverResult> MEM = new HashMap<String,SolverResult>();  // Memory object for memorization method
+        while ((s = memorization(MEM,graph,k++,new SolverResult())).resultsList==null);
         return s;
     }
 
