@@ -6,14 +6,15 @@ import java.util.*;
 public class Solver {
     public static void main(String[] args) throws IOException {
 
-
         // Use buffer reader for stdin since the input does not require validation, and it is much faster than scanner
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
         //Data structure used to store graph
 
-        HashMap<String,HashSet<String>> graph = new HashMap<>();
+
+        Set<String> vertices = new HashSet<>();
+        HashSet<String[]> edges = new HashSet<>();
 
         String line;
         while (((line = bi.readLine()) !=null)){
@@ -25,16 +26,14 @@ public class Solver {
                 //Striping line from whitespaces
 
                 String[] nodes = line.split("\\s+");
-
-                if (!graph.containsKey(nodes[0])){
-                    graph.put(nodes[0],new HashSet<>());
-                }
-                graph.get(nodes[0]).add(nodes[1]);
+                vertices.add(nodes[0]);
+                vertices.add(nodes[1]);
+                edges.add(nodes);
             }
 
 
         }
-
+        Graph graph = new Graph(vertices,edges);
         // storing the results in a LinkedList
 
         SolverResult result = vc(graph);
@@ -57,7 +56,7 @@ public class Solver {
     }
 
 
-    static SolverResult vc_branch(HashMap<String,HashSet<String>> graph, int k, SolverResult solverResult){
+    static SolverResult vc_branch(HashMap<String,SolverResult> MEM, Graph graph, int k, SolverResult solverResult){
         if (k<0) return solverResult;
         if (graph.isEmpty()){
             solverResult.setEmptyResultsList();
@@ -68,33 +67,31 @@ public class Solver {
 
         // Get random vertex and random neighbor (not some random since it is the first one :)
 
-        String firstVertex = graph.keySet().iterator().next();
-        String secondVertex = graph.get(firstVertex).iterator().next();
+        Vertex[] randomEdge = graph.getRandomEdge();
+        HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(randomEdge[0]);
 
 
 
-        // HashSet to store eliminated vertices to add them after the recursive call and avoid copying the graph
 
-        HashSet<String> eliminatedVertices = eliminateVertex(graph,firstVertex);
-        SolverResult s = vc_branch(graph,k-1, solverResult);
-
+        SolverResult s = memorization(MEM,graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
 
-        graph.put(firstVertex,eliminatedVertices);
+        graph.putVertexBack(randomEdge[0],eliminatedNeighbors);
         if (s.resultsList != null) {
-            s.addVertexToResult(firstVertex);
+            s.addVertexToResult(graph.getVertexMapping(randomEdge[0]));
             return s;
         }
 
-        eliminatedVertices = eliminateVertex(graph,secondVertex);
-        s = vc_branch(graph,k-1, solverResult);
+        eliminatedNeighbors = graph.removeVertex(randomEdge[1]);
+        s = memorization(MEM,graph,k-1, solverResult);
+        //s = vc_branch(graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
 
-        graph.put(secondVertex,eliminatedVertices);
+        graph.putVertexBack(randomEdge[1],eliminatedNeighbors);
         if (s.resultsList != null) {
-            solverResult.addVertexToResult(secondVertex);
+            solverResult.addVertexToResult(graph.getVertexMapping(randomEdge[1]));
             return solverResult;
         }
 
@@ -103,37 +100,46 @@ public class Solver {
 
     }
 
-    // Function to eliminate a given vertex of a graph in O(E) It outputs a hashset with all removed vertices
 
-    static HashSet<String> eliminateVertex(HashMap<String,HashSet<String>> graph, String vertex){
 
-        // HashSet to store the vertices we remove to put them back after the recursive call in vc_branch ends
-        HashSet<String> removedVertices = new HashSet<>();
-        HashSet<String> removedHashSet = graph.remove(vertex);
-        if(removedHashSet !=null) removedVertices.addAll(removedHashSet);
-
-        Set<String> set = graph.keySet();
-        Iterator<String> iterator = set.iterator();
-
-        while(iterator.hasNext()){
-            String v = iterator.next();
-            HashSet<String> list = graph.get(v);
-            if(list.remove(vertex)) removedVertices.add(v);
-            if (list.isEmpty()){
-                iterator.remove();
-            }
+    // Memorization method stores (some) partial results instead of recomputing them again
+    public static SolverResult memorization(HashMap<String,SolverResult> MEM, Graph graph, int k, SolverResult r){
+        String id = graph.encodeGraph(k);
+        SolverResult s = MEM.get(id);
+        if (s == null){
+            s = vc_branch(MEM,graph, k, r);
+            MEM.put(id,s);
         }
-
-        return removedVertices;
-
+        return s;
     }
+
+    // Encode (G,k) as String for memorization
+//    public static String encodeGraph(HashMap<String,HashSet<String>> graph, int k){
+//        StringBuilder sb = new StringBuilder();
+//        ArrayList<String> V = new ArrayList<String>(graph.keySet());
+//        Collections.sort(V);
+//        for (String v : V){
+//            sb.append(v);
+//            sb.append(":");
+//            ArrayList<String> neighbours = new ArrayList<String>(graph.get(v));
+//            Collections.sort(neighbours);
+//            for (String v2 : neighbours){
+//                sb.append(v2);
+//                sb.append("-");
+//            }
+//            sb.append(",");
+//        }
+//        sb.append("#"+k);
+//        return sb.toString();
+//    }
 
     // main function which increases the cover vertex size k every iteration
 
-    public static SolverResult vc(HashMap<String,HashSet<String>> graph){
+    public static SolverResult vc(Graph graph){
         SolverResult  s;
         int k = 0;
-        while ((s = vc_branch(graph,k++,new SolverResult())).resultsList==null);
+        HashMap<String,SolverResult> MEM = new HashMap<>();  // Memory object for memorization method
+        while ((s = memorization(MEM,graph,k++,new SolverResult())).resultsList==null);
         return s;
     }
 
@@ -146,12 +152,12 @@ public class Solver {
         }
 
         private void addVertexToResult(String vertexToAdd){
-        this.resultsList.add(vertexToAdd);
-       }
+            this.resultsList.add(vertexToAdd);
+        }
 
-       private void increaseRecursiveSteps(){
+        private void increaseRecursiveSteps(){
             this.recursiveSteps++;
-       }
+        }
 
         private void setEmptyResultsList(){
             this.resultsList = new LinkedList<>();
@@ -159,5 +165,15 @@ public class Solver {
 
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
