@@ -1,16 +1,14 @@
 import java.util.*;
 
 public class Graph {
-        private final Map<Vertex, HashSet<Vertex>> adjVertices=new HashMap<>();
-        private final Map<Vertex, String> vertexStringMap = new HashMap<>();
-
+    private final Map<Vertex, HashSet<Vertex>> adjVertices=new HashMap<>();
+    private final Map<Vertex, String> vertexStringMap = new HashMap<>();
 
     public Graph(Set<String> verticesString, HashSet<String[]> edges){
         int index = 0;
-
         Iterator<String> vertexIterator = verticesString.iterator();
-
         Map<String, Vertex> stringVertexMap = new HashMap<>();
+
         while(vertexIterator.hasNext()) {
             Vertex vertex = new Vertex(index);
             String vertexString = vertexIterator.next();
@@ -19,21 +17,16 @@ public class Graph {
             this.adjVertices.put(vertex, new HashSet<>());
             index++;
         }
-        for (String[] edge : edges) {
 
+        for (String[] edge : edges) {
             this.adjVertices.get(stringVertexMap.get(edge[0])).add(stringVertexMap.get(edge[1]));
             this.adjVertices.get(stringVertexMap.get(edge[1])).add(stringVertexMap.get(edge[0]));
-
         }
     }
-
-
-
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        //sb.append("Vertices: ").append("\n");
         for (Vertex vertex :this.vertexStringMap.keySet()) {
             sb.append(vertex).append(": ");
             if (this.adjVertices.containsKey(vertex)) {
@@ -41,58 +34,30 @@ public class Graph {
                     sb.append(adjacentVertex).append(" ");
                 }
             }
-
             sb.append("\n");
-
         }
-
-
         return sb.toString();
     }
 
     public boolean isEmpty() {
         boolean isEmpty = true;
         for (Vertex vertex :this.vertexStringMap.keySet()) {
-
             if (this.adjVertices.containsKey(vertex)) {
                 isEmpty = isEmpty && this.adjVertices.get(vertex).isEmpty();
             }
-
-
         }
         return isEmpty;
     }
 
     public Vertex[] getRandomEdge () {
         Vertex[] randomEdge = new Vertex[2];
-//        List<Vertex> keysAsArray = new ArrayList<Vertex>(adjVertices.keySet());
-//        Random r = new Random();
-//        Vertex firstVertex = keysAsArray.get(r.nextInt(keysAsArray.size()));
-//        while(adjVertices.get(firstVertex).isEmpty()){
-//            r = new Random();
-//            firstVertex = keysAsArray.get(r.nextInt(keysAsArray.size()));
-//        }
-//        randomEdge[0] = new Vertex(firstVertex.label);
-//        Random rand = new Random();
-//        int size = adjVertices.get(firstVertex).size();
-//        int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
-//        int i = 0;
-//        for(Vertex vertex: adjVertices.get(firstVertex))
-//        {
-//            if (i == item)
-//                randomEdge[1] = vertex;
-//            i++;
-//        }
         for (Vertex vertex : adjVertices.keySet()) {
             if(!adjVertices.get(vertex).isEmpty()){
                 randomEdge[0] = vertex;
                 break;
             }
         }
-
         randomEdge[1] = adjVertices.get(randomEdge[0]).iterator().next();
-
-
         return randomEdge;
     }
 
@@ -112,7 +77,6 @@ public class Graph {
         }
 
         return adjacentVertices;
-
     }
 
     String getVertexMapping(Vertex vertex) {
@@ -130,11 +94,8 @@ public class Graph {
             sb.append(v.label);
             sb.append(":");
             ArrayList<Vertex> neighbours;
-            if(this.adjVertices.containsKey(v)) {
-                neighbours = new ArrayList<>(this.adjVertices.get(v));
-            }else{
-                neighbours = new ArrayList<>();
-            }
+            if(this.adjVertices.containsKey(v)) neighbours = new ArrayList<>(this.adjVertices.get(v));
+            else neighbours = new ArrayList<>();
             Collections.sort(neighbours);
             for (Vertex v2 : neighbours){
                 sb.append(v2.label);
@@ -147,22 +108,14 @@ public class Graph {
     }
 
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors){
-
         Vertex v1 = new Vertex(originalVertex.label);
         if(!adjVertices.containsKey(v1)) adjVertices.put(v1,new HashSet<>());
 
         for(Vertex neighbor: neighbors){
-
             Vertex v2 = new Vertex(neighbor.label);
             adjVertices.get(v1).add(v2);
             if(!adjVertices.containsKey(v2)) adjVertices.put(v2,new HashSet<>());
             adjVertices.get(v2).add(v1);
-
-
         }
-
-
     }
-
-
 }

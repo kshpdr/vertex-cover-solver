@@ -7,12 +7,9 @@ public class Solver {
     public static void main(String[] args) throws IOException {
 
         // Use buffer reader for stdin since the input does not require validation, and it is much faster than scanner
-
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
         //Data structure used to store graph
-
-
         Set<String> vertices = new HashSet<>();
         HashSet<String[]> edges = new HashSet<>();
 
@@ -20,7 +17,6 @@ public class Solver {
         while (((line = bi.readLine()) !=null)){
 
             // Ignore lines starting with # and empty lines
-
             if (!line.contains("#") && !line.isEmpty()){
 
                 //Striping line from whitespaces
@@ -30,29 +26,22 @@ public class Solver {
                 vertices.add(nodes[1]);
                 edges.add(nodes);
             }
-
-
         }
-        Graph graph = new Graph(vertices,edges);
-        // storing the results in a LinkedList
 
+        Graph graph = new Graph(vertices,edges);
+
+        // storing the results in a LinkedList
         SolverResult result = vc(graph);
 
         // Putting it all together in one String to only use one I/O operation
-
         StringBuilder sb = new StringBuilder();
-
         if (!result.resultsList.isEmpty()){
             for (String s : result.resultsList) {
-
                 sb.append(s).append("\n");
             }
         }
-
         sb.append("#recursive steps: ").append(result.recursiveSteps).append("\n");
-
-        String resultStr = sb.toString();
-        System.out.print(resultStr);
+        System.out.print(sb.toString());
     }
 
 
@@ -66,17 +55,12 @@ public class Solver {
         solverResult.increaseRecursiveSteps();
 
         // Get random vertex and random neighbor (not some random since it is the first one :)
-
         Vertex[] randomEdge = graph.getRandomEdge();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(randomEdge[0]);
-
-
-
 
         SolverResult s = memorization(MEM,graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
-
         graph.putVertexBack(randomEdge[0],eliminatedNeighbors);
         if (s.resultsList != null) {
             s.addVertexToResult(graph.getVertexMapping(randomEdge[0]));
@@ -85,19 +69,15 @@ public class Solver {
 
         eliminatedNeighbors = graph.removeVertex(randomEdge[1]);
         s = memorization(MEM,graph,k-1, solverResult);
-        //s = vc_branch(graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
-
         graph.putVertexBack(randomEdge[1],eliminatedNeighbors);
         if (s.resultsList != null) {
             solverResult.addVertexToResult(graph.getVertexMapping(randomEdge[1]));
             return solverResult;
         }
 
-
         return new SolverResult();
-
     }
 
 
