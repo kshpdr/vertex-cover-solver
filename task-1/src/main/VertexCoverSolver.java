@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class VertexCoverSolver {
@@ -24,7 +25,7 @@ public class VertexCoverSolver {
         if (!graph.hasEdges()) { return solution; }
         Edge randomEdge = graph.getRandomEdge();
 
-        ArrayList<Vertex> edgesForFirstVertex = graph.edges.get(randomEdge.getFirstVertex());
+        HashSet<Vertex> edgesForFirstVertex = graph.edges.get(randomEdge.getFirstVertex());
         solution = solveVertexCover(graph.deleteVertex(randomEdge.getFirstVertex()), k-1);
         graph.addEdges(randomEdge.getFirstVertex(), edgesForFirstVertex);
         if (solution != null) {
@@ -32,7 +33,7 @@ public class VertexCoverSolver {
             return solution;
         }
 
-        ArrayList<Vertex> edgesForSecondVertex = graph.edges.get(randomEdge.getSecondVertex());
+        HashSet<Vertex> edgesForSecondVertex = graph.edges.get(randomEdge.getSecondVertex());
         solution = solveVertexCover(graph.deleteVertex(randomEdge.getSecondVertex()), k-1);
         graph.addEdges(randomEdge.getSecondVertex(), edgesForSecondVertex);
         if (solution != null) {

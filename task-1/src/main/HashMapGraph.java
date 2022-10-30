@@ -1,20 +1,21 @@
 package main;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HashMapGraph {
-    public List<Vertex> vertices = new ArrayList<>();
-    public HashMap<Vertex, ArrayList<Vertex>> edges = new HashMap<>();
+    public HashSet<Vertex> vertices = new HashSet<>();
+    public HashMap<Vertex, HashSet<Vertex>> edges = new HashMap<>();
 
-    public HashMapGraph(ArrayList<Edge> edges){
+    public HashMapGraph(List<Edge> edges){
         this.vertices = getVerticesFromEdges(edges);
-        this.edges = getHashmapFromList(this.vertices, edges);
+        this.edges = getHashmapFromList(edges);
     }
 
-    public HashMapGraph(HashMap<Vertex, ArrayList<Vertex>> edges){
-        this.vertices = new ArrayList<>(edges.keySet());
+    public HashMapGraph(HashMap<Vertex, HashSet<Vertex>> edges){
+        this.vertices = new HashSet<>(edges.keySet());
         this.edges = edges;
     }
 
@@ -26,34 +27,36 @@ public class HashMapGraph {
     public Edge getRandomEdge(){
         Edge randomEdge = null;
         while (randomEdge == null){
-            int rnd = new Random().nextInt(vertices.size());
-            Vertex rndVertex = vertices.get(rnd);
+            Vertex rndVertex = getRandomVertex();
             if (!edges.get(rndVertex).isEmpty()){
-                randomEdge = new Edge(rndVertex, edges.get(rndVertex).get(0));
+                HashSet<Vertex> adjacentVertices = edges.get(rndVertex);
+                Vertex adjacentVertex = (new ArrayList<>(adjacentVertices)).get(0);
+                randomEdge = new Edge(rndVertex, adjacentVertex);
             }
         }
         return randomEdge;
     }
 
-    public ArrayList<Vertex> getVerticesFromEdges(List<Edge> edges){
-        ArrayList<Vertex> vertices = new ArrayList<>();
+    public Vertex getRandomVertex(){
+        int rnd = new Random().nextInt(vertices.size());
+        return (new ArrayList<>(vertices)).get(rnd);
+    }
+
+    public HashSet<Vertex> getVerticesFromEdges(List<Edge> edges){
+        HashSet<Vertex> vertices = new HashSet<>();
         for (Edge edge : edges){
-            if (!vertices.contains(edge.getFirstVertex())) {
-                vertices.add(edge.getFirstVertex());
-            }
-            if (!vertices.contains(edge.getSecondVertex())) {
-                vertices.add(edge.getSecondVertex());
-            }
+            vertices.add(edge.getFirstVertex());
+            vertices.add(edge.getSecondVertex());
         }
         return vertices;
     }
 
-    public HashMap<Vertex, ArrayList<Vertex>> getHashmapFromList(List<Vertex> vertices, ArrayList<Edge> edges){
-        HashMap<Vertex, ArrayList<Vertex>> mapEdges = new HashMap<>();
+    public HashMap<Vertex, HashSet<Vertex>> getHashmapFromList(List<Edge> edges){
+        HashMap<Vertex, HashSet<Vertex>> mapEdges = new HashMap<>();
 
         for (Edge edge : edges){
             if (!mapEdges.containsKey(edge.getFirstVertex())){
-                ArrayList<Vertex> adjacentList = new ArrayList<>();
+                HashSet<Vertex> adjacentList = new HashSet<>();
                 adjacentList.add(edge.getSecondVertex());
                 mapEdges.put(edge.getFirstVertex(), adjacentList);
             }
@@ -62,7 +65,7 @@ public class HashMapGraph {
             }
 
             if (!mapEdges.containsKey(edge.getSecondVertex())){
-                ArrayList<Vertex> adjacentList = new ArrayList<>();
+                HashSet<Vertex> adjacentList = new HashSet<>();
                 adjacentList.add(edge.getFirstVertex());
                 mapEdges.put(edge.getSecondVertex(), adjacentList);
             }
@@ -94,24 +97,24 @@ public class HashMapGraph {
         return this;
     }
 
-    public HashMap<Vertex, ArrayList<Vertex>> getEdges(){
+    public HashMap<Vertex, HashSet<Vertex>> getEdges(){
         return edges;
     }
 
-    public static HashMap<Vertex, ArrayList<Vertex>> copy(
-            HashMap<Vertex, ArrayList<Vertex>> original)
+    public static HashMap<Vertex, HashSet<Vertex>> copy(
+            HashMap<Vertex, HashSet<Vertex>> original)
     {
-        HashMap<Vertex, ArrayList<Vertex>> copy = new HashMap<Vertex, ArrayList<Vertex>>();
-        for (Map.Entry<Vertex, ArrayList<Vertex>> entry : original.entrySet())
+        HashMap<Vertex, HashSet<Vertex>> copy = new HashMap<Vertex, HashSet<Vertex>>();
+        for (Map.Entry<Vertex, HashSet<Vertex>> entry : original.entrySet())
         {
             copy.put(entry.getKey(),
                     // Or whatever List implementation you'd like here.
-                    new ArrayList<Vertex>(entry.getValue()));
+                    new HashSet<Vertex>(entry.getValue()));
         }
         return copy;
     }
 
-    public void addEdges(Vertex vertexToAdd, ArrayList<Vertex> edgesToAdd){
+    public void addEdges(Vertex vertexToAdd, HashSet<Vertex> edgesToAdd){
         if (!vertices.contains(vertexToAdd)){
             vertices.add(vertexToAdd);
         }
