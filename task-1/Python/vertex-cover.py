@@ -2,6 +2,7 @@
 
 from re import match
 from signal import signal,SIGINT
+from sys import stdin
 
 RECURSION = 0
 LAST_K = 0
@@ -16,10 +17,10 @@ def main():
 
 # Parse input graph from stdin
 def read_input():
-	nodes,edges = [int(inp) for inp in match(r"#(\d+) (\d+)",input()).groups()]
 	V,E = set(),list()
-	for i in range(edges):										# Parse each following edge line
-		e = match(r"([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)",input()).groups()
+	for line in stdin:										# Parse each following edge line
+		if line.startswith("#") or len(line.strip()) == 0: continue
+		e = match(r"([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)\n",line).groups()
 		E.append(e)
 		for n in e: V.add(n)
 	E.sort()
