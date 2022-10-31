@@ -21,7 +21,7 @@ def read_input():
 	for line in stdin:										# Parse each following edge line
 		line = line.strip()
 		if line.startswith("#") or len(line.strip()) == 0: continue
-		e = match(r"([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)\n",line).groups()
+		e = match(r"([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)",line).groups()
 		E.append(e)
 		for n in e: V.add(n)
 	E.sort()
