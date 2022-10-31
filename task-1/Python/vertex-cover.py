@@ -19,6 +19,7 @@ def main():
 def read_input():
 	V,E = set(),list()
 	for line in stdin:										# Parse each following edge line
+		line = line.strip()
 		if line.startswith("#") or len(line.strip()) == 0: continue
 		e = match(r"([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)\n",line).groups()
 		E.append(e)
