@@ -89,9 +89,7 @@ public class HashMapGraph {
     public HashMapGraph deleteVertex(Vertex vertexToDelete){
         vertices.remove(vertexToDelete);
         for (Vertex vertex : edges.get(vertexToDelete)){
-            if (edges.get(vertex).contains(vertexToDelete)){
-                edges.get(vertex).remove(vertexToDelete);
-            }
+            edges.get(vertex).remove(vertexToDelete);
         }
         edges.remove(vertexToDelete);
         return this;
