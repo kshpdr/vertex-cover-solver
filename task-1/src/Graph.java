@@ -16,19 +16,10 @@ public class Graph {
 
 
         Map<String, Vertex> stringVertexMap = new HashMap<>();
-//        while(vertexIterator.hasNext()) {
-//            Vertex vertex = new Vertex(index);
-//            String vertexString = vertexIterator.next();
-//            this.vertexStringMap.put(vertex,vertexString);
-//            this.arrayVertex.add(vertex);
-//            vertexHeap.add(vertex);
-//            stringVertexMap.put(vertexString,vertex);
-//            this.adjVertices.put(vertex, new HashSet<>());
-//            index++;
-//        }
+
         for (String[] edge : edges) {
 
-            //Putting neighbors in the corresponding hashset
+
             if (!stringVertexMap.containsKey(edge[0])) {
                 Vertex vertex1 = new Vertex(index);
                 this.vertexStringMap.put(vertex1, edge[0]);
@@ -55,6 +46,8 @@ public class Graph {
             stringVertexMap.get(edge[1]).degree++;
 
         }
+
+        //Putting the vertices in the heap
         vertexHeap.addAll(arrayVertex);
 
     }
@@ -186,14 +179,11 @@ public class Graph {
 
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors){
 
-//        Vertex v1 = new Vertex(originalVertex.label);
-//        System.out.println(this);
-//        System.out.println("receiving this as input: Original vertex: "+ originalVertex+ " neighbors: "+ neighbors);
+
         if(!adjVertices.containsKey(originalVertex)) adjVertices.put(originalVertex,new HashSet<>());
 
         for(Vertex neighbor: neighbors){
 
-//            Vertex v2 = new Vertex(neighbor.label);
             adjVertices.get(originalVertex).add(neighbor);
             this.arrayVertex.get(originalVertex.label).degree++;
             this.vertexHeap.remove(originalVertex);
@@ -227,7 +217,6 @@ public class Graph {
     void putManyVerticesBack(HashMap<Vertex,HashSet<Vertex>> verticesBack){
 
         for (Map.Entry<Vertex, HashSet<Vertex>> entry : verticesBack.entrySet()) {
-            //Vertex v = entry.getKey();
             putVertexBack(entry.getKey(),entry.getValue());
         }
 

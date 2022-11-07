@@ -43,7 +43,6 @@ public class Vertex implements Comparable<Vertex>{
 
     @Override
     public int compareTo(Vertex o) {
-        //System.out.println("im comparing Vertex: " + this.label + " with degree: "+ this.degree + " with Vertex: "+ o.label+ " and degree: "+ o.degree+ " and the result is: "+ Integer.compare(this.degree,  o.degree));
 
         return Integer.compare(this.degree,  o.degree);
     }
