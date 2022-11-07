@@ -13,7 +13,6 @@ public class Solver {
         //Data structure used to store graph
 
 
-        Set<String> vertices = new HashSet<>();
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
@@ -26,14 +25,16 @@ public class Solver {
                 //Striping line from whitespaces
 
                 String[] nodes = line.split("\\s+");
-                vertices.add(nodes[0]);
-                vertices.add(nodes[1]);
                 edges.add(nodes);
             }
 
 
         }
-        Graph graph = new Graph(vertices,edges);
+        Graph graph = new Graph(edges);
+
+//        System.out.println(graph);
+//        System.out.println("Encoded Graph");
+//        System.out.println(graph.encodeGraph(0));
         // storing the results in a LinkedList
 
         SolverResult result = vc(graph);
@@ -41,6 +42,8 @@ public class Solver {
         // Putting it all together in one String to only use one I/O operation
 
         StringBuilder sb = new StringBuilder();
+
+
 
         if (!result.resultsList.isEmpty()){
             for (String s : result.resultsList) {
@@ -67,8 +70,16 @@ public class Solver {
 
         // Get random vertex and random neighbor (not some random since it is the first one :)
 
-        Vertex[] randomEdge = graph.getRandomEdge();
-        HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(randomEdge[0]);
+//        Vertex[] randomEdge = graph.getRandomEdge();
+//        HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(randomEdge[0]);
+
+        Vertex v = graph.getNextNode();
+        HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
+//        System.out.println("--------------------------------------------------");
+//        System.out.println("k is "+ k);
+//        System.out.println("Vertex eliminated: " +v);
+//        System.out.println(graph);
+//        System.out.println("--------------------------------------------------");
 
 
 
@@ -77,21 +88,41 @@ public class Solver {
 
         //Putting back the eliminated vertices
 
-        graph.putVertexBack(randomEdge[0],eliminatedNeighbors);
+        //graph.putVertexBack(randomEdge[0],eliminatedNeighbors);
+        graph.putVertexBack(v,eliminatedNeighbors);
+//        System.out.println("--------------------------------------------------");
+//        System.out.println("k is "+ k);
+//        System.out.println("Vertex put back: " + v);
+//        System.out.println(graph);
+//        System.out.println("--------------------------------------------------");
+
+
         if (s.resultsList != null) {
-            s.addVertexToResult(graph.getVertexMapping(randomEdge[0]));
+            s.addVertexToResult(graph.getVertexMapping(v));
             return s;
         }
 
-        eliminatedNeighbors = graph.removeVertex(randomEdge[1]);
-        s = memorization(MEM,graph,k-1, solverResult);
+        HashMap<Vertex,HashSet<Vertex>> eliminatedNeighborsMap= graph.removeSetofVertices(eliminatedNeighbors);
+
+//        System.out.println("--------------------------------------------------");
+//        System.out.println("k is "+ k);
+//        System.out.println("Vertices eliminated: " + eliminatedNeighbors);
+//        System.out.println(graph);
+//        System.out.println("--------------------------------------------------");
+        s = memorization(MEM,graph,k-eliminatedNeighbors.size(), solverResult);
         //s = vc_branch(graph,k-1, solverResult);
 
         //Putting back the eliminated vertices
+        graph.putManyVerticesBack(eliminatedNeighborsMap);
 
-        graph.putVertexBack(randomEdge[1],eliminatedNeighbors);
+//        System.out.println("--------------------------------------------------");
+//        System.out.println("k is "+ k);
+//        System.out.println("Vertex put back: " + eliminatedNeighbors);
+//        System.out.println(graph);
+//        System.out.println("--------------------------------------------------");
+
         if (s.resultsList != null) {
-            solverResult.addVertexToResult(graph.getVertexMapping(randomEdge[1]));
+            solverResult.addMultipleVertexToResult(graph.getMultipleMappings(eliminatedNeighbors));
             return solverResult;
         }
 
@@ -104,13 +135,13 @@ public class Solver {
 
     // Memorization method stores (some) partial results instead of recomputing them again
     public static SolverResult memorization(HashMap<String,SolverResult> MEM, Graph graph, int k, SolverResult r){
-        String id = graph.encodeGraph(k);
-        SolverResult s = MEM.get(id);
-        if (s == null){
-            s = vc_branch(MEM,graph, k, r);
-            MEM.put(id,s);
-        }
-        return s;
+
+
+
+       // vc_branch(MEM,graph, k, r);
+
+
+        return vc_branch(MEM,graph, k, r);
     }
 
     // Encode (G,k) as String for memorization
@@ -153,6 +184,12 @@ public class Solver {
 
         private void addVertexToResult(String vertexToAdd){
             this.resultsList.add(vertexToAdd);
+        }
+
+        private void addMultipleVertexToResult(String[] verticesToAdd){
+
+            Collections.addAll(this.resultsList, verticesToAdd);
+
         }
 
         private void increaseRecursiveSteps(){
