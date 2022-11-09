@@ -52,6 +52,10 @@ public class Graph {
 
     }
 
+    public Graph(){
+
+    }
+
 
 
 
@@ -236,6 +240,39 @@ public class Graph {
             result[i] = this.getVertexMapping(it.next());
         }
         return result;
+
+    }
+
+    Graph getCopy(){
+        Graph copy = new Graph();
+        //
+        for (Vertex vertex: this.arrayVertex){
+            Vertex vertexCopy = new Vertex(vertex.label);
+            vertexCopy.degree = vertex.degree;
+            copy.arrayVertex.add(vertexCopy);
+            if(!copy.vertexStringMap.containsKey(vertexCopy)) {
+                copy.vertexStringMap.put(vertexCopy, this.vertexStringMap.get(vertexCopy));
+            }
+
+        }
+
+        for (Vertex vertex: this.adjVertices.keySet()){
+                for(Vertex neighbor:  this.adjVertices.get(vertex)){
+                    if(copy.adjVertices.containsKey(vertex)){
+                        copy.adjVertices.get(copy.arrayVertex.get(vertex.label)).add(copy.arrayVertex.get(neighbor.label));
+                    }else{
+                        HashSet<Vertex> tmpNeighbors = new HashSet<>();
+                        tmpNeighbors.add(copy.arrayVertex.get(neighbor.label));
+                        copy.adjVertices.put(copy.arrayVertex.get(vertex.label), tmpNeighbors);
+
+                    }
+
+                }
+
+        }
+
+        copy.vertexHeap.addAll(copy.arrayVertex);
+        return copy;
 
     }
 }
