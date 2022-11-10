@@ -275,4 +275,24 @@ public class Graph {
         return copy;
 
     }
+
+    HashSet<Vertex> getMaximalClique(){
+        HashSet<Vertex> clique = new HashSet<>();
+        Vertex firstVertex = this.getNextNode();
+        clique.add(firstVertex);
+        for (Vertex vertex: this.arrayVertex){
+            if(!clique.contains(vertex)) {
+
+                if (this.adjVertices.containsKey(vertex) && this.adjVertices.get(vertex).containsAll(clique)) {
+
+
+                    clique.add(vertex);
+                }
+            }
+
+        }
+
+        return clique;
+
+    }
 }
