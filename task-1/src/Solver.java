@@ -32,8 +32,7 @@ public class Solver {
         }
         Graph graph = new Graph(edges);
 
-
-        SolverResult result = vc(graph);
+        SolverResult result = vc(graph, graph.getCliqueLowerBound());
 
         // Putting it all together in one String to only use one I/O operation
 
@@ -138,9 +137,9 @@ public class Solver {
 
     // main function which increases the cover vertex size k every iteration
 
-    public static SolverResult vc(Graph graph){
+    public static SolverResult vc(Graph graph,int lowerBound){
         SolverResult  s;
-        int k = 0;
+        int k = lowerBound;
         //HashMap<String,SolverResult> MEM = new HashMap<>();  // Memory object for memorization method
         while ((s = vc_branch(graph,k++,new SolverResult())).resultsList==null);
         return s;

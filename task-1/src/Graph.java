@@ -295,4 +295,25 @@ public class Graph {
         return clique;
 
     }
+
+    HashSet<HashSet<Vertex>> getApproximateMaximumClique(){
+        Graph copyGraph = this.getCopy();
+        HashSet<HashSet<Vertex>> result = new HashSet<>();
+        HashSet<Vertex> maxClique;
+        while(!copyGraph.vertexHeap.isEmpty()){
+            maxClique = copyGraph.getMaximalClique();
+            result.add(maxClique);
+            copyGraph.removeSetofVertices(maxClique);
+        }
+        return result;
+
+
+    }
+
+    int getCliqueLowerBound(){
+        return this.arrayVertex.size()-this.getApproximateMaximumClique().size();
+    }
+
+
+
 }
