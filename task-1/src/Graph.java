@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Graph {
         private final Map<Vertex, HashSet<Vertex>> adjVertices=new HashMap<>();
-        private final Map<Vertex, String> vertexStringMap = new HashMap<>();
+        private final ArrayList<String> vertexStringMap = new ArrayList<>();
         private final ArrayList<Vertex> arrayVertex = new ArrayList<>();
 
         private final Queue<Vertex> vertexHeap = new PriorityQueue<>(Collections.reverseOrder());
@@ -22,7 +22,7 @@ public class Graph {
 
             if (!stringVertexMap.containsKey(edge[0])) {
                 Vertex vertex1 = new Vertex(index);
-                this.vertexStringMap.put(vertex1, edge[0]);
+                this.vertexStringMap.add(edge[0]);
                 this.adjVertices.put(vertex1, new HashSet<>());
                 stringVertexMap.put(edge[0], vertex1);
                 this.arrayVertex.add(vertex1);
@@ -30,7 +30,7 @@ public class Graph {
             }
             if (!stringVertexMap.containsKey(edge[1])) {
                 Vertex vertex2 = new Vertex(index);
-                this.vertexStringMap.put(vertex2, edge[1]);
+                this.vertexStringMap.add(edge[1]);
                 stringVertexMap.put(edge[1], vertex2);
                 this.adjVertices.put(vertex2, new HashSet<>());
                 this.arrayVertex.add(vertex2);
@@ -63,7 +63,7 @@ public class Graph {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         //sb.append("Vertices: ").append("\n");
-        for (Vertex vertex :this.vertexStringMap.keySet()) {
+        for (Vertex vertex :this.arrayVertex) {
             sb.append(vertex).append(": ");
             if (this.adjVertices.containsKey(vertex)) {
                 for (Vertex adjacentVertex : this.adjVertices.get(vertex)) {
@@ -82,7 +82,7 @@ public class Graph {
 
     public boolean isEmpty() {
         boolean isEmpty = true;
-        for (Vertex vertex :this.vertexStringMap.keySet()) {
+        for (Vertex vertex :this.arrayVertex) {
 
             if (this.adjVertices.containsKey(vertex)) {
                 isEmpty = isEmpty && this.adjVertices.get(vertex).isEmpty();
@@ -151,7 +151,7 @@ public class Graph {
     }
 
     String getVertexMapping(Vertex vertex) {
-        return vertexStringMap.get(vertex);
+        return vertexStringMap.get(vertex.label);
 
     }
 
@@ -250,9 +250,7 @@ public class Graph {
             Vertex vertexCopy = new Vertex(vertex.label);
             vertexCopy.degree = vertex.degree;
             copy.arrayVertex.add(vertexCopy);
-            if(!copy.vertexStringMap.containsKey(vertexCopy)) {
-                copy.vertexStringMap.put(vertexCopy, this.vertexStringMap.get(vertexCopy));
-            }
+            copy.vertexStringMap.add(this.vertexStringMap.get(vertexCopy.label));
 
         }
 
