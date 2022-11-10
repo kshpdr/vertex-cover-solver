@@ -82,11 +82,10 @@ public class Graph {
 
     public boolean isEmpty() {
         boolean isEmpty = true;
-        for (Vertex vertex :this.arrayVertex) {
+        for (Vertex vertex :this.adjVertices.keySet()) {
 
-            if (this.adjVertices.containsKey(vertex)) {
                 isEmpty = isEmpty && this.adjVertices.get(vertex).isEmpty();
-            }
+
 
 
         }
