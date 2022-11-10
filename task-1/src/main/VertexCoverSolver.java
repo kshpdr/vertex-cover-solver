@@ -10,6 +10,27 @@ public class VertexCoverSolver {
 
     public static int recursiveSteps = -1;
 
+    public static HashSet<Vertex> reduceOneDegreeVertices(HashMapGraph graph){
+        HashSet<Vertex> partialSolution = new HashSet<>();
+        HashSet<Vertex> verticesToDelete = new HashSet<>();
+        for (Vertex vertex : graph.getEdges().keySet()){
+            if (graph.getEdges().get(vertex).size() == 1){
+                if (!verticesToDelete.contains(vertex)){
+                    Vertex vertexToSave = graph.getEdges().get(vertex).iterator().next();
+                    partialSolution.add(graph.getEdges().get(vertex).iterator().next());
+
+                    verticesToDelete.add(vertexToSave);
+                    verticesToDelete.add(vertex);
+                }
+            }
+        }
+
+        for (Vertex vertex : verticesToDelete){
+            graph.getEdges().remove(vertex);
+        }
+        return partialSolution;
+    }
+
     public static List<Vertex> findMinimalVertexCover(HashMapGraph graph){
         int k = 0;
         while(true){
@@ -62,11 +83,14 @@ public class VertexCoverSolver {
 
         HashMapGraph graph = new HashMapGraph(edges);
 
+        HashSet<Vertex> partialSolution = reduceOneDegreeVertices(graph);
         List<Vertex> solution = solveVertexCover(graph, findMinimalVertexCover(graph).size());
-        for (Vertex vertex : solution){
-            System.out.println(vertex);
-        }
+        assert solution != null;
+        solution.addAll(partialSolution);
         System.out.println("#recursive steps " + recursiveSteps);
 
+        for (Vertex vertex : solution) {
+            System.out.println(vertex);
+        }
     }
 }
