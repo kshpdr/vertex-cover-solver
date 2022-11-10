@@ -91,10 +91,14 @@ public class HashMapGraph {
     }
 
     public void deleteEmptyAdjacentLists(){
+        HashSet<Vertex> verticesToDelete = new HashSet<>();
         for (Vertex vertex : this.edges.keySet()){
             if (edges.get(vertex).isEmpty()){
-                this.deleteVertex(vertex);
+                verticesToDelete.add(vertex);
             }
+        }
+        for (Vertex vertex : verticesToDelete){
+            deleteVertex(vertex);
         }
     }
 
