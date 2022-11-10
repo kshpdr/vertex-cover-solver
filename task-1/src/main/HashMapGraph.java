@@ -90,6 +90,14 @@ public class HashMapGraph {
         return this;
     }
 
+    public void deleteEmptyAdjacentLists(){
+        for (Vertex vertex : this.edges.keySet()){
+            if (edges.get(vertex).isEmpty()){
+                this.deleteVertex(vertex);
+            }
+        }
+    }
+
     public HashMap<Vertex, HashSet<Vertex>> getEdges(){
         return edges;
     }

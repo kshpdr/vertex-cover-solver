@@ -26,8 +26,9 @@ public class VertexCoverSolver {
         }
 
         for (Vertex vertex : verticesToDelete){
-            graph.getEdges().remove(vertex);
+            graph.deleteVertex(vertex);
         }
+        graph.deleteEmptyAdjacentLists();
         return partialSolution;
     }
 
