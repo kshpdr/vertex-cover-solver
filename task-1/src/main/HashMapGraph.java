@@ -78,12 +78,7 @@ public class HashMapGraph {
     }
 
     public boolean hasEdges(){
-        for (Vertex vertex : vertices){
-            if (!edges.get(vertex).isEmpty()){
-                return true;
-            }
-        }
-        return false;
+        return !edges.isEmpty();
     }
 
     public HashMapGraph deleteVertex(Vertex vertexToDelete){
