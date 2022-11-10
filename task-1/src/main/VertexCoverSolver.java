@@ -8,10 +8,12 @@ import java.util.List;
 
 public class VertexCoverSolver {
 
-    public static List<Vertex> findMinimalVertexCover(HashMapGraph G){
+    public static int recursiveSteps = -1;
+
+    public static List<Vertex> findMinimalVertexCover(HashMapGraph graph){
         int k = 0;
         while(true){
-            List<Vertex> solution = solveVertexCover(new HashMapGraph(G), k);
+            List<Vertex> solution = solveVertexCover(new HashMapGraph(graph), k);
             if (solution != null){
                 return solution;
             }
@@ -20,6 +22,8 @@ public class VertexCoverSolver {
     }
 
     public static List<Vertex> solveVertexCover(HashMapGraph graph, int k){
+        recursiveSteps++;
+
         List<Vertex> solution = new ArrayList<>();
         if (k < 0){ return null; }
         if (!graph.hasEdges()) { return solution; }
@@ -62,6 +66,7 @@ public class VertexCoverSolver {
         for (Vertex vertex : solution){
             System.out.println(vertex);
         }
+        System.out.println("#recursive steps " + recursiveSteps);
 
     }
 }
