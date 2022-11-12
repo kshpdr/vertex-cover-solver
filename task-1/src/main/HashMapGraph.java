@@ -8,10 +8,15 @@ import java.util.stream.Collectors;
 public class HashMapGraph {
     public HashSet<Vertex> vertices = new HashSet<>();
     public HashMap<Vertex, HashSet<Vertex>> edges = new HashMap<>();
+    public List<Edge> listEdges = new ArrayList<>();
+
+    public HashSet<Vertex> red = new HashSet<>();
+    public HashSet<Vertex> blue = new HashSet<>();
 
     public HashMapGraph(List<Edge> edges){
         this.vertices = getVerticesFromEdges(edges);
         this.edges = getHashmapFromList(edges);
+        this.listEdges = edges;
     }
 
     public HashMapGraph(HashMap<Vertex, HashSet<Vertex>> edges){
@@ -106,6 +111,18 @@ public class HashMapGraph {
         return edges;
     }
 
+    public List<Edge> getListEdges() {
+        return listEdges;
+    }
+
+    public HashSet<Vertex> getAdjacentVertices(Vertex vertex){
+        return edges.get(vertex);
+    }
+
+    public HashSet<Vertex> getVertices(){
+        return vertices;
+    }
+
     public static HashMap<Vertex, HashSet<Vertex>> copy(
             HashMap<Vertex, HashSet<Vertex>> original)
     {
@@ -117,6 +134,47 @@ public class HashMapGraph {
                     new HashSet<Vertex>(entry.getValue()));
         }
         return copy;
+    }
+
+    public void addVertex(Vertex vertex){
+        vertices.add(vertex);
+    }
+
+    public boolean isBipartite(){
+        Vertex randomVertex = vertices.iterator().next();
+        randomVertex.color = 1;
+
+        Stack<Vertex> vertices = new Stack<>();
+        vertices.push(randomVertex);
+
+        while (!vertices.isEmpty()){
+            Vertex vertex = vertices.pop();
+            for (Vertex neighbour : getEdges().get(vertex)){
+                if (neighbour.color == 0){
+                    if (vertex.color == 1){
+                        neighbour.color = 2;
+                    }
+                    else {
+                        neighbour.color = 1;
+                    }
+                    vertices.push(neighbour);
+                }
+                else {
+                    if (vertex.color == neighbour.color){
+                        return false;
+                    }
+                }
+            }
+        }
+        for (Vertex vertex : this.vertices){
+            if (vertex.color == 1){
+                red.add(vertex);
+            }
+            else if (vertex.color == 2){
+                blue.add(vertex);
+            }
+        }
+        return true;
     }
 
     public void addEdges(Vertex vertexToAdd, HashSet<Vertex> edgesToAdd){

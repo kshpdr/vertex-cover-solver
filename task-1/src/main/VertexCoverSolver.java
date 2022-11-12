@@ -32,8 +32,8 @@ public class VertexCoverSolver {
         return partialSolution;
     }
 
-    public static List<Vertex> findMinimalVertexCover(HashMapGraph graph){
-        int k = 0;
+    public static List<Vertex> findMinimalVertexCover(HashMapGraph graph, int lowerBound){
+        int k = lowerBound;
         while(true){
             List<Vertex> solution = solveVertexCover(new HashMapGraph(graph), k);
             if (solution != null){
@@ -83,11 +83,12 @@ public class VertexCoverSolver {
         }
 
         HashMapGraph graph = new HashMapGraph(edges);
+        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
+        int lowerBound = bipartiteGraph.findMaximumMatchingSize();
 
-        HashSet<Vertex> partialSolution = reduceOneDegreeVertices(graph);
-        List<Vertex> solution = solveVertexCover(graph, findMinimalVertexCover(graph).size());
-        assert solution != null;
-        solution.addAll(partialSolution);
+        List<Vertex> solution = new ArrayList<>();
+        solution.addAll(reduceOneDegreeVertices(graph));
+        solution.addAll(solveVertexCover(graph, findMinimalVertexCover(graph, lowerBound).size()));
         System.out.println("#recursive steps " + recursiveSteps);
 
         for (Vertex vertex : solution) {

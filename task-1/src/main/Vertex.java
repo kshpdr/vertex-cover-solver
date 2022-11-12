@@ -4,9 +4,16 @@ import java.util.Objects;
 
 public class Vertex {
     String v;
+    int color;
+    int dist = 0;
 
     public Vertex(String v){
         this.v = v;
+        this.color = 0;
+    }
+
+    public Vertex(Vertex vertexToCopy){
+        this(vertexToCopy.v);
     }
 
     @Override
