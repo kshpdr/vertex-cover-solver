@@ -140,6 +140,6 @@ public class BipartiteGraph {
 
         HashMapGraph graph = new HashMapGraph(edges);
         BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
-        System.out.println(bipartiteGraph.findMaximumMatchingSize());
+        //System.out.println(bipartiteGraph.findMaximumMatchingSize());
     }
 }
