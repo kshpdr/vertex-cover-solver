@@ -70,7 +70,6 @@ public class BipartiteGraph {
                 checkResult += 0.5;
             }
         }
-        System.out.println(checkResult);
 
         return (int) checkResult;
     }
