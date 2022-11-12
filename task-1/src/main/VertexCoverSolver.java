@@ -85,10 +85,11 @@ public class VertexCoverSolver {
         HashMapGraph graph = new HashMapGraph(edges);
         BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
         int lowerBound = bipartiteGraph.findMaximumMatchingSize();
+        //int lowerBound = 0;
 
         List<Vertex> solution = new ArrayList<>();
         solution.addAll(reduceOneDegreeVertices(graph));
-        solution.addAll(solveVertexCover(graph, findMinimalVertexCover(graph, lowerBound).size()));
+        solution.addAll(solveVertexCover(graph, lowerBound));
         System.out.println("#recursive steps " + recursiveSteps);
 
         for (Vertex vertex : solution) {

@@ -34,6 +34,7 @@ public class BipartiteGraph {
 
     public int findMaximumMatchingSize(){
         int result = 0;
+        double checkResult = 0;
 
         pairLeft = new HashMap<>(left.size() + 1);
         pairRight = new HashMap<>(right.size() + 1);
@@ -58,7 +59,20 @@ public class BipartiteGraph {
                 if (pairLeft.get(vertex) == nilVertex && dfs(vertex))
                     result++;
         }
-        return result;
+
+        for (Vertex vertex : pairLeft.keySet()){
+            if (pairLeft.get(vertex) != nilVertex){
+                checkResult += 0.5;
+            }
+        }
+        for (Vertex vertex : pairRight.keySet()){
+            if (pairRight.get(vertex) != nilVertex){
+                checkResult += 0.5;
+            }
+        }
+        System.out.println(checkResult);
+
+        return (int) checkResult;
     }
 
     // returns true, when augmenting path exists
