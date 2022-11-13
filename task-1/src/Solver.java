@@ -10,7 +10,8 @@ public class Solver {
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
-        //Data structure used to store graph
+
+        //Storing edges to call the graph constructor afterwards
 
 
         HashSet<String[]> edges = new HashSet<>();
@@ -30,7 +31,11 @@ public class Solver {
 
 
         }
+
+        // Instantiate graph
         Graph graph = new Graph(edges);
+
+        // Call method with the clique lower bound
 
         SolverResult result = vc(graph, graph.getCliqueLowerBound());
 
@@ -83,6 +88,8 @@ public class Solver {
             return s;
         }
 
+        //Eliminating the neighbors of the vertex with the highest degree and storing the neighbors of the neighbors with a hashmap
+
         HashMap<Vertex,HashSet<Vertex>> eliminatedNeighborsMap= graph.removeSetofVertices(eliminatedNeighbors);
 
         //Branching with the neighbors
@@ -103,45 +110,13 @@ public class Solver {
     }
 
 
-
-//    public static SolverResult memorization(HashMap<String,SolverResult> MEM, Graph graph, int k, SolverResult r){
-//        String id = graph.encodeGraph(k);
-//        SolverResult s = MEM.get(id);
-//        if (s == null){
-//            s = vc_branch(MEM,graph, k, r);
-//            MEM.put(id,s);
-//        }
-//        return s;
-//    }
-
-
-    // Encode (G,k) as String for memorization
-//    public static String encodeGraph(HashMap<String,HashSet<String>> graph, int k){
-//        StringBuilder sb = new StringBuilder();
-//        ArrayList<String> V = new ArrayList<String>(graph.keySet());
-//        Collections.sort(V);
-//        for (String v : V){
-//            sb.append(v);
-//            sb.append(":");
-//            ArrayList<String> neighbours = new ArrayList<String>(graph.get(v));
-//            Collections.sort(neighbours);
-//            for (String v2 : neighbours){
-//                sb.append(v2);
-//                sb.append("-");
-//            }
-//            sb.append(",");
-//        }
-//        sb.append("#"+k);
-//        return sb.toString();
-//    }
-
     // main function which increases the cover vertex size k every iteration
 
     public static SolverResult vc(Graph graph,int lowerBound){
-        SolverResult  s;
+        SolverResult  s = new SolverResult();
         int k = lowerBound;
         //HashMap<String,SolverResult> MEM = new HashMap<>();  // Memory object for memorization method
-        while ((s = vc_branch(graph,k++,new SolverResult())).resultsList==null);
+        while ((vc_branch(graph,k++,s)).resultsList==null){}
         return s;
     }
 

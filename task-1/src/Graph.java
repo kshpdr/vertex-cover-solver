@@ -92,38 +92,6 @@ public class Graph {
         return isEmpty;
     }
 
-//    public Vertex[] getRandomEdge () {
-//        Vertex[] randomEdge = new Vertex[2];
-////        List<Vertex> keysAsArray = new ArrayList<Vertex>(adjVertices.keySet());
-////        Random r = new Random();
-////        Vertex firstVertex = keysAsArray.get(r.nextInt(keysAsArray.size()));
-////        while(adjVertices.get(firstVertex).isEmpty()){
-////            r = new Random();
-////            firstVertex = keysAsArray.get(r.nextInt(keysAsArray.size()));
-////        }
-////        randomEdge[0] = new Vertex(firstVertex.label);
-////        Random rand = new Random();
-////        int size = adjVertices.get(firstVertex).size();
-////        int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
-////        int i = 0;
-////        for(Vertex vertex: adjVertices.get(firstVertex))
-////        {
-////            if (i == item)
-////                randomEdge[1] = vertex;
-////            i++;
-////        }
-//        for (Vertex vertex : adjVertices.keySet()) {
-//            if(!adjVertices.get(vertex).isEmpty()){
-//                randomEdge[0] = vertex;
-//                break;
-//            }
-//        }
-//
-//        randomEdge[1] = adjVertices.get(randomEdge[0]).iterator().next();
-//
-//
-//        return randomEdge;
-//    }
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
         HashSet<Vertex> adjacentVertices = new HashSet<>();
@@ -154,31 +122,6 @@ public class Graph {
 
     }
 
-    // Encode (G,k) as String for memorization
-//    public String encodeGraph(int k){
-//        StringBuilder sb = new StringBuilder();
-//        ArrayList<Vertex> V = new ArrayList<>(this.vertexStringMap.keySet());
-//        Collections.sort(V);
-//
-//        for (Vertex v : V){
-//            sb.append(v.label);
-//            sb.append(":");
-//            ArrayList<Vertex> neighbours;
-//            if(this.adjVertices.containsKey(v)) {
-//                neighbours = new ArrayList<>(this.adjVertices.get(v));
-//            }else{
-//                neighbours = new ArrayList<>();
-//            }
-//            Collections.sort(neighbours);
-//            for (Vertex v2 : neighbours){
-//                sb.append(v2.label);
-//                sb.append("-");
-//            }
-//            sb.append(",");
-//        }
-//        sb.append("#").append(k);
-//        return sb.toString();
-//    }
 
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors){
 
