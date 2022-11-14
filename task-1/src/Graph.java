@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Graph {
@@ -301,7 +302,7 @@ public class Graph {
             HashSet<HashSet<Vertex>> tmpClique = new HashSet<>();
             HashSet<Vertex> removedVertices = new HashSet<>();
 
-            List<Integer> indicesofVertices = new ArrayList<>(IntStream.rangeClosed(0, this.adjVertices.size() - 1).boxed().toList());
+            List<Integer> indicesofVertices = new ArrayList<>(IntStream.rangeClosed(0, this.adjVertices.size() - 1).boxed().collect(Collectors.toList()));
             Collections.shuffle(indicesofVertices);
 
             Graph copyGraph = this.getCopy();
