@@ -5,7 +5,8 @@ public class Graph {
         private final ArrayList<String> vertexStringMap = new ArrayList<>();
         private final ArrayList<Vertex> arrayVertex = new ArrayList<>();
 
-        private final Queue<Vertex> vertexHeap = new PriorityQueue<>(Collections.reverseOrder());
+
+        private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
 
 
 
@@ -26,6 +27,7 @@ public class Graph {
                 this.adjVertices.put(vertex1, new HashSet<>());
                 stringVertexMap.put(edge[0], vertex1);
                 this.arrayVertex.add(vertex1);
+                this.degreeOrder.addVertex(vertex1);
                 index++;
             }
             if (!stringVertexMap.containsKey(edge[1])) {
@@ -34,6 +36,7 @@ public class Graph {
                 stringVertexMap.put(edge[1], vertex2);
                 this.adjVertices.put(vertex2, new HashSet<>());
                 this.arrayVertex.add(vertex2);
+                this.degreeOrder.addVertex(vertex2);
                 index++;
             }
 
@@ -44,11 +47,12 @@ public class Graph {
             //increasing degrees of vertices
             stringVertexMap.get(edge[0]).degree++;
             stringVertexMap.get(edge[1]).degree++;
+            this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[0]),1);
+            this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[1]),1);
 
         }
 
-        //Putting the vertices in the heap
-        vertexHeap.addAll(arrayVertex);
+
 
     }
 
@@ -74,7 +78,7 @@ public class Graph {
             sb.append("\n");
 
         }
-        sb.append("Heap: ").append(this.vertexHeap);
+        sb.append("Degrees of Vertices: ").append(this.degreeOrder);
 
 
         return sb.toString();
@@ -95,23 +99,28 @@ public class Graph {
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
         HashSet<Vertex> adjacentVertices = new HashSet<>();
-//        Vertex v = new Vertex(vertexToRemove.label);
 
+        this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
         for (Vertex tmpVertex : this.adjVertices.keySet()) {
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)){
+
                 this.arrayVertex.get(tmpVertex.label).degree--;
-                this.vertexHeap.remove(tmpVertex);
-                this.vertexHeap.add(tmpVertex);
-                adjacentVertices.add(new Vertex(tmpVertex.label));
+
+                this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
+
+                adjacentVertices.add(tmpVertex);
+
             }
         }
         if (adjVertices.containsKey(vertexToRemove)){
 
             adjacentVertices.addAll(adjVertices.get(vertexToRemove));
             this.arrayVertex.get(vertexToRemove.label).degree=0;
-            this.vertexHeap.remove(vertexToRemove);
+
             adjVertices.remove(vertexToRemove);
         }
+
+
 
         return adjacentVertices;
 
@@ -132,16 +141,17 @@ public class Graph {
 
             adjVertices.get(originalVertex).add(neighbor);
             this.arrayVertex.get(originalVertex.label).degree++;
-            this.vertexHeap.remove(originalVertex);
-            this.vertexHeap.add(this.arrayVertex.get(originalVertex.label));
+            this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(originalVertex.label),1);
+
             if(!adjVertices.containsKey(neighbor)) adjVertices.put(neighbor,new HashSet<>());
             adjVertices.get(neighbor).add(originalVertex);
             this.arrayVertex.get(neighbor.label).degree++;
-            this.vertexHeap.remove(neighbor);
-            this.vertexHeap.add(this.arrayVertex.get(neighbor.label));
+            this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(neighbor.label),1);
+
 
 
         }
+
 
 
     }
@@ -170,7 +180,7 @@ public class Graph {
     }
 
     Vertex getNextNode(){
-        return this.vertexHeap.poll();
+        return this.degreeOrder.getVertexWithMaxDegree();
     }
 
 
@@ -193,6 +203,7 @@ public class Graph {
             vertexCopy.degree = vertex.degree;
             copy.arrayVertex.add(vertexCopy);
             copy.vertexStringMap.add(this.vertexStringMap.get(vertexCopy.label));
+            copy.degreeOrder.addVertex(vertex);
 
         }
 
@@ -209,9 +220,10 @@ public class Graph {
 
                 }
 
+
         }
 
-        copy.vertexHeap.addAll(copy.arrayVertex);
+       // copy.vertexHeap.addAll(copy.arrayVertex);
         return copy;
 
     }
@@ -219,6 +231,7 @@ public class Graph {
     HashSet<Vertex> getMaximalClique(){
         HashSet<Vertex> clique = new HashSet<>();
         Vertex firstVertex = this.getNextNode();
+        //System.out.println(firstVertex);
         clique.add(firstVertex);
         for (Vertex vertex: this.arrayVertex){
             if(!clique.contains(vertex)) {
@@ -240,10 +253,13 @@ public class Graph {
         Graph copyGraph = this.getCopy();
         HashSet<HashSet<Vertex>> result = new HashSet<>();
         HashSet<Vertex> maxClique;
-        while(!copyGraph.vertexHeap.isEmpty()){
+
+        while(!copyGraph.degreeOrder.isEmpty()){
             maxClique = copyGraph.getMaximalClique();
             result.add(maxClique);
+
             copyGraph.removeSetofVertices(maxClique);
+
         }
         return result;
 

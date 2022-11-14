@@ -37,6 +37,7 @@ public class Solver {
 
         // Call method with the clique lower bound
 
+
         SolverResult result = vc(graph, graph.getCliqueLowerBound());
 
         // Putting it all together in one String to only use one I/O operation
@@ -78,9 +79,9 @@ public class Solver {
 
         SolverResult s = vc_branch(graph,k-1, solverResult);
 
-        //Putting back the eliminated vertex
 
         graph.putVertexBack(v,eliminatedNeighbors);
+
 
 
         if (s.resultsList != null) {
@@ -88,14 +89,17 @@ public class Solver {
             return s;
         }
 
+
         //Eliminating the neighbors of the vertex with the highest degree and storing the neighbors of the neighbors with a hashmap
 
         HashMap<Vertex,HashSet<Vertex>> eliminatedNeighborsMap= graph.removeSetofVertices(eliminatedNeighbors);
+
 
         //Branching with the neighbors
         s = vc_branch(graph,k-eliminatedNeighbors.size(), solverResult);
 
         //Putting back the eliminated vertices
+
         graph.putManyVerticesBack(eliminatedNeighborsMap);
 
 
