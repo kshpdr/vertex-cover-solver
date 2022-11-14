@@ -101,7 +101,10 @@ public class Graph {
         HashSet<Vertex> adjacentVertices = new HashSet<>();
 
         this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
-        for (Vertex tmpVertex : this.adjVertices.keySet()) {
+        Iterator iterator = this.adjVertices.keySet().iterator();
+
+        while(iterator.hasNext()){
+            Vertex tmpVertex = (Vertex) iterator.next();
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)){
 
                 this.arrayVertex.get(tmpVertex.label).degree--;
@@ -111,7 +114,24 @@ public class Graph {
                 adjacentVertices.add(tmpVertex);
 
             }
+            if (this.adjVertices.get(tmpVertex).isEmpty()){
+                iterator.remove();
+            }
         }
+//        for (Vertex tmpVertex : this.adjVertices.keySet()) {
+//            if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)){
+//
+//                this.arrayVertex.get(tmpVertex.label).degree--;
+//
+//                this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
+//
+//                adjacentVertices.add(tmpVertex);
+//
+//            }
+//            if (this.adjVertices.get(tmpVertex).isEmpty()){
+//                this.adjVertices.remove(tmpVertex);
+//            }
+//        }
         if (adjVertices.containsKey(vertexToRemove)){
 
             adjacentVertices.addAll(adjVertices.get(vertexToRemove));
@@ -269,6 +289,39 @@ public class Graph {
     int getCliqueLowerBound(){
         return this.arrayVertex.size()-this.getApproximateMaximumClique().size();
     }
+
+
+//    HashSet<HashSet<HashSet<Vertex>>> randomHeuristicMaximumClique(int iterations){
+//        HashSet<HashSet<HashSet<Vertex>>> result = new HashSet<>();
+//
+//        for (int i = 0; i<iterations;i++){
+//
+//            int[] indicesOfArray = new int[getCopy().adjVertices.keySet().size()];
+//            FisherYatesShuffle.shuffleArray(indicesOfArray);
+//            Graph copyGraph = this.getCopy();
+//            for(int j : indicesOfArray){
+//                if(copyGraph.adjVertices.keySet().contains(copyGraph.arrayVertex.get(j))){
+//
+//                }
+//            }
+//
+//
+//        }
+//
+//        Graph copyGraph = this.getCopy();
+//        HashSet<HashSet<Vertex>> result = new HashSet<>();
+//        HashSet<Vertex> maxClique;
+//
+//        while(!copyGraph.degreeOrder.isEmpty()){
+//            maxClique = copyGraph.getMaximalClique();
+//            result.add(maxClique);
+//
+//            copyGraph.removeSetofVertices(maxClique);
+//
+//        }
+//
+//
+//    }
 
 
 
