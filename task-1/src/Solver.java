@@ -38,7 +38,8 @@ public class Solver {
         // Call method with the clique lower bound
 
 
-        SolverResult result = vc(graph, graph.getCliqueLowerBound());
+
+        SolverResult result = vc(graph, graph.getAbsolutMaximumCliqueBound());
 
         // Putting it all together in one String to only use one I/O operation
 
@@ -119,7 +120,7 @@ public class Solver {
     public static SolverResult vc(Graph graph,int lowerBound){
         SolverResult  s = new SolverResult();
         int k = lowerBound;
-        //HashMap<String,SolverResult> MEM = new HashMap<>();  // Memory object for memorization method
+
         while ((vc_branch(graph,k++,s)).resultsList==null){}
         return s;
     }
