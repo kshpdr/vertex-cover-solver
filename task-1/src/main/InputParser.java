@@ -11,6 +11,10 @@ public class InputParser {
         this.reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
+    public InputParser(FileReader reader) {
+        this.reader = new BufferedReader(reader);
+    }
+
     public List<String> parseEdges() throws IOException {
         List<String> stringEdges = new ArrayList<>();
         String[] line;

@@ -87,6 +87,8 @@ public class VertexCoverSolver {
         int lowerBound = bipartiteGraph.findMaximumMatchingSize();
         lowerBound /= 2;
 
+        findMinimalVertexCover(graph, 0);
+
         List<Vertex> solution = new ArrayList<>();
         solution.addAll(reduceOneDegreeVertices(graph));
         solution.addAll(solveVertexCover(graph, lowerBound));
