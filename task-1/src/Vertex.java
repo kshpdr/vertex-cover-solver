@@ -1,7 +1,8 @@
 public class Vertex implements Comparable<Vertex>{
     int label;
     int degree;
-    Vertex(int label) {
+    int dist = 0;
+    Vertex(Integer label) {
         this.label = label;
     }
 

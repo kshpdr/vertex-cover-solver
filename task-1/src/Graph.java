@@ -9,6 +9,7 @@ public class Graph {
 
 
         private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
+        private final ArrayList<Edge> listEdges = new ArrayList<>();
 
 
 
@@ -51,6 +52,7 @@ public class Graph {
             stringVertexMap.get(edge[1]).degree++;
             this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[0]),1);
             this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[1]),1);
+            this.listEdges.add(new Edge(stringVertexMap.get(edge[0]),stringVertexMap.get(edge[1])));
 
         }
 
@@ -61,6 +63,7 @@ public class Graph {
     public Graph(){
 
     }
+
 
 
 
@@ -298,7 +301,7 @@ public class Graph {
     HashSet<HashSet<HashSet<Vertex>>> randomHeuristicMaximumClique(){
         HashSet<HashSet<HashSet<Vertex>>> result = new HashSet<>();
 
-        for (int i = 0; i< 100; i++){
+        for (int i = 0; i< 10; i++){
             HashSet<HashSet<Vertex>> tmpClique = new HashSet<>();
             HashSet<Vertex> removedVertices = new HashSet<>();
 
@@ -346,5 +349,11 @@ public class Graph {
     }
 
 
+    public ArrayList<Vertex> getVertices() {
+        return this.arrayVertex;
+    }
 
+    public ArrayList<Edge> getListEdges() {
+        return listEdges;
+    }
 }
