@@ -36,13 +36,9 @@ public class Solver {
         Graph graph = new Graph(edges);
 
         // Call method with the clique lower bound
-        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
 
-        int lpBound = (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() /2);
-        int cliqueBound = graph.getAbsolutMaximumCliqueBound();
-        int lowerbound = Math.max(lpBound,cliqueBound);
 
-        SolverResult result = vc(graph, lowerbound);
+        SolverResult result = vc(graph, graph.getMaxLowerBound());
 
         // Putting it all together in one String to only use one I/O operation
 

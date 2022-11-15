@@ -356,4 +356,13 @@ public class Graph {
     public ArrayList<Edge> getListEdges() {
         return listEdges;
     }
+
+    public int getLpBound(){
+        BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
+        return (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() /2);
+
+    }
+    public int getMaxLowerBound(){
+        return Math.max(this.getAbsolutMaximumCliqueBound(),this.getLpBound());
+    }
 }
