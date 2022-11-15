@@ -52,7 +52,9 @@ public class VertexCoverSolver {
         Edge randomEdge = graph.getRandomEdge();
 
         HashSet<Vertex> edgesForFirstVertex = graph.edges.get(randomEdge.getFirstVertex());
-        solution = solveVertexCover(graph.deleteVertex(randomEdge.getFirstVertex()), k-1);
+        graph.deleteVertex(randomEdge.getFirstVertex());
+        graph.deleteEmptyAdjacentLists();
+        solution = solveVertexCover(graph, k-1);
         graph.addEdges(randomEdge.getFirstVertex(), edgesForFirstVertex);
         if (solution != null) {
             solution.add(randomEdge.getFirstVertex());
@@ -60,7 +62,9 @@ public class VertexCoverSolver {
         }
 
         HashSet<Vertex> edgesForSecondVertex = graph.edges.get(randomEdge.getSecondVertex());
-        solution = solveVertexCover(graph.deleteVertex(randomEdge.getSecondVertex()), k-1);
+        graph.deleteVertex(randomEdge.getSecondVertex());
+        graph.deleteEmptyAdjacentLists();
+        solution = solveVertexCover(graph, k-1);
         graph.addEdges(randomEdge.getSecondVertex(), edgesForSecondVertex);
         if (solution != null) {
             solution.add(randomEdge.getSecondVertex());
@@ -93,6 +97,7 @@ public class VertexCoverSolver {
         // construct a solution
         List<Vertex> solution = new ArrayList<>();
         solution.addAll(reduceOneDegreeVertices(graph));
+        lowerBound -= solution.size();
         solution.addAll(solveVertexCover(graph, lowerBound));
 
         // print out solution vertices

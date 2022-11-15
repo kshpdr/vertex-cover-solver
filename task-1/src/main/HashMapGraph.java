@@ -1,9 +1,6 @@
 package main;
 
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class HashMapGraph {
     public HashSet<Vertex> vertices = new HashSet<>();
@@ -33,10 +30,12 @@ public class HashMapGraph {
         Edge randomEdge = null;
         while (randomEdge == null){
             Vertex rndVertex = getRandomVertex();
-            if (!edges.get(rndVertex).isEmpty()){
-                HashSet<Vertex> adjacentVertices = edges.get(rndVertex);
-                Vertex adjacentVertex = (new ArrayList<>(adjacentVertices)).get(0);
-                randomEdge = new Edge(rndVertex, adjacentVertex);
+            if (edges.containsKey(rndVertex)){
+                if (!edges.get(rndVertex).isEmpty()) {
+                    HashSet<Vertex> adjacentVertices = edges.get(rndVertex);
+                    Vertex adjacentVertex = (new ArrayList<>(adjacentVertices)).get(0);
+                    randomEdge = new Edge(rndVertex, adjacentVertex);
+                }
             }
         }
         return randomEdge;
@@ -103,7 +102,7 @@ public class HashMapGraph {
             }
         }
         for (Vertex vertex : verticesToDelete){
-            deleteVertex(vertex);
+            edges.remove(vertex);
         }
     }
 
@@ -178,12 +177,17 @@ public class HashMapGraph {
     }
 
     public void addEdges(Vertex vertexToAdd, HashSet<Vertex> edgesToAdd){
-        if (!vertices.contains(vertexToAdd)){
-            vertices.add(vertexToAdd);
-        }
+        vertices.add(vertexToAdd);
         edges.put(vertexToAdd, edgesToAdd);
         for (Vertex vertex : edgesToAdd){
-            edges.get(vertex).add(vertexToAdd);
+            if (edges.containsKey(vertex)){
+                edges.get(vertex).add(vertexToAdd);
+            }
+            else{
+                HashSet<Vertex> hashSetToAdd = new HashSet<Vertex>();
+                hashSetToAdd.add(vertexToAdd);
+                edges.put(vertex, hashSetToAdd);
+            }
         }
     }
 
