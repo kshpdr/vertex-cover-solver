@@ -71,8 +71,8 @@ public class VertexCoverSolver {
     }
 
     public static void main(String[] args) throws IOException {
+        // parse the input
         InputParser inputParser = new InputParser();
-
         List<String> stringEdges = inputParser.parseEdges();
 
         ArrayList<Edge> edges = new ArrayList<>();
@@ -82,18 +82,20 @@ public class VertexCoverSolver {
             edges.add(edge);
         }
 
+        // construct graph and corresponding bipartite graph
         HashMapGraph graph = new HashMapGraph(edges);
         BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
+
+        // compute a lower bound and divide by 2 as vc is a half of max.matchin
         int lowerBound = bipartiteGraph.findMaximumMatchingSize();
         lowerBound /= 2;
 
-        findMinimalVertexCover(graph, 0);
-
+        // construct a solution
         List<Vertex> solution = new ArrayList<>();
         solution.addAll(reduceOneDegreeVertices(graph));
         solution.addAll(solveVertexCover(graph, lowerBound));
-        System.out.println("#recursive steps " + recursiveSteps);
 
+        // print out solution vertices
         for (Vertex vertex : solution) {
             System.out.println(vertex);
         }

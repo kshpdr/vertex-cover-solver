@@ -32,9 +32,9 @@ public class BipartiteGraph {
         }
     }
 
+    // horcropft-carp algorithm for maximum matchin in bipartite graphs
     public int findMaximumMatchingSize(){
         int result = 0;
-        double checkResult = 0;
 
         pairLeft = new HashMap<>(left.size() + 1);
         pairRight = new HashMap<>(right.size() + 1);
@@ -60,18 +60,7 @@ public class BipartiteGraph {
                     result++;
         }
 
-        for (Vertex vertex : pairLeft.keySet()){
-            if (pairLeft.get(vertex) != nilVertex){
-                checkResult += 0.5;
-            }
-        }
-        for (Vertex vertex : pairRight.keySet()){
-            if (pairRight.get(vertex) != nilVertex){
-                checkResult += 0.5;
-            }
-        }
-
-        return (int) checkResult;
+        return result;
     }
 
     // returns true, when augmenting path exists
@@ -140,6 +129,5 @@ public class BipartiteGraph {
 
         HashMapGraph graph = new HashMapGraph(edges);
         BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
-        //System.out.println(bipartiteGraph.findMaximumMatchingSize());
     }
 }
