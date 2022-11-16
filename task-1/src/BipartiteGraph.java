@@ -119,18 +119,16 @@ public class BipartiteGraph {
 
         List<String> stringEdges = inputParser.parseEdges();
 
-//        ArrayList<Edge> edges = new ArrayList<>();
+
         HashSet<String[]> edges = new HashSet<>();
         for (String stringEdge : stringEdges){
-//            String[] stringVertices = stringEdge.split(" ");
-//            Edge edge = new Edge(new Vertex(stringVertices[0]), new Vertex(stringVertices[1]));
+
             String[] nodes = stringEdge.split("\\s+");
             edges.add(nodes);
-//            edges.add(edge);
+
         }
 
         Graph graph = new Graph(edges);
-        //System.out.println(graph);
         BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
         System.out.println(bipartiteGraph.findMaximumMatchingSize());
     }

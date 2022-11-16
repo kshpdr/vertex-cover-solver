@@ -72,6 +72,7 @@ public class Solver {
 
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
+//
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
 
 

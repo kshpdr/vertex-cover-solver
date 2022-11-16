@@ -21,6 +21,7 @@ public class VertexDegreeOrder {
         }
         if (maxDegree<v.degree) maxDegree = v.degree;
 
+
     }
 
 
@@ -40,6 +41,7 @@ public class VertexDegreeOrder {
         if(degreeMap.containsKey(v.degree-delta)){
             degreeMap.get(v.degree-delta).remove(v);
         }
+
 
 
     }
@@ -71,20 +73,11 @@ public class VertexDegreeOrder {
 
 
 
+
     }
 
     public void decreaseDegreeOfVertex(Vertex v,int delta) {
 
-
-        if (degreeMap.containsKey(v.degree + delta)){
-            degreeMap.get(v.degree + delta).remove(v);
-            if ((v.degree + delta==this.maxDegree) && degreeMap.get(v.degree + delta).isEmpty()){
-                int degree = v.degree+delta;
-                while(degree> 0 && this.degreeMap.containsKey(degree) && this.degreeMap.get(degree--).isEmpty()){
-                    this.maxDegree--;
-                }
-            }
-        }
         if (!degreeMap.containsKey(v.degree)) {
             HashSet<Vertex> tmpSet = new HashSet<>();
             tmpSet.add(v);
@@ -93,9 +86,23 @@ public class VertexDegreeOrder {
             degreeMap.get(v.degree).add(v);
         }
 
+        if (degreeMap.containsKey(v.degree + delta)){
+            degreeMap.get(v.degree + delta).remove(v);
+            if ((v.degree + delta==this.maxDegree) && degreeMap.get(v.degree + delta).isEmpty()){
+                int degree = v.degree+delta;
+                while(degree> 0 && this.degreeMap.containsKey(degree) && this.degreeMap.get(degree--).isEmpty()){
+                    this.maxDegree--;
+
+                }
+            }
+        }
+
+
     }
 
     public void removeVertex(Vertex v){
+
+
 
         this.degreeMap.get(v.degree).remove(v);
 
@@ -110,7 +117,6 @@ public class VertexDegreeOrder {
             }
             this.maxDegree = degree;
         }
-
 
 
 

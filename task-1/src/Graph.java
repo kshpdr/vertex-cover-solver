@@ -1,6 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Graph {
         private final Map<Vertex, HashSet<Vertex>> adjVertices=new HashMap<>();
@@ -118,7 +116,6 @@ public class Graph {
 
 
 
-
                 this.arrayVertex.get(tmpVertex.label).degree--;
                 this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
 
@@ -139,7 +136,6 @@ public class Graph {
 
             adjVertices.remove(vertexToRemove);
         }
-
 
 
 
@@ -293,72 +289,9 @@ public class Graph {
         return this.arrayVertex.size()-this.getApproximateMaximumClique().size();
     }
 
-    int getRandomCliqueLowerBound(){
-        int maxCliqueSize = 0;
-        HashSet<HashSet<HashSet<Vertex>>> cliques = this.randomHeuristicMaximumClique();
-
-
-        for(HashSet<HashSet<Vertex>> clique : cliques){
-
-            if (maxCliqueSize < clique.size()) maxCliqueSize = clique.size();
-        }
 
 
 
-        return this.arrayVertex.size()-maxCliqueSize;
-    }
-
-
-
-    HashSet<HashSet<HashSet<Vertex>>> randomHeuristicMaximumClique(){
-        HashSet<HashSet<HashSet<Vertex>>> result = new HashSet<>();
-
-        for (int i = 0; i< 10; i++){
-            HashSet<HashSet<Vertex>> tmpClique = new HashSet<>();
-            HashSet<Vertex> removedVertices = new HashSet<>();
-
-            List<Integer> indicesofVertices = new ArrayList<>(IntStream.rangeClosed(0, this.adjVertices.size() - 1).boxed().collect(Collectors.toList()));
-            Collections.shuffle(indicesofVertices);
-
-            Graph copyGraph = this.getCopy();
-
-
-            for(int j : indicesofVertices){
-                if(removedVertices.contains(copyGraph.arrayVertex.get(j))) continue;
-
-                HashSet<Vertex> clique = new HashSet<>();
-                if (copyGraph.adjVertices.containsKey(copyGraph.arrayVertex.get(j))) {
-
-                    clique = copyGraph.getMaximalCliqueFromVertex(copyGraph.arrayVertex.get(j));
-
-
-                } else {
-                    clique.add(copyGraph.arrayVertex.get(j));
-                }
-
-                tmpClique.add(clique);
-
-
-
-                removedVertices.addAll(clique);
-
-                copyGraph.removeSetofVertices(clique);
-
-
-
-            }
-
-        result.add(tmpClique);
-        }
-
-        return result;
-
-
-    }
-
-    int getAbsolutMaximumCliqueBound(){
-        return Math.max(this.getCliqueLowerBound(),this.getRandomCliqueLowerBound());
-    }
 
 
     public ArrayList<Vertex> getVertices() {
@@ -375,6 +308,6 @@ public class Graph {
 
     }
     public int getMaxLowerBound(){
-        return Math.max(this.getRandomCliqueLowerBound(),this.getLpBound());
+        return Math.max(this.getCliqueLowerBound(),this.getLpBound());
     }
 }
