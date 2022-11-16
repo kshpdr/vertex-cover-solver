@@ -103,18 +103,26 @@ public class Graph {
 
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
+
+
         HashSet<Vertex> adjacentVertices = new HashSet<>();
 
         this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
+
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
 
         while(iterator.hasNext()){
             Vertex tmpVertex = iterator.next();
+
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)){
 
-                this.arrayVertex.get(tmpVertex.label).degree--;
 
+
+
+                this.arrayVertex.get(tmpVertex.label).degree--;
                 this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
+
+
 
                 adjacentVertices.add(tmpVertex);
 
@@ -134,6 +142,7 @@ public class Graph {
 
 
 
+
         return adjacentVertices;
 
     }
@@ -148,13 +157,12 @@ public class Graph {
 
 
         if(!adjVertices.containsKey(originalVertex)) adjVertices.put(originalVertex,new HashSet<>());
-        this.degreeOrder.addVertex(this.arrayVertex.get(originalVertex.label));
 
         for(Vertex neighbor: neighbors){
 
             adjVertices.get(originalVertex).add(neighbor);
             this.arrayVertex.get(originalVertex.label).degree++;
-            this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(originalVertex.label),1);
+            //this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(originalVertex.label),1);
 
             if(!adjVertices.containsKey(neighbor)) adjVertices.put(neighbor,new HashSet<>());
             adjVertices.get(neighbor).add(originalVertex);
@@ -164,6 +172,9 @@ public class Graph {
 
 
         }
+
+        this.degreeOrder.putBack(this.arrayVertex.get(originalVertex.label),neighbors.size());
+
 
 
 
@@ -242,7 +253,8 @@ public class Graph {
 
     HashSet<Vertex> getMaximalCliqueFromVertex(Vertex firstVertex){
         HashSet<Vertex> clique = new HashSet<>();
-        //System.out.println(firstVertex);
+
+
         clique.add(firstVertex);
         for (Vertex vertex: this.arrayVertex){
             if(!clique.contains(vertex)) {
@@ -363,6 +375,6 @@ public class Graph {
 
     }
     public int getMaxLowerBound(){
-        return Math.max(this.getAbsolutMaximumCliqueBound(),this.getLpBound());
+        return Math.max(this.getRandomCliqueLowerBound(),this.getLpBound());
     }
 }

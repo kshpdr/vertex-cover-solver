@@ -20,6 +20,7 @@ public class BipartiteGraph {
         }
 
         for (Edge edge : graph.getListEdges()){
+
             Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
             Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));
 

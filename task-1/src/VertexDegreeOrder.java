@@ -9,14 +9,39 @@ public class VertexDegreeOrder {
 
     }
     public void addVertex(Vertex v){
+
         if (!degreeMap.containsKey(v.degree)){
             HashSet<Vertex> tmpSet = new HashSet<>();
             tmpSet.add(v);
             degreeMap.put(v.degree,tmpSet);
-            if (maxDegree<v.degree) maxDegree = v.degree;
+
         }else{
             degreeMap.get(v.degree).add(v);
+
         }
+        if (maxDegree<v.degree) maxDegree = v.degree;
+
+    }
+
+
+    public void putBack(Vertex v,int delta){
+
+
+        if (!degreeMap.containsKey(v.degree)){
+            HashSet<Vertex> tmpSet = new HashSet<>();
+            tmpSet.add(v);
+            degreeMap.put(v.degree,tmpSet);
+
+        }else{
+            degreeMap.get(v.degree).add(v);
+
+        }
+        if (maxDegree<v.degree) maxDegree = v.degree;
+        if(degreeMap.containsKey(v.degree-delta)){
+            degreeMap.get(v.degree-delta).remove(v);
+        }
+
+
     }
 
 
@@ -32,6 +57,7 @@ public class VertexDegreeOrder {
     }
 
     public void increaseDegreeOfVertex(Vertex v, int delta){
+
         if(degreeMap.containsKey(v.degree-delta)) degreeMap.get(v.degree-delta).remove(v);
         if (!degreeMap.containsKey(v.degree)){
             HashSet<Vertex> tmpSet = new HashSet<>();
@@ -43,9 +69,12 @@ public class VertexDegreeOrder {
             if (maxDegree<v.degree) maxDegree = v.degree;
         }
 
+
+
     }
 
     public void decreaseDegreeOfVertex(Vertex v,int delta) {
+
 
         if (degreeMap.containsKey(v.degree + delta)){
             degreeMap.get(v.degree + delta).remove(v);
@@ -63,12 +92,13 @@ public class VertexDegreeOrder {
         } else {
             degreeMap.get(v.degree).add(v);
         }
+
     }
 
     public void removeVertex(Vertex v){
 
-
         this.degreeMap.get(v.degree).remove(v);
+
         if(v.degree == this.maxDegree && this.degreeMap.get(v.degree).isEmpty()) {
             int degree = v.degree;
             while (degree >0) {
@@ -83,14 +113,18 @@ public class VertexDegreeOrder {
 
 
 
+
     }
 
     public Vertex getVertexWithMaxDegree(){
 
-            return this.degreeMap.get(this.maxDegree).iterator().next();
+
+        return this.degreeMap.get(this.maxDegree).iterator().next();
     }
     public boolean isEmpty(){
         return this.degreeMap.isEmpty() || this.degreeMap.get(this.maxDegree).isEmpty();
     }
+
+
 
 }
