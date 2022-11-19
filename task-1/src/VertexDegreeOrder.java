@@ -1,9 +1,10 @@
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class VertexDegreeOrder {
     private final HashMap<Integer, HashSet<Vertex>> degreeMap = new HashMap<>();
     private int maxDegree = 0;
+    SortedSet<Integer> sortedAvailableDegrees = new TreeSet<>(Collections.reverseOrder());
+
 
     public  VertexDegreeOrder(){
 
@@ -13,7 +14,9 @@ public class VertexDegreeOrder {
         if (!degreeMap.containsKey(v.degree)){
             HashSet<Vertex> tmpSet = new HashSet<>();
             tmpSet.add(v);
+
             degreeMap.put(v.degree,tmpSet);
+            sortedAvailableDegrees.add(v.degree);
 
         }else{
             degreeMap.get(v.degree).add(v);
@@ -32,6 +35,7 @@ public class VertexDegreeOrder {
             HashSet<Vertex> tmpSet = new HashSet<>();
             tmpSet.add(v);
             degreeMap.put(v.degree,tmpSet);
+            sortedAvailableDegrees.add(v.degree);
 
         }else{
             degreeMap.get(v.degree).add(v);
@@ -65,11 +69,12 @@ public class VertexDegreeOrder {
             HashSet<Vertex> tmpSet = new HashSet<>();
             tmpSet.add(v);
             degreeMap.put(v.degree,tmpSet);
-            if (maxDegree<v.degree) maxDegree = v.degree;
+            sortedAvailableDegrees.add(v.degree);
         }else{
             degreeMap.get(v.degree).add(v);
-            if (maxDegree<v.degree) maxDegree = v.degree;
+
         }
+        if (maxDegree<v.degree) maxDegree = v.degree;
 
 
 
@@ -82,6 +87,7 @@ public class VertexDegreeOrder {
             HashSet<Vertex> tmpSet = new HashSet<>();
             tmpSet.add(v);
             degreeMap.put(v.degree, tmpSet);
+            sortedAvailableDegrees.add(v.degree);
         } else {
             degreeMap.get(v.degree).add(v);
         }
@@ -98,6 +104,8 @@ public class VertexDegreeOrder {
         }
 
 
+
+
     }
 
     public void removeVertex(Vertex v){
@@ -106,18 +114,15 @@ public class VertexDegreeOrder {
 
         this.degreeMap.get(v.degree).remove(v);
 
+
         if(v.degree == this.maxDegree && this.degreeMap.get(v.degree).isEmpty()) {
-            int degree = v.degree;
-            while (degree >0) {
-                if (this.degreeMap.containsKey(degree) && !this.degreeMap.get(degree).isEmpty()) {
-                    break;
-                }
-
-                degree--;
+            for(Object degree: this.sortedAvailableDegrees){
+                    if(this.degreeMap.containsKey((int) degree) && !this.degreeMap.get((int) degree).isEmpty()){
+                        this.maxDegree= (int) degree;
+                        break;
+                    }
             }
-            this.maxDegree = degree;
         }
-
 
 
     }

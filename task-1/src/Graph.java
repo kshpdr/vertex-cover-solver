@@ -200,6 +200,8 @@ public class Graph {
     }
 
     Vertex getNextNode(){
+
+        //System.out.println(this);
         return this.degreeOrder.getVertexWithMaxDegree();
     }
 
