@@ -22,7 +22,6 @@ def read_input():
         V.add(n2)
     return V, E
 
-
 # Find minimal vertex cover method (from lecture)
 def vertex_cover(V, E):
     for k in range(0, len(V)):
