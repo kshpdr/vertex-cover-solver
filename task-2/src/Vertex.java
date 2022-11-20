@@ -32,7 +32,6 @@ public class Vertex implements Comparable<Vertex>{
         return this.label;
     }
 
-
     @Override
     public String toString() {
 
