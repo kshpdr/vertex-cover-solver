@@ -1,0 +1,16 @@
+file;time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-diff-to-opt
+2-social-networks/00-karate.graph.dimacs;0.13;34;78;14;14;1;OK;OK;0;
+2-social-networks/01-dolphins.graph.dimacs;0.95;62;159;34;41445;1;OK;OK;0;
+2-social-networks/02-chesapeake.graph.dimacs;0.17;39;170;22;781;1;OK;OK;0;
+2-social-networks/03-adjnoun.graph.dimacs;139.82;112;425;59;16838448;1;OK;OK;0;
+2-social-networks/04-polbooks.graph.dimacs;51.99;105;441;62;9997020;1;OK;OK;0;
+2-social-networks/05-football.graph.dimacs;;115;613;0;;0;;;;
+2-social-networks/06-celegans_metabolic.graph.dimacs;;453;2025;0;;0;;;;
+2-social-networks/07-jazz.graph.dimacs;;198;2742;0;;0;;;;
+2-social-networks/08-netscience.graph.dimacs;;1589;2742;0;;0;;;;
+2-social-networks/09-email.graph.dimacs;;1133;5451;0;;0;;;;
+2-social-networks/10-add20.graph.dimacs;;2395;7462;0;;0;;;;
+2-social-networks/11-power.graph.dimacs;;4941;6594;0;;0;;;;
+2-social-networks/12-uk.graph.dimacs;;4824;6837;0;;0;;;;
+2-social-networks/13-add32.graph.dimacs;;4960;9462;0;;0;;;;
+2-social-networks/14-as20000102.txt.dimacs;;6474;12572;0;;0;;;;

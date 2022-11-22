@@ -4,7 +4,7 @@ with open(sys.argv[1]) as a, open(sys.argv[2]) as b:
     lines_a = a.readlines()
     lines_b = b.readlines()
 
-f = open("compare.csv", "a")
+f = open("plots/after-lp-bound/after-lp-bound.csv", "a")
 
 f.write("file;Type;Atime;Btime\n")
 
