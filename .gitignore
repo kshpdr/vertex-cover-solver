@@ -1,0 +1,7 @@
+.idea
+out/
+*jar
+*class
+task-2/vc-data-students/*.txt
+task-2/vc-data-students/*.csv
+*pdf
