@@ -32,6 +32,9 @@ public class Solver {
 
         }
 
+        // Apply reduction rules before instatiating graph (+ internally used datastructure(s))
+        SolverResult reductionResult = ReductionRules.applyReductionRules(edges);
+        
         // Instantiate graph
         Graph graph = new Graph(edges);
 
@@ -44,8 +47,13 @@ public class Solver {
 
         StringBuilder sb = new StringBuilder();
 
-
-
+        // Add results from reduction rules
+        if (!reductionResult.resultsList.isEmpty()){
+            for (String s : reductionResult.resultsList){
+                sb.append(s).append("\n");
+            }
+        }
+        // Add results from actual branching algorithm
         if (!result.resultsList.isEmpty()){
             for (String s : result.resultsList) {
 
@@ -58,7 +66,6 @@ public class Solver {
         String resultStr = sb.toString();
         System.out.print(resultStr);
     }
-
 
     static SolverResult vc_branch(Graph graph, int k, SolverResult solverResult){
         if (k<0) return solverResult;
@@ -133,7 +140,7 @@ public class Solver {
 
         }
 
-        private void addVertexToResult(String vertexToAdd){
+        protected void addVertexToResult(String vertexToAdd){
             this.resultsList.add(vertexToAdd);
         }
 
@@ -147,7 +154,7 @@ public class Solver {
             this.recursiveSteps++;
         }
 
-        private void setEmptyResultsList(){
+        protected void setEmptyResultsList(){
             this.resultsList = new LinkedList<>();
         }
 
