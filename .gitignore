@@ -2,6 +2,11 @@
 out/
 *jar
 *class
+task-1/custom_graphs
+task-1/plots
+task-1/task-1.iml
 task-2/vc-data-students/*.txt
 task-2/vc-data-students/*.csv
+task-2/task-2.iml
 *pdf
+scripts
