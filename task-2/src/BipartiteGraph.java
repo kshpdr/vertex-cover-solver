@@ -12,14 +12,14 @@ public class BipartiteGraph {
     HashMap<Vertex, Vertex> pairLeft, pairRight;
     HashMap<Vertex, Integer> dist;
 
-    public BipartiteGraph(Graph graph){
+    public BipartiteGraph(Graph graph) {
         nilVertex.dist = INF;
-        for (Vertex vertex : graph.getVertices()){
+        for (Vertex vertex : graph.getVertices()) {
             left.add(new Vertex(vertex.label));
             right.add(new Vertex(vertex.label));
         }
 
-        for (Edge edge : graph.getListEdges()){
+        for (Edge edge : graph.getListEdges()) {
 
             Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
             Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));
@@ -32,19 +32,19 @@ public class BipartiteGraph {
     }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
-    public int findMaximumMatchingSize(){
+    public int findMaximumMatchingSize() {
         int result = 0;
 
         pairLeft = new HashMap<>(left.size() + 1);
         pairRight = new HashMap<>(right.size() + 1);
         dist = new HashMap<>(left.size() + 1);
 
-        for (Vertex vertex : left){
+        for (Vertex vertex : left) {
             pairLeft.put(vertex, nilVertex);
             dist.put(vertex, 0);
         }
 
-        for (Vertex vertex : right){
+        for (Vertex vertex : right) {
             pairRight.put(vertex, nilVertex);
         }
 
@@ -52,7 +52,7 @@ public class BipartiteGraph {
         // there is an augmenting path.
         while (bfs()) {
             // Find a free vertex
-            for(Vertex vertex : pairLeft.keySet())
+            for (Vertex vertex : pairLeft.keySet())
                 // If current vertex is free and there is
                 // an augmenting path from current vertex
                 if (pairLeft.get(vertex) == nilVertex && dfs(vertex))
@@ -63,25 +63,24 @@ public class BipartiteGraph {
     }
 
     // returns true, when augmenting path exists
-    public boolean bfs(){
+    public boolean bfs() {
         Queue<Vertex> queue = new LinkedList<>();
-        for(Vertex vertex : pairLeft.keySet()) {
+        for (Vertex vertex : pairLeft.keySet()) {
             if (pairLeft.get(vertex) == nilVertex) {
                 // u is not matched
                 dist.replace(vertex, 0);
                 queue.add(vertex);
-            }
-            else
+            } else
                 dist.replace(vertex, INF);
         }
         dist.put(nilVertex, INF);
-        while (!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             Vertex vertex = queue.poll();
-            if (dist.get(vertex) < dist.get(nilVertex)){
-                for (Edge edge : edges){
-                    if (edge.getFirstVertex() == vertex){
+            if (dist.get(vertex) < dist.get(nilVertex)) {
+                for (Edge edge : edges) {
+                    if (edge.getFirstVertex() == vertex) {
                         Vertex neighbor = edge.getSecondVertex();
-                        if (dist.get(pairRight.get(neighbor)) == INF){
+                        if (dist.get(pairRight.get(neighbor)) == INF) {
                             dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
                             queue.add(pairRight.get(neighbor));
                         }
@@ -94,8 +93,8 @@ public class BipartiteGraph {
 
     public boolean dfs(Vertex vertex) {
         if (vertex != nilVertex) {
-            for (Edge edge : edges){
-                if (edge.getFirstVertex() == vertex){
+            for (Edge edge : edges) {
+                if (edge.getFirstVertex() == vertex) {
                     // Adjacent to u
                     Vertex neighbor = edge.getSecondVertex();
                     // Follow the distances set by BFS
@@ -119,9 +118,8 @@ public class BipartiteGraph {
 
         List<String> stringEdges = inputParser.parseEdges();
 
-
         HashSet<String[]> edges = new HashSet<>();
-        for (String stringEdge : stringEdges){
+        for (String stringEdge : stringEdges) {
 
             String[] nodes = stringEdge.split("\\s+");
             edges.add(nodes);
