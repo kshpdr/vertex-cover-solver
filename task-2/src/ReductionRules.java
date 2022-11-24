@@ -29,16 +29,7 @@ public class ReductionRules {
         }
 
         // Loop through initial HashSet of edges and delete (... those which are not used anymore)
-        ArrayList<String[]> toDelete = new ArrayList<>();
-        for (String[] edge : edges){
-            // If we dont find the edge in our reduced adjMap => delete it also from hashset
-            HashSet<String> neighbours = adjMap.get(edge[0]);
-            if (neighbours == null || !neighbours.contains(edge[1])){
-                toDelete.add(edge);
-            }
-        }
-        edges.removeAll(toDelete);
-        //edges.removeIf(edge -> adjMap.containsKey(edge[0]) && );
+        edges.removeIf(edge -> !adjMap.containsKey(edge[0]) || !adjMap.get(edge[0]).contains(edge[1]));
         
         // Return partial result obtained from reduction rules
         return result;
