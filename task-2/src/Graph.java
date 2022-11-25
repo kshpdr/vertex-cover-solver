@@ -261,6 +261,7 @@ public class Graph {
     }
 
     public ArrayList<Vertex> getVertices() {
+
         return this.arrayVertex;
     }
 

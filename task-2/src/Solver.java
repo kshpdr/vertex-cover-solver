@@ -66,7 +66,11 @@ public class Solver {
     }
 
     static SolverResult vc_branch(Graph graph, int k, SolverResult solverResult) {
-        if (k < 0 || k < graph.getCliqueLowerBound()) return solverResult;
+        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
+        if(k < graph.getCliqueLowerBound()) return solverResult;
+        if(k < graph.getLpBound()) return solverResult;
+
+        if (k < 0) return solverResult;
         if (graph.isEmpty()) {
             solverResult.setEmptyResultsList();
             return solverResult;
