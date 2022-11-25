@@ -3,6 +3,9 @@ public class Vertex implements Comparable<Vertex> {
     int degree;
     int dist = 0;
 
+    boolean active =true;
+
+
     Vertex(Integer label) {
         this.label = label;
     }

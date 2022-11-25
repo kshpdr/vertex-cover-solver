@@ -8,6 +8,7 @@ public class Graph {
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private final ArrayList<Edge> listEdges = new ArrayList<>();
 
+
     public Graph(HashSet<String[]> edges) {
         int index = 0;
 
@@ -85,6 +86,9 @@ public class Graph {
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
 
+        this.arrayVertex.get(vertexToRemove.label).active = false;
+
+
         HashSet<Vertex> adjacentVertices = new HashSet<>();
 
         this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
@@ -125,6 +129,8 @@ public class Graph {
     }
 
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
+
+        this.arrayVertex.get(originalVertex.label).active = true;
 
         if (!adjVertices.containsKey(originalVertex))
             adjVertices.put(originalVertex, new HashSet<>());
@@ -170,7 +176,6 @@ public class Graph {
     }
 
     Vertex getNextNode() {
-
         // System.out.println(this);
         return this.degreeOrder.getVertexWithMaxDegree();
     }
@@ -221,13 +226,12 @@ public class Graph {
         HashSet<Vertex> clique = new HashSet<>();
 
         clique.add(firstVertex);
-        for (Vertex vertex : this.arrayVertex) {
-            if (!clique.contains(vertex)) {
+        for (Vertex vertex : this.adjVertices.keySet()) {
+            if (!clique.contains(vertex) && this.adjVertices.get(vertex).containsAll(clique) ) {
 
-                if (this.adjVertices.containsKey(vertex) && this.adjVertices.get(vertex).containsAll(clique)) {
 
                     clique.add(vertex);
-                }
+
             }
 
         }

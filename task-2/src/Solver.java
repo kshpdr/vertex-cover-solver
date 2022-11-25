@@ -45,7 +45,7 @@ public class Solver {
 
         StringBuilder sb = new StringBuilder();
 
-        // Add results from reduction rules
+         //Add results from reduction rules
         if (!reductionResult.resultsList.isEmpty()) {
             for (String s : reductionResult.resultsList) {
                 sb.append(s).append("\n");
@@ -66,8 +66,7 @@ public class Solver {
     }
 
     static SolverResult vc_branch(Graph graph, int k, SolverResult solverResult) {
-        if (k < 0)
-            return solverResult;
+        if (k < 0 || k < graph.getCliqueLowerBound()) return solverResult;
         if (graph.isEmpty()) {
             solverResult.setEmptyResultsList();
             return solverResult;
