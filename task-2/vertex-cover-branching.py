@@ -19,6 +19,7 @@
 from re import match
 from signal import signal,SIGINT
 from sys import stdin
+from bipartite_graph import BipartiteGraph
 
 # Global variables (used for benchmark.sh)
 RECURSION = 0
@@ -29,7 +30,13 @@ def main():
     try: V,E = read_input()                       # Parse input from stdin
     except Exception as e: return print("[ERROR] Could not parse input graph: "+str(e))
     E,S0 = apply_reduction(E)                     # Apply reduction rules
-    S = vertex_cover(V-set(S0),E)                 # Execute V.C. algorithm (on reduced graph if possible)
+    V -= set(S0)
+    
+    BG = BipartiteGraph(V,E)
+    LP_bound = BG.lower_bound()
+    print("#LP-Lower-Bound: "+str(LP_bound))
+    
+    S = vertex_cover(V,E,LP_bound)                # Execute V.C. algorithm (on reduced graph if possible)
     for v in S0: S.append(v)
     if len(S) > 0: print("\n".join(S))            # Print result
 
@@ -65,8 +72,8 @@ def reduction_rules(E):
     return E,None   # Reduction rule can't be applied anymore (=> there is no vertex v with degree = 1)
 
 # Find minimal vertex cover (method from lecture)
-def vertex_cover(V,E):
-    for k in range(len(V)):
+def vertex_cover(V,E,lower_bound=0):
+    for k in range(lower_bound,len(V)):
         LAST_K = k
         S = vc_branch(E,k)
         if S != None: return S
