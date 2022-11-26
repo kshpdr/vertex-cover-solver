@@ -8,12 +8,12 @@
 		- Creates a copy from Edge-List in each iteration (bad!)
         - Improved Branching
         - Reduction Rule
+        - Understand + implement LP-Lower-Bound
     ### TODO:
         - Use Hashmap / Heap / other datastructure for storing edges
 		- Use Mapping from Vertex-Label to Numeric-ID (String <=> Int)
 		- Add/Remove vertices (more efficiently) instead of duplicating complete edge list
         - Understand + implement Clique-Lower-Bound
-        - Understand + implement LP-Lower-Bound
 """
 
 from re import match
@@ -64,7 +64,7 @@ def apply_reduction(E):
 # Single reduction rule implemented
 def reduction_rules(E):                           
     D = node_degrees(E)                           # Compute node degree for each node
-    for v,ne in D.items():
+    for ne in D.values():
         if len(ne) == 1:                          # Find vertex v with degree = 1
             n = ne[0]                             # Remove the (single) neighbour N(v) from graph
             En = [e for e in E if n not in e]
@@ -76,7 +76,7 @@ def vertex_cover(V,E,lower_bound=0):
     for k in range(lower_bound,len(V)):
         LAST_K = k
         S = vc_branch(E,k)
-        if S != None: return S
+        if not S is None: return S
     return V
 
 # Find vertex cover of size k (method from lecture + improved branching)
