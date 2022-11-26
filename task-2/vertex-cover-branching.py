@@ -25,15 +25,18 @@ from bipartite_graph import BipartiteGraph
 RECURSION = 0
 LAST_K = 0
 
+ENABLE_REDUCTION = False
+ENABLE_LP_BOUND = True
+ENABLE_KN_BOUND = True
+
 # Main method
 def main():
     try: V,E = read_input()                       # Parse input from stdin
     except Exception as e: return print("[ERROR] Could not parse input graph: "+str(e))
-    E,S0 = apply_reduction(E)                     # Apply reduction rules
+    E,S0 = apply_reduction(E) if ENABLE_REDUCTION else E,[]                    # Apply reduction rules
     V -= set(S0)
     
-    BG = BipartiteGraph(V,E)
-    LP_bound = BG.lower_bound()
+    LP_bound = BipartiteGraph(V,E).lower_bound() if ENABLE_LP_BOUND else 0
     print("#LP-Lower-Bound: "+str(LP_bound))
     
     S = vertex_cover(V,E,LP_bound)                # Execute V.C. algorithm (on reduced graph if possible)
@@ -89,6 +92,12 @@ def vc_branch(E,k):
         
     # Calculate node degree (for each node)
     D = node_degrees(E)
+
+    # Lower Bound - Complete-Graph: VC(Kn) = n-1
+    total_edges, total_nodes = len(E), len(D)
+    if ENABLE_KN_BOUND:
+        if total_nodes-1 <= k and total_edges == total_nodes*(total_nodes-1)/2:
+            return list(D.keys())[1:]
 
     # Find max degree node
     max_v = max(D,key=lambda k: len(D[k]))
