@@ -1,7 +1,8 @@
-public class Vertex implements Comparable<Vertex>{
+public class Vertex implements Comparable<Vertex> {
     int label;
     int degree;
     int dist = 0;
+
     Vertex(Integer label) {
         this.label = label;
     }
@@ -16,12 +17,9 @@ public class Vertex implements Comparable<Vertex>{
             return true;
         }
 
-
         if (!(o instanceof Vertex)) {
             return false;
         }
-
-
 
         return this.label == ((Vertex) o).label;
     }
@@ -32,21 +30,18 @@ public class Vertex implements Comparable<Vertex>{
         return this.label;
     }
 
-
     @Override
     public String toString() {
 
-        //sb.append("Vertices: ").append("\n");
+        // sb.append("Vertices: ").append("\n");
 
-        return "Vertex " + this.label +" degree " + this.degree;
+        return "Vertex " + this.label + " degree " + this.degree;
     }
-
 
     @Override
     public int compareTo(Vertex o) {
 
-        return Integer.compare(this.degree,  o.degree);
+        return Integer.compare(this.degree, o.degree);
     }
-
 
 }
