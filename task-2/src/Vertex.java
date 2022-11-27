@@ -1,10 +1,11 @@
-public class Vertex implements Comparable<Vertex> {
-    int label;
-    int degree;
+public class Vertex {
+    String name;
+    int id;
     int dist = 0;
 
-    public Vertex(Integer label) {
-        this.label = label;
+    public Vertex(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override
@@ -17,21 +18,16 @@ public class Vertex implements Comparable<Vertex> {
             return false;
         }
 
-        return this.label == ((Vertex) o).label;
+        return this.id == ((Vertex) o).id;
     }
 
     @Override
     public int hashCode() {
-        return this.label;
+        return this.id;
     }
 
     @Override
     public String toString() {
-        return "Vertex " + this.label + " degree " + this.degree;
-    }
-
-    @Override
-    public int compareTo(Vertex o) {
-        return Integer.compare(this.degree, o.degree);
+        return "Vertex " + this.name;
     }
 }
