@@ -7,9 +7,11 @@ public class Graph {
     public Graph(HashSet<String[]> edges) {
         for (String[] edge : edges) {
             Vertex vertex1 = new Vertex(edge[0].hashCode(), edge[0]);
+
             if (!this.adjacentMap.containsKey(vertex1)){
                 this.adjacentMap.put(vertex1, new HashSet<>());
             }
+
 
             Vertex vertex2 = new Vertex(edge[1].hashCode(), edge[1]);
             if (!this.adjacentMap.containsKey(vertex2)){
@@ -39,37 +41,40 @@ public class Graph {
     }
 
     public boolean isEmpty() {
-        for (Vertex vertex : this.adjacentMap.keySet()) {
-            if (!this.adjacentMap.get(vertex).isEmpty()){
-                return false;
-            }
-        }
-        return true;
+        return this.adjacentMap.isEmpty();
     }
 
     // remove vertex and return all his neigbours
     public HashSet<Vertex> removeVertex(Vertex vertexToRemove){
         HashSet<Vertex> neighbors = adjacentMap.get(vertexToRemove);
+        HashSet<Vertex> emptyVertex = new HashSet<>();
         for (Vertex neighbor : adjacentMap.get(vertexToRemove)){
             if (adjacentMap.get(neighbor) != null){
                 adjacentMap.get(neighbor).remove(vertexToRemove);
+            }
+            if(adjacentMap.get(neighbor).isEmpty()){
+                emptyVertex.add(new Vertex(neighbor.id,neighbor.name));
+            }
+
+            for(Vertex vertex: emptyVertex){
+                this.adjacentMap.remove(vertex);
             }
         }
         adjacentMap.remove(vertexToRemove);
         return neighbors;
     }
 
-    public void deleteEmptyAdjacentLists(){
-        HashSet<Vertex> verticesToDelete = new HashSet<>();
-        for (Vertex vertex : adjacentMap.keySet()){
-            if (adjacentMap.get(vertex).isEmpty()){
-                verticesToDelete.add(vertex);
-            }
-        }
-        for (Vertex vertex : verticesToDelete){
-            adjacentMap.remove(vertex);
-        }
-    }
+//    public void deleteEmptyAdjacentLists(){
+//        HashSet<Vertex> verticesToDelete = new HashSet<>();
+//        for (Vertex vertex : adjacentMap.keySet()){
+//            if (adjacentMap.get(vertex).isEmpty()){
+//                verticesToDelete.add(vertex);
+//            }
+//        }
+//        for (Vertex vertex : verticesToDelete){
+//            adjacentMap.remove(vertex);
+//        }
+//    }
 
     public void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
         if (!adjacentMap.containsKey(originalVertex))
@@ -90,7 +95,9 @@ public class Graph {
         }
 
         for (Vertex vertex : copy) {
-            adjacentVertices.put(vertex, this.removeVertex(vertex));
+            if(this.adjacentMap.containsKey(vertex)) {
+                adjacentVertices.put(vertex, this.removeVertex(vertex));
+            }
         }
         return adjacentVertices;
     }
@@ -148,11 +155,17 @@ public class Graph {
             cliqueCover.add(maxClique);
             copyGraph.removeVertices(maxClique);
         }
+
         return cliqueCover;
     }
 
     public int getCliqueLowerBound() {
-        return this.adjacentMap.keySet().size() - this.getApproximateMaximumCliqueCover().size();
+        int totalVerticesClique =0;
+        HashSet<HashSet<Vertex>> vertexCover = this.getApproximateMaximumCliqueCover();
+        for(HashSet<Vertex> clique: vertexCover){
+            totalVerticesClique+=clique.size();
+        }
+        return this.adjacentMap.keySet().size() - (vertexCover.size()+(this.adjacentMap.keySet().size() - totalVerticesClique));
     }
 
     public Set<Vertex> getVertices() {
@@ -170,7 +183,7 @@ public class Graph {
     }
 
     public int getMaxLowerBound() {
-//        return Math.max(this.getCliqueLowerBound(), this.getLpBound());
-        return this.getLpBound();
+        return Math.max(this.getCliqueLowerBound(), this.getLpBound());
+       // return this.getLpBound();
     }
 }

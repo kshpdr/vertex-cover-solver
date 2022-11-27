@@ -8,6 +8,9 @@ public class Solver {
     public static int recursiveSteps = 0;
 
     public static LinkedList<String> vc_branch(Graph graph, int k) {
+        //System.out.println("Clique Lower Bound: " + graph.getCliqueLowerBound());
+        int lowerbound = graph.getCliqueLowerBound();
+        if(k< lowerbound) return null;
         if (k < 0)
             return null;
         if (graph.isEmpty())
@@ -17,7 +20,7 @@ public class Solver {
         LinkedList<String> solution = new LinkedList<>();
         Vertex vertex = graph.getNextNode();
         HashSet<Vertex> neighbors = graph.removeVertex(vertex);
-        graph.deleteEmptyAdjacentLists();
+//        graph.deleteEmptyAdjacentLists();
 
         solution = vc_branch(graph, k - 1);
         graph.putVertexBack(vertex, neighbors);
@@ -28,11 +31,11 @@ public class Solver {
 
         int neighborsSize = neighbors.size();
         HashMap<Vertex, HashSet<Vertex>> neighborsVertices = graph.removeVertices(neighbors);
-        graph.deleteEmptyAdjacentLists();
+
         solution = vc_branch(graph, k - neighborsSize);
         graph.putVertices(neighborsVertices);
         if (solution != null) {
-            for (Vertex neighbor : neighbors){
+            for (Vertex neighbor : neighborsVertices.keySet()){
                 solution.add(neighbor.name);
             }
             return solution;
@@ -56,7 +59,7 @@ public class Solver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-        while (!((line = bi.readLine()).isEmpty())){
+        while (!((line = bi.readLine())==null)){
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 edges.add(nodes);
@@ -64,7 +67,9 @@ public class Solver {
         }
 
         Graph graph = new Graph(edges);
-        LinkedList<String> solution = vc(graph, graph.getMaxLowerBound());
+        //System.out.println("Clique Lower Bound" + graph.getCliqueLowerBound());
+        int lowerbound = graph.getMaxLowerBound();
+        LinkedList<String> solution = vc(graph, lowerbound);
 
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();

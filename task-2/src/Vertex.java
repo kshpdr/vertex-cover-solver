@@ -23,7 +23,7 @@ public class Vertex {
 
     @Override
     public int hashCode() {
-        return this.id;
+        return this.name.hashCode();
     }
 
     @Override
