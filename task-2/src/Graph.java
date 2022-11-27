@@ -5,18 +5,21 @@ public class Graph {
     private final ArrayList<Edge> listEdges = new ArrayList<>();
 
     public Graph(HashSet<String[]> edges) {
-        int id = 0;
         for (String[] edge : edges) {
-            Vertex vertex1 = new Vertex(id++, edge[0]);
-            this.adjacentMap.put(vertex1, new HashSet<>());
+            Vertex vertex1 = new Vertex(edge[0].hashCode(), edge[0]);
+            if (!this.adjacentMap.containsKey(vertex1)){
+                this.adjacentMap.put(vertex1, new HashSet<>());
+            }
 
-            Vertex vertex2 = new Vertex(id++, edge[1]);
-            this.adjacentMap.put(vertex2, new HashSet<>());
+            Vertex vertex2 = new Vertex(edge[1].hashCode(), edge[1]);
+            if (!this.adjacentMap.containsKey(vertex2)){
+                this.adjacentMap.put(vertex2, new HashSet<>());
+            }
 
             this.adjacentMap.get(vertex1).add(vertex2);
             this.adjacentMap.get(vertex2).add(vertex1);
 
-            this.listEdges.add(new Edge(vertex1, vertex1));
+            this.listEdges.add(new Edge(vertex1, vertex2));
         }
 
     }
@@ -45,21 +48,14 @@ public class Graph {
     }
 
     // remove vertex and return all his neigbours
-    public HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
-        HashSet<Vertex> adjacentVertices = new HashSet<>();
-        Iterator<Vertex> iterator = this.adjacentMap.keySet().iterator();
-
-        while (iterator.hasNext()) {
-            Vertex adjacentVertex = iterator.next();
-            this.adjacentMap.get(adjacentVertex).remove(vertexToRemove);
-            adjacentVertices.add(adjacentVertex);
-            if (this.adjacentMap.get(adjacentVertex).isEmpty()) {
-                iterator.remove();
-            }
+    public HashSet<Vertex> removeVertex(Vertex vertexToDelete){
+        HashSet<Vertex> neighbors = new HashSet<>();
+        for (Vertex vertex : adjacentMap.get(vertexToDelete)){
+            adjacentMap.get(vertex).remove(vertexToDelete);
+            neighbors.add(new Vertex(vertex.id, vertex.name));
         }
-
-        adjacentMap.remove(vertexToRemove);
-        return adjacentVertices;
+        adjacentMap.remove(vertexToDelete);
+        return neighbors;
     }
 
     public void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
@@ -75,10 +71,12 @@ public class Graph {
 
     public HashMap<Vertex, HashSet<Vertex>> removeVertices(HashSet<Vertex> verticesToRemove) {
         HashMap<Vertex, HashSet<Vertex>> adjacentVertices = new HashMap<>();
+        HashSet<Vertex> copy = new HashSet<>();
+        for (Vertex vertexToRemove : verticesToRemove){
+            copy.add(new Vertex(vertexToRemove.id, vertexToRemove.name));
+        }
 
-        Iterator<Vertex> iterator = verticesToRemove.iterator();
-        while (iterator.hasNext()) {
-            Vertex vertex = iterator.next();
+        for (Vertex vertex : copy) {
             adjacentVertices.put(vertex, this.removeVertex(vertex));
         }
         return adjacentVertices;

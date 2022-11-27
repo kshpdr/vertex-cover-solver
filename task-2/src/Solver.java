@@ -25,8 +25,9 @@ public class Solver {
             return solution;
         }
 
+        int neighborsSize = neighbors.size();
         HashMap<Vertex, HashSet<Vertex>> neighborsVertices = graph.removeVertices(neighbors);
-        solution = vc_branch(graph, k - neighbors.size());
+        solution = vc_branch(graph, k - neighborsSize);
         graph.putVertices(neighborsVertices);
         if (solution != null) {
             for (Vertex neighbor : neighbors){
