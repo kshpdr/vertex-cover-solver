@@ -54,30 +54,19 @@ public class Solver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-//        while ((!(line = bi.readLine()).isEmpty()){
-        while ((line = bi.readLine()) == null){
+        while (((line = bi.readLine()) != null)){
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 edges.add(nodes);
             }
         }
 
-        // Apply reduction rules before instatiating graph (+ internally used
-        // datastructure(s))
-//        SolverResult reductionResult = ReductionRules.applyReductionRules(edges);
         Graph graph = new Graph(edges);
-        LinkedList<String> solution = vc(graph, 0);
+        LinkedList<String> solution = vc(graph, graph.getMaxLowerBound());
 
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
 
-        // Add results from reduction rules
-//        if (!reductionResult.resultsList.isEmpty()) {
-//            for (String s : reductionResult.resultsList) {
-//                sb.append(s).append("\n");
-//            }
-//        }
-        // Add results from actual branching algorithm
         if (!solution.isEmpty()) {
             for (String s : solution) {
                 sb.append(s).append("\n");
