@@ -17,6 +17,7 @@ public class Solver {
         LinkedList<String> solution = new LinkedList<>();
         Vertex vertex = graph.getNextNode();
         HashSet<Vertex> neighbors = graph.removeVertex(vertex);
+        graph.deleteEmptyAdjacentLists();
 
         solution = vc_branch(graph, k - 1);
         graph.putVertexBack(vertex, neighbors);
@@ -27,6 +28,7 @@ public class Solver {
 
         int neighborsSize = neighbors.size();
         HashMap<Vertex, HashSet<Vertex>> neighborsVertices = graph.removeVertices(neighbors);
+        graph.deleteEmptyAdjacentLists();
         solution = vc_branch(graph, k - neighborsSize);
         graph.putVertices(neighborsVertices);
         if (solution != null) {
@@ -54,7 +56,7 @@ public class Solver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-        while (((line = bi.readLine()) != null)){
+        while (!((line = bi.readLine()).isEmpty())){
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 edges.add(nodes);
@@ -75,5 +77,6 @@ public class Solver {
         sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
         String resultStr = sb.toString();
         System.out.print(resultStr);
+        System.out.println("#solsize " + solution.size());
     }
 }

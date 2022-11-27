@@ -48,14 +48,27 @@ public class Graph {
     }
 
     // remove vertex and return all his neigbours
-    public HashSet<Vertex> removeVertex(Vertex vertexToDelete){
-        HashSet<Vertex> neighbors = new HashSet<>();
-        for (Vertex vertex : adjacentMap.get(vertexToDelete)){
-            adjacentMap.get(vertex).remove(vertexToDelete);
-            neighbors.add(new Vertex(vertex.id, vertex.name));
+    public HashSet<Vertex> removeVertex(Vertex vertexToRemove){
+        HashSet<Vertex> neighbors = adjacentMap.get(vertexToRemove);
+        for (Vertex neighbor : adjacentMap.get(vertexToRemove)){
+            if (adjacentMap.get(neighbor) != null){
+                adjacentMap.get(neighbor).remove(vertexToRemove);
+            }
         }
-        adjacentMap.remove(vertexToDelete);
+        adjacentMap.remove(vertexToRemove);
         return neighbors;
+    }
+
+    public void deleteEmptyAdjacentLists(){
+        HashSet<Vertex> verticesToDelete = new HashSet<>();
+        for (Vertex vertex : adjacentMap.keySet()){
+            if (adjacentMap.get(vertex).isEmpty()){
+                verticesToDelete.add(vertex);
+            }
+        }
+        for (Vertex vertex : verticesToDelete){
+            adjacentMap.remove(vertex);
+        }
     }
 
     public void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
@@ -136,15 +149,14 @@ public class Graph {
             copyGraph.removeVertices(maxClique);
         }
         return cliqueCover;
-
     }
 
     public int getCliqueLowerBound() {
         return this.adjacentMap.keySet().size() - this.getApproximateMaximumCliqueCover().size();
     }
 
-    public HashSet<Vertex> getVertices() {
-        return (HashSet<Vertex>) this.adjacentMap.keySet();
+    public Set<Vertex> getVertices() {
+        return this.adjacentMap.keySet();
     }
 
     public ArrayList<Edge> getListEdges() {
@@ -158,6 +170,7 @@ public class Graph {
     }
 
     public int getMaxLowerBound() {
-        return Math.max(this.getCliqueLowerBound(), this.getLpBound());
+//        return Math.max(this.getCliqueLowerBound(), this.getLpBound());
+        return this.getLpBound();
     }
 }
