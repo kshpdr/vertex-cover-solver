@@ -56,8 +56,7 @@ public class Solver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-//        while (!((line = bi.readLine()).isEmpty())){
-        while (((line = bi.readLine()) != null)){
+        while (!((line = bi.readLine()).isEmpty())){
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 edges.add(nodes);
