@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Graph {
-    private final Map<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
+    private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final ArrayList<String> vertexStringMap = new ArrayList<>();
     private final ArrayList<Vertex> arrayVertex = new ArrayList<>();
 
@@ -75,13 +75,10 @@ public class Graph {
     }
 
     public boolean isEmpty() {
-        boolean isEmpty = true;
         for (Vertex vertex : this.adjVertices.keySet()) {
-
-            isEmpty = isEmpty && this.adjVertices.get(vertex).isEmpty();
-
+            if (!this.adjVertices.get(vertex).isEmpty()) return false;
         }
-        return isEmpty;
+        return true;
     }
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
@@ -189,6 +186,42 @@ public class Graph {
         }
         return result;
 
+    }
+
+    public HashMap<Vertex,HashSet<Vertex>> applyReductionRules(Solver.SolverResult result) {
+        // Instatiate Map (storing vertex -> neighbors for all reduced vertices)
+        HashMap<Vertex,HashSet<Vertex>> removedVerticesMap = new HashMap<>();
+
+        // Repeatedly apply reduction rules ...
+        Vertex v = reductionRules();
+        // Until no more reduction possible!
+        while (v != null) {
+            // Save partial solution
+            result.addVertexToResult(this.getVertexMapping(v));
+            // Remove vertex from graph
+            removedVerticesMap.put(v,this.removeVertex(v));
+            // Apply reduction rules again (until not possible ...)
+            v = reductionRules();
+        }
+
+        // Returns Map (for reduced vertices+neighbors) obtained from reduction rules
+        return removedVerticesMap;
+    }
+
+    public Vertex reductionRules() {
+        // Loop over all vertices
+        for (Vertex v : adjVertices.keySet()) {
+            HashSet<Vertex> neighbors = adjVertices.get(v);
+            // Degree-1 Rule: Try to find a vertex v with degree = 1
+            if (neighbors != null && neighbors.size() == 1) {
+                for (Vertex singleNeighbor : neighbors) {
+                    // Remove N(v) and add it to the VC-result
+                    return singleNeighbor;
+                }
+            }
+        }
+        // Cannot apply reduction rules anymore ... done!
+        return null;
     }
 
     Graph getCopy() {

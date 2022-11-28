@@ -30,10 +30,9 @@ public class Solver {
 
         }
 
-        // Apply reduction rules before instatiating graph (+ internally used
-        // datastructure(s))
+        // Apply reduction rules before instatiating graph (+ internally used datastructure(s))
         SolverResult reductionResult = ReductionRules.applyReductionRules(edges);
-
+        
         // Instantiate graph
         Graph graph = new Graph(edges);
 
@@ -52,7 +51,7 @@ public class Solver {
             }
         }
         // Add results from actual branching algorithm
-        if (!result.resultsList.isEmpty()) {
+        if (result.resultsList != null && !result.resultsList.isEmpty()) {
             for (String s : result.resultsList) {
 
                 sb.append(s).append("\n");
@@ -66,13 +65,24 @@ public class Solver {
     }
 
     static SolverResult vc_branch(Graph graph, int k, SolverResult solverResult) {
+        // Initialize solver result for reduction rules
+        SolverResult reductionResult = new SolverResult();
+        reductionResult.setEmptyResultsList();
+        // Apply Reduction rules (save deleted vertices+neighbors) and reduce k accordingly
+        HashMap<Vertex,HashSet<Vertex>> removedReductionVerticesMap = graph.applyReductionRules(reductionResult);
+        k -= reductionResult.resultsList.size();
+        
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getCliqueLowerBound()) return solverResult;
-        if(k < graph.getLpBound()) return solverResult;
-
-        if (k < 0) return solverResult;
+        if(k < graph.getCliqueLowerBound() || k < graph.getLpBound() || k < 0) {
+            // Undo changes done from reduction rules
+            graph.putManyVerticesBack(removedReductionVerticesMap);
+            return solverResult;
+        }
+        
         if (graph.isEmpty()) {
             solverResult.setEmptyResultsList();
+            // Add vertices reduced (via reduction rules) to result list
+            for (String v : reductionResult.resultsList) solverResult.addVertexToResult(v);
             return solverResult;
         }
 
@@ -80,34 +90,37 @@ public class Solver {
 
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
-        //
+
+        // Branch Case: G\v
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-
         SolverResult s = vc_branch(graph, k - 1, solverResult);
-
         graph.putVertexBack(v, eliminatedNeighbors);
 
         if (s.resultsList != null) {
             s.addVertexToResult(graph.getVertexMapping(v));
+            // Add vertices reduced (via reduction rules) to result list
+            for (String r : reductionResult.resultsList) s.addVertexToResult(r);
             return s;
         }
 
+        // Branch Case: G\N(v)
         // Eliminating the neighbors of the vertex with the highest degree and storing
         // the neighbors of the neighbors with a hashmap
-
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-
         // Branching with the neighbors
         s = vc_branch(graph, k - eliminatedNeighbors.size(), solverResult);
-
         // Putting back the eliminated vertices
-
         graph.putManyVerticesBack(eliminatedNeighborsMap);
 
         if (s.resultsList != null) {
             solverResult.addMultipleVertexToResult(graph.getMultipleMappings(eliminatedNeighbors));
+            // Add vertices reduced (via reduction rules) to result list
+            for (String r : reductionResult.resultsList) solverResult.addVertexToResult(r);
             return solverResult;
         }
+
+        // Undo changes done from reduction rules
+        graph.putManyVerticesBack(removedReductionVerticesMap);
 
         return new SolverResult();
 
