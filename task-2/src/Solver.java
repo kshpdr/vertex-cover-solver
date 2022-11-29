@@ -32,64 +32,66 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        SolverResult reductionResult = ReductionRules.applyReductionRules(edges);
+        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
 
         // Call method with the clique lower bound
 
-        SolverResult result = vc(graph, graph.getMaxLowerBound());
+        LinkedList<String> result = vc(graph, graph.getMaxLowerBound());
 
         // Putting it all together in one String to only use one I/O operation
 
         StringBuilder sb = new StringBuilder();
 
          //Add results from reduction rules
-        if (!reductionResult.resultsList.isEmpty()) {
-            for (String s : reductionResult.resultsList) {
+        if (!reductionResult.isEmpty()) {
+            for (String s : reductionResult) {
                 sb.append(s).append("\n");
             }
         }
         // Add results from actual branching algorithm
-        if (!result.resultsList.isEmpty()) {
-            for (String s : result.resultsList) {
+        if (!result.isEmpty()) {
+            for (String s : result) {
 
                 sb.append(s).append("\n");
             }
         }
 
-        sb.append("#recursive steps: ").append(result.recursiveSteps).append("\n");
+        sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
 
         String resultStr = sb.toString();
         System.out.print(resultStr);
     }
 
-    static SolverResult vc_branch(Graph graph, int k, SolverResult solverResult) {
+    public static int recursiveSteps = 0;
+
+    static LinkedList<String> vc_branch(Graph graph, int k) {
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getCliqueLowerBound()) return solverResult;
-        if(k < graph.getLpBound()) return solverResult;
+        if(k < graph.getCliqueLowerBound()) return null;
+        if(k < graph.getLpBound()) return null;
 
-        if (k < 0) return solverResult;
-        if (graph.isEmpty()) {
-            solverResult.setEmptyResultsList();
-            return solverResult;
-        }
+        if (k < 0) return null;
+        if (graph.isEmpty())
+            return new LinkedList<>();
 
-        solverResult.increaseRecursiveSteps();
+        LinkedList<String> solution;
+
+        recursiveSteps++;
 
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
         //
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
 
-        SolverResult s = vc_branch(graph, k - 1, solverResult);
+        solution = vc_branch(graph, k - 1);
 
         graph.putVertexBack(v, eliminatedNeighbors);
 
-        if (s.resultsList != null) {
-            s.addVertexToResult(graph.getVertexMapping(v));
-            return s;
+        if (solution!= null) {
+            solution.add(graph.getVertexMapping(v));
+            return solution;
         }
 
         // Eliminating the neighbors of the vertex with the highest degree and storing
@@ -98,56 +100,34 @@ public class Solver {
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
 
         // Branching with the neighbors
-        s = vc_branch(graph, k - eliminatedNeighbors.size(), solverResult);
+        solution = vc_branch(graph, k - eliminatedNeighbors.size());
 
         // Putting back the eliminated vertices
 
         graph.putManyVerticesBack(eliminatedNeighborsMap);
 
-        if (s.resultsList != null) {
-            solverResult.addMultipleVertexToResult(graph.getMultipleMappings(eliminatedNeighbors));
-            return solverResult;
+        if (solution != null) {
+            for (Vertex neighbor : eliminatedNeighborsMap.keySet()){
+                solution.add(graph.getVertexMapping(neighbor));
+            }
+            return solution;
         }
 
-        return new SolverResult();
+
+        return null;
 
     }
 
     // main function which increases the cover vertex size k every iteration
 
-    public static SolverResult vc(Graph graph, int lowerBound) {
-        SolverResult s = new SolverResult();
-        int k = lowerBound;
+    public static LinkedList<String> vc(Graph graph, int lowerBound) {
 
-        while ((vc_branch(graph, k++, s)).resultsList == null) {
-        }
-        return s;
-    }
-
-    static class SolverResult {
-        private LinkedList<String> resultsList = null;
-        private int recursiveSteps;
-
-        SolverResult() {
-
-        }
-
-        protected void addVertexToResult(String vertexToAdd) {
-            this.resultsList.add(vertexToAdd);
-        }
-
-        private void addMultipleVertexToResult(String[] verticesToAdd) {
-
-            Collections.addAll(this.resultsList, verticesToAdd);
-
-        }
-
-        private void increaseRecursiveSteps() {
-            this.recursiveSteps++;
-        }
-
-        protected void setEmptyResultsList() {
-            this.resultsList = new LinkedList<>();
+        while (true) {
+            LinkedList<String> solution = vc_branch(graph, lowerBound);
+            if (solution != null){
+                return solution;
+            }
+            lowerBound++;
         }
 
     }
