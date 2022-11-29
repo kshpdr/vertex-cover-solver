@@ -38,8 +38,9 @@ public class Solver {
         Graph graph = new Graph(edges);
 
         // Call method with the clique lower bound
+        int lowerbound = graph.getMaxLowerBound();
 
-        LinkedList<String> result = vc(graph, graph.getMaxLowerBound());
+        LinkedList<String> result = vc(graph, lowerbound);
 
         // Putting it all together in one String to only use one I/O operation
 
@@ -70,7 +71,7 @@ public class Solver {
     static LinkedList<String> vc_branch(Graph graph, int k) {
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
         if(k < graph.getCliqueLowerBound()) return null;
-        if(k < graph.getLpBound()) return null;
+//        if(k < graph.getLpBound()) return null;
 
         if (k < 0) return null;
         if (graph.isEmpty())
