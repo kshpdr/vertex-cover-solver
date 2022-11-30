@@ -111,6 +111,7 @@ public class Graph {
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
                 this.degreeOrder.removeVertex(tmpVertex);
+                this.arrayVertex.get(tmpVertex.label).active=false;
             }
         }
 
@@ -148,6 +149,7 @@ public class Graph {
 
             if (!adjVertices.containsKey(neighbor)){
                 adjVertices.put(neighbor, new HashSet<>());
+                this.arrayVertex.get(neighbor.label).active=true;
             }
             adjVertices.get(neighbor).add(originalVertex);
             this.arrayVertex.get(neighbor.label).degree++;
@@ -275,4 +277,34 @@ public class Graph {
     public int getMaxLowerBound() {
         return Math.max(this.getCliqueLowerBound(), this.getLpBound());
     }
+
+    public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
+        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
+        while(true){
+            boolean reduced = false;
+            for (Vertex currentVertex : this.arrayVertex) {
+
+                if (currentVertex.active) {
+                    boolean delete = false;
+                    for (Vertex n : this.adjVertices.get(currentVertex)) {
+                        HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
+                        tmpNeighbors.add(currentVertex);
+                        if (tmpNeighbors.containsAll(this.adjVertices.get(n))) {
+                            delete = true;
+                            reduced = true;
+                            break;
+                        }
+
+                    }
+                    if (delete) {
+                        verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
+                    }
+                }
+
+            }
+            if(!reduced) break;
+            }
+        return verticesInVertexCover;
+        }
+
 }
