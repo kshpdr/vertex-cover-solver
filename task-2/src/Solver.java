@@ -55,9 +55,9 @@ public class Solver {
                 solutionSize++;
             }
         }
-
-
-        //Add results from Domination rule
+//
+//
+//        //Add results from Domination rule
         for(Vertex vertex: reducedNeighborsMap.keySet()){
             sb.append(graph.getVertexMapping(vertex)).append("\n");
             solutionSize++;
@@ -96,45 +96,48 @@ public class Solver {
         Vertex v = graph.getNextNode();
         //
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-//        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
 //
-        solution = vc_branch(graph, k - 1);
-//        graph.putManyVerticesBack(reducedNeighborsMap);
-//
+        solution = vc_branch(graph, k - 1-reducedNeighborsMap.keySet().size());
+        graph.putManyVerticesBack(reducedNeighborsMap);
         graph.putVertexBack(v, eliminatedNeighbors);
+//
 
         if (solution!= null) {
             solution.add(graph.getVertexMapping(v));
-//            for (Vertex neighbor : reducedNeighborsMap.keySet()){
-//                solution.add(graph.getVertexMapping(neighbor));
-//            }
+            for (Vertex neighbor : reducedNeighborsMap.keySet()){
+                solution.add(graph.getVertexMapping(neighbor));
+            }
             return solution;
         }
+
 
         // Eliminating the neighbors of the vertex with the highest degree and storing
         // the neighbors of the neighbors with a hashmap
 
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-//        reducedNeighborsMap = graph.applyDominationRule();
+        reducedNeighborsMap = graph.applyDominationRule();
 
         // Branching with the neighbors
-        solution = vc_branch(graph, k - eliminatedNeighbors.size());
+        solution = vc_branch(graph, k - eliminatedNeighbors.size()-reducedNeighborsMap.keySet().size());
 
-//        graph.putManyVerticesBack(reducedNeighborsMap);
+        graph.putManyVerticesBack(eliminatedNeighborsMap);
+        graph.putManyVerticesBack(reducedNeighborsMap);
 
         // Putting back the eliminated vertices
 
-        graph.putManyVerticesBack(eliminatedNeighborsMap);
+
 
         if (solution != null) {
             for (Vertex neighbor : eliminatedNeighborsMap.keySet()){
                 solution.add(graph.getVertexMapping(neighbor));
             }
-//            for (Vertex neighbor : reducedNeighborsMap.keySet()){
-//                solution.add(graph.getVertexMapping(neighbor));
-//            }
+            for (Vertex neighbor : reducedNeighborsMap.keySet()){
+                solution.add(graph.getVertexMapping(neighbor));
+            }
             return solution;
         }
+
 
 
         return null;
