@@ -1,0 +1,9 @@
+file;time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-diff-to-opt
+1-random/000002_000000000002.dimacs;;2;0; 1;;1;Not a VC: ;;;
+1-random/000002_000000000012.dimacs;;12;10; 1;;1;Not a VC: ;;;
+1-random/000004_000000000004.dimacs;;4;0; 1;;1;Not a VC: ;;;
+1-random/000004_000000000024.dimacs;;24;20; 1;;1;Not a VC: ;;;
+1-random/000006_000000000007.dimacs;;7;1; 1;;1;Not a VC: ;;;
+1-random/000006_000000000036.dimacs;;36;30; 1;;1;Not a VC: ;;;
+1-random/000008_000000000009.dimacs;;9;1; 1;;1;Not a VC: ;;;
+1-random/000008_000000000048.dimacs;;48;40; 1;;1;Not a VC: ;;;

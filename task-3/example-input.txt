@@ -1,0 +1,8 @@
+# 6 vertices
+# 6 edges
+a b
+a d
+c e
+c f
+d e
+e f
