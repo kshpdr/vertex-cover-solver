@@ -1,11 +1,8 @@
-public class Vertex {
-    String name;
-    int id;
+public class Vertex implements Comparable<Vertex> {
+    int label;
+    int degree;
     int dist = 0;
 
-    public Vertex(Integer id, String name) {
-        this.id = id;
-        this.name = name;
     boolean active =true;
 
 
@@ -13,8 +10,12 @@ public class Vertex {
         this.label = label;
     }
 
+    // equals and hashCode
+
     @Override
     public boolean equals(Object o) {
+
+        // If the object is compared with itself then return true
         if (o == this) {
             return true;
         }
@@ -23,16 +24,27 @@ public class Vertex {
             return false;
         }
 
-        return this.id == ((Vertex) o).id;
+        return this.label == ((Vertex) o).label;
     }
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+
+        return this.label;
     }
 
     @Override
     public String toString() {
-        return "Vertex " + this.name;
+
+        // sb.append("Vertices: ").append("\n");
+
+        return "Vertex " + this.label + " degree " + this.degree;
     }
+
+    @Override
+    public int compareTo(Vertex o) {
+
+        return Integer.compare(this.degree, o.degree);
+    }
+
 }
