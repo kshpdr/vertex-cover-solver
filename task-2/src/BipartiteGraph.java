@@ -15,19 +15,22 @@ public class BipartiteGraph {
     public BipartiteGraph(Graph graph) {
         nilVertex.dist = INF;
         for (Vertex vertex : graph.getVertices()) {
-            left.add(new Vertex(vertex.id, vertex.name));
-            right.add(new Vertex(vertex.id, vertex.name));
+            if (vertex.active) {
+                left.add(new Vertex(vertex.label));
+                right.add(new Vertex(vertex.label));
+            }
         }
 
         for (Edge edge : graph.getListEdges()) {
+            if (edge.v.active && edge.w.active) {
+                Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
+                Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));
 
-            Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
-            Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));
-
-            Vertex rightFirst = right.get(right.indexOf(edge.getFirstVertex()));
-            Vertex rightSecond = right.get(right.indexOf(edge.getSecondVertex()));
-            edges.add(new Edge(leftFirst, rightSecond));
-            edges.add(new Edge(leftSecond, rightFirst));
+                Vertex rightFirst = right.get(right.indexOf(edge.getFirstVertex()));
+                Vertex rightSecond = right.get(right.indexOf(edge.getSecondVertex()));
+                edges.add(new Edge(leftFirst, rightSecond));
+                edges.add(new Edge(leftSecond, rightFirst));
+            }
         }
     }
 

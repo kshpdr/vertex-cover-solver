@@ -6,6 +6,11 @@ public class Vertex {
     public Vertex(Integer id, String name) {
         this.id = id;
         this.name = name;
+    boolean active =true;
+
+
+    Vertex(Integer label) {
+        this.label = label;
     }
 
     @Override

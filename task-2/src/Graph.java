@@ -4,6 +4,8 @@ public class Graph {
     private final HashMap<Vertex, HashSet<Vertex>> adjacentMap = new HashMap<>();
     private final ArrayList<Edge> listEdges = new ArrayList<>();
 
+
+
     public Graph(HashSet<String[]> edges) {
         for (String[] edge : edges) {
             Vertex vertex1 = new Vertex(edge[0].hashCode(), edge[0]);
@@ -41,24 +43,53 @@ public class Graph {
     }
 
     public boolean isEmpty() {
-        return this.adjacentMap.isEmpty();
+        for (Vertex vertex : this.adjVertices.keySet()) {
+
+            if(!this.adjVertices.get(vertex).isEmpty()){
+                return false;
+            }
+
+        }
+        return true;
     }
 
-    // remove vertex and return all his neigbours
-    public HashSet<Vertex> removeVertex(Vertex vertexToRemove){
-        HashSet<Vertex> neighbors = adjacentMap.get(vertexToRemove);
-        HashSet<Vertex> emptyVertex = new HashSet<>();
-        for (Vertex neighbor : adjacentMap.get(vertexToRemove)){
-            if (adjacentMap.get(neighbor) != null){
-                adjacentMap.get(neighbor).remove(vertexToRemove);
-            }
-            if(adjacentMap.get(neighbor).isEmpty()){
-                emptyVertex.add(new Vertex(neighbor.id,neighbor.name));
-            }
+    HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
 
-            for(Vertex vertex: emptyVertex){
-                this.adjacentMap.remove(vertex);
+        this.arrayVertex.get(vertexToRemove.label).active = false;
+
+
+        HashSet<Vertex> adjacentVertices = new HashSet<>();
+
+        this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
+
+        Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
+
+        while (iterator.hasNext()) {
+            Vertex tmpVertex = iterator.next();
+
+            if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)) {
+
+                this.arrayVertex.get(tmpVertex.label).degree--;
+                this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
+
+                adjacentVertices.add(tmpVertex);
+
             }
+            if (this.adjVertices.get(tmpVertex).isEmpty()) {
+                iterator.remove();
+                this.degreeOrder.removeVertex(tmpVertex);
+                this.arrayVertex.get(tmpVertex.label).active=false;
+            }
+        }
+
+        if (adjVertices.containsKey(vertexToRemove)) {
+
+            adjacentVertices.addAll(adjVertices.get(vertexToRemove));
+            this.arrayVertex.get(vertexToRemove.label).degree = 0;
+
+            adjVertices.remove(vertexToRemove);
+            this.arrayVertex.get(vertexToRemove.label).active=false;
+
         }
         adjacentMap.remove(vertexToRemove);
         return neighbors;
@@ -76,14 +107,29 @@ public class Graph {
 //        }
 //    }
 
-    public void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
-        if (!adjacentMap.containsKey(originalVertex))
-            adjacentMap.put(originalVertex, neighbors);
+    }
+
+    void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
+
+        this.arrayVertex.get(originalVertex.label).active = true;
+
+        if (!adjVertices.containsKey(originalVertex))
+            adjVertices.put(originalVertex, new HashSet<>());
 
         for (Vertex neighbor : neighbors) {
-            if (!adjacentMap.containsKey(neighbor))
-                adjacentMap.put(neighbor, new HashSet<>());
-            adjacentMap.get(neighbor).add(originalVertex);
+
+            adjVertices.get(originalVertex).add(neighbor);
+            this.arrayVertex.get(originalVertex.label).degree++;
+            // this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(originalVertex.label),1);
+
+            if (!adjVertices.containsKey(neighbor)){
+                adjVertices.put(neighbor, new HashSet<>());
+                this.arrayVertex.get(neighbor.label).active=true;
+            }
+            adjVertices.get(neighbor).add(originalVertex);
+            this.arrayVertex.get(neighbor.label).degree++;
+            this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(neighbor.label), 1);
+
         }
     }
 
@@ -108,15 +154,11 @@ public class Graph {
         }
     }
 
-    public Vertex getNextNode() {
-        Vertex maxDegreeVertex = null;
-        for (Vertex vertex : adjacentMap.keySet()){
-            if (maxDegreeVertex == null || adjacentMap.get(vertex).size() > adjacentMap.get(maxDegreeVertex).size()){
-                maxDegreeVertex = vertex;
-            }
-        }
-        return maxDegreeVertex;
+    Vertex getNextNode() {
+        // System.out.println(this);
+        return this.degreeOrder.getVertexWithMaxDegree();
     }
+
 
     public Graph getCopy() {
         Graph copy = new Graph();
@@ -134,42 +176,43 @@ public class Graph {
     public HashSet<Vertex> getMaximalCliqueFromVertex(Vertex firstVertex) {
         HashSet<Vertex> clique = new HashSet<>();
         clique.add(firstVertex);
-        for (Vertex vertex : this.adjacentMap.keySet()) {
-            if (!clique.contains(vertex)) {
-                if (this.adjacentMap.containsKey(vertex) && this.adjacentMap.get(vertex).containsAll(clique)) {
+        ArrayList<Vertex> vertices = new ArrayList<>(this.adjVertices.keySet());
+        Collections.shuffle(vertices);
+        for (Vertex vertex : this.adjVertices.keySet()) {
+            if (!clique.contains(vertex) && this.adjVertices.get(this.arrayVertex.get(vertex.label)).containsAll(clique) ) {
+
+
                     clique.add(vertex);
-                }
+
             }
         }
         return clique;
 
     }
 
-    HashSet<HashSet<Vertex>> getApproximateMaximumCliqueCover() {
+    int getCliqueLowerBound() {
         Graph copyGraph = this.getCopy();
         HashSet<HashSet<Vertex>> cliqueCover = new HashSet<>();
         HashSet<Vertex> maxClique;
+        int usedVertices = 0;
 
         while (!copyGraph.isEmpty()) {
             maxClique = copyGraph.getMaximalCliqueFromVertex(copyGraph.getNextNode());
-            cliqueCover.add(maxClique);
-            copyGraph.removeVertices(maxClique);
+            result.add(maxClique);
+            usedVertices+=maxClique.size();
+
+            copyGraph.removeSetofVertices(maxClique);
+
         }
+        return this.adjVertices.size() - result.size()- (this.adjVertices.size()-usedVertices);
 
         return cliqueCover;
     }
 
-    public int getCliqueLowerBound() {
-        int totalVerticesClique =0;
-        HashSet<HashSet<Vertex>> vertexCover = this.getApproximateMaximumCliqueCover();
-        for(HashSet<Vertex> clique: vertexCover){
-            totalVerticesClique+=clique.size();
-        }
-        return this.adjacentMap.keySet().size() - (vertexCover.size()+(this.adjacentMap.keySet().size() - totalVerticesClique));
-    }
 
-    public Set<Vertex> getVertices() {
-        return this.adjacentMap.keySet();
+    public ArrayList<Vertex> getVertices() {
+
+        return this.arrayVertex;
     }
 
     public ArrayList<Edge> getListEdges() {
@@ -186,4 +229,34 @@ public class Graph {
         return Math.max(this.getCliqueLowerBound(), this.getLpBound());
        // return this.getLpBound();
     }
+
+    public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
+        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
+        while(true){
+            boolean reduced = false;
+            for (Vertex currentVertex : this.arrayVertex) {
+
+                if (currentVertex.active) {
+                    boolean delete = false;
+                    for (Vertex n : this.adjVertices.get(currentVertex)) {
+                        HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
+                        tmpNeighbors.add(currentVertex);
+                        if (tmpNeighbors.containsAll(this.adjVertices.get(n))) {
+                            delete = true;
+                            reduced = true;
+                            break;
+                        }
+
+                    }
+                    if (delete) {
+                        verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
+                    }
+                }
+
+            }
+            if(!reduced) break;
+            }
+        return verticesInVertexCover;
+        }
+
 }
