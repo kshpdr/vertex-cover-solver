@@ -129,8 +129,8 @@ public class BipartiteGraph {
 
         }
 
-        Graph graph = new Graph(edges);
-        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
-        System.out.println(bipartiteGraph.findMaximumMatchingSize());
+//        Graph graph = new Graph(edges);
+//        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
+//        System.out.println(bipartiteGraph.findMaximumMatchingSize());
     }
 }

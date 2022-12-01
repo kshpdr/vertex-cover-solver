@@ -4,165 +4,155 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static void main(String[] args) throws IOException {
+    public static boolean cliqueBound = true;
+    public static boolean lpBound = false;
+    public static boolean zeroDegreeRule = false;
+    public static boolean highDegreeRule = false;
+    public static boolean bussRule = false;
+    public static int recursiveSteps = 0;
 
-        // Use buffer reader for stdin since the input does not require validation, and
-        // it is much faster than scanner
-
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
-
-        // Storing edges to call the graph constructor afterwards
-
-        HashSet<String[]> edges = new HashSet<>();
-
-        String line;
-        while (((line = bi.readLine()) != null)) {
-
-            // Ignore lines starting with # and empty lines
-
-            if (!line.contains("#") && !line.isEmpty()) {
-
-                // Striping line from whitespaces
-
-                String[] nodes = line.split("\\s+");
-                edges.add(nodes);
-            }
-
-        }
-
-        // Apply reduction rules before instatiating graph (+ internally used datastructure(s))
-        SolverResult reductionResult = ReductionRules.applyReductionRules(edges);
-        
-        // Instantiate graph
-        Graph graph = new Graph(edges);
-
-        // Call method with the clique lower bound
-
-        SolverResult result = vc(graph, graph.getMaxLowerBound());
-
-        // Putting it all together in one String to only use one I/O operation
-
-        StringBuilder sb = new StringBuilder();
-
-         //Add results from reduction rules
-        if (!reductionResult.resultsList.isEmpty()) {
-            for (String s : reductionResult.resultsList) {
-                sb.append(s).append("\n");
-            }
-        }
-        // Add results from actual branching algorithm
-        if (result.resultsList != null && !result.resultsList.isEmpty()) {
-            for (String s : result.resultsList) {
-
-                sb.append(s).append("\n");
-            }
-        }
-
-        sb.append("#recursive steps: ").append(result.recursiveSteps).append("\n");
-
-        String resultStr = sb.toString();
-        System.out.print(resultStr);
-    }
-
-    static SolverResult vc_branch(Graph graph, int k, SolverResult solverResult) {
-        // Initialize solver result for reduction rules
-        SolverResult reductionResult = new SolverResult();
-        reductionResult.setEmptyResultsList();
-        // Apply Reduction rules (save deleted vertices+neighbors) and reduce k accordingly
-        HashMap<Vertex,HashSet<Vertex>> removedReductionVerticesMap = graph.applyReductionRules(reductionResult);
-        k -= reductionResult.resultsList.size();
-        
+    static LinkedList<String> vc_branch(Graph graph, int k) {
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getCliqueLowerBound() || k < graph.getLpBound() || k < 0) {
-            // Undo changes done from reduction rules
-            graph.putManyVerticesBack(removedReductionVerticesMap);
-            return solverResult;
-        }
-        
-        if (graph.isEmpty()) {
-            solverResult.setEmptyResultsList();
-            // Add vertices reduced (via reduction rules) to result list
-            for (String v : reductionResult.resultsList) solverResult.addVertexToResult(v);
-            return solverResult;
-        }
+        if(k < graph.getMaxLowerBound(false, false)) return null;
+//        if(k < graph.getLpBound()) return null;
 
-        solverResult.increaseRecursiveSteps();
+        if (k < 0) return null;
+        if (graph.isEmpty())
+            return new LinkedList<>();
+
+        LinkedList<String> solution;
+        recursiveSteps++;
 
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
-
-        // Branch Case: G\v
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-        SolverResult s = vc_branch(graph, k - 1, solverResult);
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
+
+        solution = vc_branch(graph, k - 1-reducedNeighborsMap.keySet().size());
+        graph.putManyVerticesBack(reducedNeighborsMap);
         graph.putVertexBack(v, eliminatedNeighbors);
 
-        if (s.resultsList != null) {
-            s.addVertexToResult(graph.getVertexMapping(v));
-            // Add vertices reduced (via reduction rules) to result list
-            for (String r : reductionResult.resultsList) s.addVertexToResult(r);
-            return s;
+
+        if (solution!= null) {
+            solution.add(graph.getVertexMapping(v));
+            for (Vertex neighbor : reducedNeighborsMap.keySet()){
+                solution.add(graph.getVertexMapping(neighbor));
+            }
+            return solution;
         }
 
-        // Branch Case: G\N(v)
         // Eliminating the neighbors of the vertex with the highest degree and storing
         // the neighbors of the neighbors with a hashmap
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
+        reducedNeighborsMap = graph.applyDominationRule();
+
         // Branching with the neighbors
-        s = vc_branch(graph, k - eliminatedNeighbors.size(), solverResult);
-        // Putting back the eliminated vertices
+        solution = vc_branch(graph, k - eliminatedNeighbors.size()-reducedNeighborsMap.keySet().size());
         graph.putManyVerticesBack(eliminatedNeighborsMap);
+        graph.putManyVerticesBack(reducedNeighborsMap);
 
-        if (s.resultsList != null) {
-            solverResult.addMultipleVertexToResult(graph.getMultipleMappings(eliminatedNeighbors));
-            // Add vertices reduced (via reduction rules) to result list
-            for (String r : reductionResult.resultsList) solverResult.addVertexToResult(r);
-            return solverResult;
+        // Putting back the eliminated vertices
+        if (solution != null) {
+            for (Vertex neighbor : eliminatedNeighborsMap.keySet()){
+                solution.add(graph.getVertexMapping(neighbor));
+            }
+            for (Vertex neighbor : reducedNeighborsMap.keySet()){
+                solution.add(graph.getVertexMapping(neighbor));
+            }
+            return solution;
         }
-
-        // Undo changes done from reduction rules
-        graph.putManyVerticesBack(removedReductionVerticesMap);
-
-        return new SolverResult();
-
+        return null;
     }
 
     // main function which increases the cover vertex size k every iteration
 
-    public static SolverResult vc(Graph graph, int lowerBound) {
-        SolverResult s = new SolverResult();
-        int k = lowerBound;
-
-        while ((vc_branch(graph, k++, s)).resultsList == null) {
+    public static LinkedList<String> vc(Graph graph, int lowerBound) {
+        while (true) {
+            LinkedList<String> solution = vc_branch(graph, lowerBound);
+            if (solution != null){
+                return solution;
+            }
+            lowerBound++;
         }
-        return s;
     }
 
-    static class SolverResult {
-        private LinkedList<String> resultsList = null;
-        private int recursiveSteps;
+    public static void main(String[] args) throws IOException {
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
-        SolverResult() {
+        // Storing edges to call the graph constructor afterwards
+        HashSet<String[]> edges = new HashSet<>();
 
+        String line;
+        int verticesAmount = 0;
+        int edgesAmount = 0;
+        while (((line = bi.readLine()) != null)) {
+            if (line.contains("#")){
+                String[] info = line.split("\\s+");
+                verticesAmount = Integer.parseInt(info[0].substring(1));
+                edgesAmount = Integer.parseInt(info[1]);
+            }
+            else if (!line.contains("#") && !line.isEmpty()) {
+                String[] nodes = line.split("\\s+");
+                edges.add(nodes);
+            }
         }
 
-        protected void addVertexToResult(String vertexToAdd) {
-            this.resultsList.add(vertexToAdd);
+        // Apply reduction rules before instatiating graph (+ internally used
+        // datastructure(s))
+//        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+
+        // Instantiate graph
+        Graph graph = new Graph(verticesAmount, edgesAmount, edges);
+
+        HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
+        HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = graph.applyDominationRule();
+        edgesAfterRules.putAll(edgesAfterDominationRule);
+
+        // Call method with the clique lower bound
+        int lowerbound = graph.getMaxLowerBound(cliqueBound, lpBound);
+
+        if (highDegreeRule){
+            HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(lowerbound);
+            edgesAfterRules.putAll(edgesAfterHighDegreeRule);
         }
 
-        private void addMultipleVertexToResult(String[] verticesToAdd) {
-
-            Collections.addAll(this.resultsList, verticesToAdd);
-
+        if (zeroDegreeRule){
+            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
+            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
         }
 
-        private void increaseRecursiveSteps() {
-            this.recursiveSteps++;
+        LinkedList<String> result = vc(graph, lowerbound);
+        // Putting it all together in one String to only use one I/O operation
+        StringBuilder sb = new StringBuilder();
+        int solutionSize = 0;
+
+        //Add results from reduction rules
+//        if (!reductionResult.isEmpty()) {
+//            for (String s : reductionResult) {
+//                sb.append(s).append("\n");
+//                solutionSize++;
+//            }
+//        }
+
+        //Add results from Domination rule
+        for(Vertex vertex: edgesAfterRules.keySet()){
+            sb.append(graph.getVertexMapping(vertex)).append("\n");
+            solutionSize++;
         }
 
-        protected void setEmptyResultsList() {
-            this.resultsList = new LinkedList<>();
+        // Add results from actual branching algorithm
+        if (!result.isEmpty()) {
+            for (String s : result) {
+                solutionSize++;
+                sb.append(s).append("\n");
+            }
         }
 
+        sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
+        sb.append("#sol size: ").append(solutionSize).append("\n");
+
+        String resultStr = sb.toString();
+        System.out.print(resultStr);
     }
 
 }
