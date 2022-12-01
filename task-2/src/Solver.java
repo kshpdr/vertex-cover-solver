@@ -33,24 +33,26 @@ public class Solver {
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
         LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
-
+//
         // Instantiate graph
         Graph graph = new Graph(edges);
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
 
         // Call method with the clique lower bound
        int lowerbound = graph.getMaxLowerBound();
-
+//
         LinkedList<String> result = vc(graph, lowerbound);
 
         // Putting it all together in one String to only use one I/O operation
 
         StringBuilder sb = new StringBuilder();
+        int solutionSize = 0;
 
 //         //Add results from reduction rules
         if (!reductionResult.isEmpty()) {
             for (String s : reductionResult) {
                 sb.append(s).append("\n");
+                solutionSize++;
             }
         }
 
@@ -58,16 +60,18 @@ public class Solver {
         //Add results from Domination rule
         for(Vertex vertex: reducedNeighborsMap.keySet()){
             sb.append(graph.getVertexMapping(vertex)).append("\n");
+            solutionSize++;
         }
         // Add results from actual branching algorithm
         if (!result.isEmpty()) {
             for (String s : result) {
-
+                solutionSize++;
                 sb.append(s).append("\n");
             }
         }
 
         sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
+        sb.append("#sol size: ").append(solutionSize).append("\n");
 
         String resultStr = sb.toString();
         System.out.print(resultStr);
@@ -92,18 +96,18 @@ public class Solver {
         Vertex v = graph.getNextNode();
         //
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
-
+//        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
+//
         solution = vc_branch(graph, k - 1);
-        graph.putManyVerticesBack(reducedNeighborsMap);
-
+//        graph.putManyVerticesBack(reducedNeighborsMap);
+//
         graph.putVertexBack(v, eliminatedNeighbors);
 
         if (solution!= null) {
             solution.add(graph.getVertexMapping(v));
-            for (Vertex neighbor : reducedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
-            }
+//            for (Vertex neighbor : reducedNeighborsMap.keySet()){
+//                solution.add(graph.getVertexMapping(neighbor));
+//            }
             return solution;
         }
 
@@ -111,12 +115,12 @@ public class Solver {
         // the neighbors of the neighbors with a hashmap
 
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-        reducedNeighborsMap = graph.applyDominationRule();
+//        reducedNeighborsMap = graph.applyDominationRule();
 
         // Branching with the neighbors
         solution = vc_branch(graph, k - eliminatedNeighbors.size());
 
-        graph.putManyVerticesBack(reducedNeighborsMap);
+//        graph.putManyVerticesBack(reducedNeighborsMap);
 
         // Putting back the eliminated vertices
 
@@ -126,9 +130,9 @@ public class Solver {
             for (Vertex neighbor : eliminatedNeighborsMap.keySet()){
                 solution.add(graph.getVertexMapping(neighbor));
             }
-            for (Vertex neighbor : reducedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
-            }
+//            for (Vertex neighbor : reducedNeighborsMap.keySet()){
+//                solution.add(graph.getVertexMapping(neighbor));
+//            }
             return solution;
         }
 
