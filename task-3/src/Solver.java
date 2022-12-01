@@ -6,8 +6,8 @@ import java.util.*;
 public class Solver {
     public static boolean cliqueBound = false;
     public static boolean lpBound = false;
-    public static boolean zeroDegreeRule = false;
-    public static boolean oneDegreeRule = false;
+    public static boolean zeroDegreeRule = true;
+    public static boolean oneDegreeRule = true;
     public static boolean twoDegreeRule = true;
     public static boolean preGraphReduction = true;
     public static boolean highDegreeRule = false;
@@ -104,7 +104,7 @@ public class Solver {
         LinkedList<String> reductionResult = null;
         if (preGraphReduction) {
             // Apply reduction rules before instatiating graph (+ internally used datastructure(s))
-            ReductionRules r = new ReductionRules(oneDegreeRule,twoDegreeRule);
+            ReductionRules r = new ReductionRules(zeroDegreeRule,oneDegreeRule,twoDegreeRule);
             reductionResult = r.applyReductionRules(edges);
             // Decrease counter variables for vertices and edges
             verticesAmount -= reductionResult.size();

@@ -1,12 +1,13 @@
 import java.util.*;
 
 public class ReductionRules {
-    private boolean oneDegreeRule, twoDegreeRule, anyRule;
+    private boolean zeroDegreeRule, oneDegreeRule, twoDegreeRule, anyRule;
 
-    public ReductionRules(boolean oneDegreeRule, boolean twoDegreeRule){
+    public ReductionRules(boolean zeroDegreeRule, boolean oneDegreeRule, boolean twoDegreeRule){
+        this.zeroDegreeRule = zeroDegreeRule;
         this.oneDegreeRule = oneDegreeRule;
         this.twoDegreeRule = twoDegreeRule;
-        this.anyRule = oneDegreeRule || twoDegreeRule;
+        this.anyRule = zeroDegreeRule || oneDegreeRule || twoDegreeRule;
     }
 
     public LinkedList<String> applyReductionRules(HashSet<String[]> edges) {
@@ -53,9 +54,12 @@ public class ReductionRules {
     public LinkedList<String> reductionRules(HashMap<String, HashSet<String>> adjMap) {
         LinkedList<String> result = new LinkedList<>();
         // Loop over all vertices
-        for (String v : adjMap.keySet()) {
+        for (String v : new LinkedList<>(adjMap.keySet())) {
             HashSet<String> neighbors = adjMap.get(v);
             if (neighbors != null){
+                if (zeroDegreeRule && neighbors.size() == 0){
+                    adjMap.remove(v);
+                }
                 // DEGREE-1 RULE
                 if (oneDegreeRule && neighbors.size() == 1) {
                     for (String singleNeighbor : neighbors) {
