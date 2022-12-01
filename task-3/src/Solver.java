@@ -4,9 +4,12 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean cliqueBound = true;
+    public static boolean cliqueBound = false;
     public static boolean lpBound = false;
     public static boolean zeroDegreeRule = false;
+    public static boolean oneDegreeRule = true;
+    public static boolean twoDegreeRule = false;
+    public static boolean preGraphReduction = false;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
     public static int recursiveSteps = 0;
@@ -97,9 +100,19 @@ public class Solver {
             }
         }
 
-        // Apply reduction rules before instatiating graph (+ internally used
-        // datastructure(s))
-//        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+        LinkedList<String> reductionResult = null;
+        if (preGraphReduction) {
+            // Apply reduction rules before instatiating graph (+ internally used datastructure(s))
+            ReductionRules r = new ReductionRules(oneDegreeRule,twoDegreeRule);
+            reductionResult = r.applyReductionRules(edges);
+            // Decrease counter variables for vertices and edges
+            verticesAmount -= reductionResult.size();
+            for (String[] edge : edges){
+                if (reductionResult.contains(edge[0]) || reductionResult.contains(edge[1])){
+                    edgesAmount -= 1;
+                }
+            }
+        }
 
         // Instantiate graph
         Graph graph = new Graph(verticesAmount, edgesAmount, edges);
@@ -127,12 +140,12 @@ public class Solver {
         int solutionSize = 0;
 
         //Add results from reduction rules
-//        if (!reductionResult.isEmpty()) {
-//            for (String s : reductionResult) {
-//                sb.append(s).append("\n");
-//                solutionSize++;
-//            }
-//        }
+        if (reductionResult != null) {
+            for (String s : reductionResult) {
+                sb.append(s).append("\n");
+                solutionSize++;
+            }
+        }
 
         //Add results from Domination rule
         for(Vertex vertex: edgesAfterRules.keySet()){
