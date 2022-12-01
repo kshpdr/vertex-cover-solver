@@ -7,11 +7,12 @@ public class Solver {
     public static boolean cliqueBound = false;
     public static boolean lpBound = false;
     public static boolean zeroDegreeRule = false;
-    public static boolean oneDegreeRule = true;
-    public static boolean twoDegreeRule = false;
-    public static boolean preGraphReduction = false;
+    public static boolean oneDegreeRule = false;
+    public static boolean twoDegreeRule = true;
+    public static boolean preGraphReduction = true;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
+    public static boolean dominationRule = false;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
@@ -29,7 +30,7 @@ public class Solver {
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = dominationRule ? graph.applyDominationRule() : new HashMap<>();
 
         solution = vc_branch(graph, k - 1-reducedNeighborsMap.keySet().size());
         graph.putManyVerticesBack(reducedNeighborsMap);
@@ -47,7 +48,7 @@ public class Solver {
         // Eliminating the neighbors of the vertex with the highest degree and storing
         // the neighbors of the neighbors with a hashmap
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-        reducedNeighborsMap = graph.applyDominationRule();
+        if (dominationRule) reducedNeighborsMap = graph.applyDominationRule();
 
         // Branching with the neighbors
         solution = vc_branch(graph, k - eliminatedNeighbors.size()-reducedNeighborsMap.keySet().size());
@@ -118,7 +119,7 @@ public class Solver {
         Graph graph = new Graph(verticesAmount, edgesAmount, edges);
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = graph.applyDominationRule();
+        HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = dominationRule ? graph.applyDominationRule() : new HashMap<>();
         edgesAfterRules.putAll(edgesAfterDominationRule);
 
         // Call method with the clique lower bound
