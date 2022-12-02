@@ -4,24 +4,42 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean cliqueBound = true;
-    public static boolean lpBound = true;
-    public static boolean zeroDegreeRule = true;
+    public static boolean cliqueBound = false;
+    public static boolean lpBound  = false;
+    public static boolean zeroDegreeRule = false;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
-    public static boolean dominationRuleBeginning = true;
+    public static boolean dominationRuleBeginning = false;
 
     public static boolean dominationRuleIteration = true;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
-        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getMaxLowerBound(true, false)) return null;
-//        if(k < graph.getLpBound()) return null;
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
+        if(dominationRuleIteration) {
+            reducedNeighborsMap =  graph.applyDominationRule();
+            k -= reducedNeighborsMap.size();
+        }
 
-        if (k < 0) return null;
-        if (graph.isEmpty())
-            return new LinkedList<>();
+        if (k < 0) {
+            // Putting back the reduced vertices
+            graph.putManyVerticesBack(reducedNeighborsMap);
+            return null;
+        }
+        if (graph.isEmpty()){
+            LinkedList<String> result = new LinkedList<>();
+            for (Vertex v : reducedNeighborsMap.keySet()){
+                result.add(graph.getVertexMapping(v));
+            }
+            return result;
+        }
+
+        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
+        if(k < graph.getMaxLowerBound(true, false)) {
+            // Putting back the reduced vertices
+            graph.putManyVerticesBack(reducedNeighborsMap);
+            return null;
+        }
 
         LinkedList<String> solution;
         recursiveSteps++;
@@ -29,14 +47,8 @@ public class Solver {
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
 
-        if(dominationRuleIteration) {
-            reducedNeighborsMap =  graph.applyDominationRule();
-        }
-
-        solution = vc_branch(graph, k - 1-reducedNeighborsMap.keySet().size());
-        graph.putManyVerticesBack(reducedNeighborsMap);
+        solution = vc_branch(graph, k - 1);
         graph.putVertexBack(v, eliminatedNeighbors);
 
 
@@ -52,14 +64,9 @@ public class Solver {
         // the neighbors of the neighbors with a hashmap
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
 
-        if(dominationRuleIteration) {
-            reducedNeighborsMap =  graph.applyDominationRule();
-        }
-
         // Branching with the neighbors
-        solution = vc_branch(graph, k - eliminatedNeighbors.size()-reducedNeighborsMap.keySet().size());
+        solution = vc_branch(graph, k - eliminatedNeighbors.size());
         graph.putManyVerticesBack(eliminatedNeighborsMap);
-        graph.putManyVerticesBack(reducedNeighborsMap);
 
         // Putting back the eliminated vertices
         if (solution != null) {
@@ -71,6 +78,10 @@ public class Solver {
             }
             return solution;
         }
+        
+        // Putting back the reduced vertices
+        graph.putManyVerticesBack(reducedNeighborsMap);
+
         return null;
     }
 
