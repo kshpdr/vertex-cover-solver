@@ -5,15 +5,18 @@ import java.util.*;
 
 public class Solver {
     public static boolean cliqueBound = true;
-    public static boolean lpBound = false;
-    public static boolean zeroDegreeRule = false;
+    public static boolean lpBound = true;
+    public static boolean zeroDegreeRule = true;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
+    public static boolean dominationRuleBeginning = true;
+
+    public static boolean dominationRuleIteration = true;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getMaxLowerBound(false, false)) return null;
+        if(k < graph.getMaxLowerBound(true, false)) return null;
 //        if(k < graph.getLpBound()) return null;
 
         if (k < 0) return null;
@@ -26,7 +29,11 @@ public class Solver {
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = graph.applyDominationRule();
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
+
+        if(dominationRuleIteration) {
+            reducedNeighborsMap =  graph.applyDominationRule();
+        }
 
         solution = vc_branch(graph, k - 1-reducedNeighborsMap.keySet().size());
         graph.putManyVerticesBack(reducedNeighborsMap);
@@ -44,7 +51,10 @@ public class Solver {
         // Eliminating the neighbors of the vertex with the highest degree and storing
         // the neighbors of the neighbors with a hashmap
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-        reducedNeighborsMap = graph.applyDominationRule();
+
+        if(dominationRuleIteration) {
+            reducedNeighborsMap =  graph.applyDominationRule();
+        }
 
         // Branching with the neighbors
         solution = vc_branch(graph, k - eliminatedNeighbors.size()-reducedNeighborsMap.keySet().size());
@@ -99,14 +109,24 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-//        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(verticesAmount, edgesAmount, edges);
 
+
+
+
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = graph.applyDominationRule();
-        edgesAfterRules.putAll(edgesAfterDominationRule);
+
+        if(dominationRuleBeginning){
+            edgesAfterRules.putAll(graph.applyDominationRule());
+        }
+
+//        if (zeroDegreeRule){
+//            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
+//            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
+//        }
 
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBound, lpBound);
@@ -116,10 +136,6 @@ public class Solver {
             edgesAfterRules.putAll(edgesAfterHighDegreeRule);
         }
 
-        if (zeroDegreeRule){
-            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
-            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
-        }
 
         LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation
@@ -127,12 +143,12 @@ public class Solver {
         int solutionSize = 0;
 
         //Add results from reduction rules
-//        if (!reductionResult.isEmpty()) {
-//            for (String s : reductionResult) {
-//                sb.append(s).append("\n");
-//                solutionSize++;
-//            }
-//        }
+        if (!reductionResult.isEmpty()) {
+            for (String s : reductionResult) {
+                sb.append(s).append("\n");
+                solutionSize++;
+            }
+        }
 
         //Add results from Domination rule
         for(Vertex vertex: edgesAfterRules.keySet()){
