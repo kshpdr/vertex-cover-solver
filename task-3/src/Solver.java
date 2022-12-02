@@ -7,11 +7,13 @@ public class Solver {
     public static boolean cliqueBound = false;
     public static boolean lpBound  = false;
     public static boolean zeroDegreeRule = false;
+    public static boolean oneDegreeRule = true;
+    public static boolean twoDegreeRule = false;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
     public static boolean dominationRuleBeginning = false;
 
-    public static boolean dominationRuleIteration = true;
+    public static boolean dominationRuleIteration = false;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
@@ -120,7 +122,11 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+        PreReductionRules preReductionRules = new PreReductionRules(zeroDegreeRule,oneDegreeRule,twoDegreeRule,highDegreeRule,bussRule);
+        LinkedList<String> reductionResult = preReductionRules.applyReductionRules(edges);
+        // Update amount counter variables accordingly
+        verticesAmount -= reductionResult.size();
+        edgesAmount = edges.size();
 
         // Instantiate graph
         Graph graph = new Graph(verticesAmount, edgesAmount, edges);
