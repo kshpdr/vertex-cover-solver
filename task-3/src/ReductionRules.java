@@ -1,19 +1,7 @@
 import java.util.*;
 
 public class ReductionRules {
-    private boolean zeroDegreeRule, oneDegreeRule, twoDegreeRule, anyRule;
-
-    public ReductionRules(boolean zeroDegreeRule, boolean oneDegreeRule, boolean twoDegreeRule){
-        this.zeroDegreeRule = zeroDegreeRule;
-        this.oneDegreeRule = oneDegreeRule;
-        this.twoDegreeRule = twoDegreeRule;
-        this.anyRule = zeroDegreeRule || oneDegreeRule || twoDegreeRule;
-    }
-
-    public LinkedList<String> applyReductionRules(HashSet<String[]> edges) {
-        // Skip this function, if none of the possible rules should be applied
-        if (!anyRule) return new LinkedList<>();
-
+    public static LinkedList<String> applyReductionRules(HashSet<String[]> edges) {
         // Build Adjacency-Map (to extract node-degree) from HashSet (of Edges)
         HashMap<String, HashSet<String>> adjMap = new HashMap<>();
         for (String[] edge : edges) {
@@ -33,14 +21,12 @@ public class ReductionRules {
         LinkedList<String> result = new LinkedList<>();
 
         // Repeatedly apply reduction rules ...
-        LinkedList<String> vertices = reductionRules(adjMap);
+        String v = reductionRules(adjMap);
         // Until no more reduction possible!
-        while (vertices != null) {
-            for (String v : vertices){
-                // Save partial solution
-                result.add(v);
-            }
-            vertices = reductionRules(adjMap);
+        while (v != null) {
+            // Save partial solution
+            result.add(v);
+            v = reductionRules(adjMap);
         }
 
         // Loop through initial HashSet of edges and delete (... those which are not
@@ -51,55 +37,23 @@ public class ReductionRules {
         return result;
     }
 
-    public LinkedList<String> reductionRules(HashMap<String, HashSet<String>> adjMap) {
-        LinkedList<String> result = new LinkedList<>();
+    public static String reductionRules(HashMap<String, HashSet<String>> adjMap) {
         // Loop over all vertices
-        for (String v : new LinkedList<>(adjMap.keySet())) {
+        for (String v : adjMap.keySet()) {
+            // Try to find a vertex v with degree = 1
             HashSet<String> neighbors = adjMap.get(v);
-            if (neighbors != null){
-                if (zeroDegreeRule && neighbors.size() == 0){
-                    adjMap.remove(v);
-                }
-                // DEGREE-1 RULE
-                if (oneDegreeRule && neighbors.size() == 1) {
-                    for (String singleNeighbor : neighbors) {
-                        // System.out.println("#add to list: "+singleNeighbor);
-                        // Remove N(v) and add it to the VC-result
-                        HashSet<String> nextNeighbors = adjMap.get(singleNeighbor);
-                        if (nextNeighbors != null) {
-                            for (String next : nextNeighbors) {
-                                adjMap.get(next).remove(singleNeighbor);
-                            }
+            if (neighbors != null && neighbors.size() == 1) {
+                for (String singleNeighbor : neighbors) {
+                    // System.out.println("#add to list: "+singleNeighbor);
+                    // Remove N(v) and add it to the VC-result
+                    HashSet<String> nextNeighbors = adjMap.get(singleNeighbor);
+                    if (nextNeighbors != null) {
+                        for (String next : nextNeighbors) {
+                            adjMap.get(next).remove(singleNeighbor);
                         }
-                        adjMap.remove(singleNeighbor);
-                        result.add(singleNeighbor);
-                        return result;
                     }
-                }
-                // DEGREE-2 RULE
-                else if (twoDegreeRule && neighbors.size() == 2){
-                    ArrayList<String> arr = new ArrayList<>(neighbors);
-                    String u = arr.get(0);
-                    String w = arr.get(1);
-                    // Case A: (u,w) in E
-                    if (adjMap.get(u).contains(w)){
-                        // Add u,w to result
-                        result.addAll(arr);
-                        // Delete [u,v,w] from graph
-                        arr.add(v);
-                        for (String n : arr){
-                            HashSet<String> nextNeighbors = adjMap.get(n);
-                            adjMap.remove(n);
-                            for (String n2 : nextNeighbors){
-                                adjMap.get(n2).remove(n);
-                            }
-                        }
-                        return result;
-                    }
-                    // Case B: (u,w) not in E
-                    else {
-                        // TODO: Can we even solve this?
-                    } 
+                    adjMap.remove(singleNeighbor);
+                    return singleNeighbor;
                 }
             }
         }

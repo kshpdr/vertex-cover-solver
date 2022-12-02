@@ -5,24 +5,41 @@ import java.util.*;
 
 public class Solver {
     public static boolean cliqueBound = false;
-    public static boolean lpBound = false;
-    public static boolean zeroDegreeRule = true;
-    public static boolean oneDegreeRule = true;
-    public static boolean twoDegreeRule = true;
-    public static boolean preGraphReduction = true;
+    public static boolean lpBound  = false;
+    public static boolean zeroDegreeRule = false;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
-    public static boolean dominationRule = false;
+    public static boolean dominationRuleBeginning = false;
+
+    public static boolean dominationRuleIteration = true;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
-        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getMaxLowerBound(false, false)) return null;
-//        if(k < graph.getLpBound()) return null;
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
+        if(dominationRuleIteration) {
+            reducedNeighborsMap =  graph.applyDominationRule();
+            k -= reducedNeighborsMap.size();
+        }
 
-        if (k < 0) return null;
-        if (graph.isEmpty())
-            return new LinkedList<>();
+        if (k < 0) {
+            // Putting back the reduced vertices
+            graph.putManyVerticesBack(reducedNeighborsMap);
+            return null;
+        }
+        if (graph.isEmpty()){
+            LinkedList<String> result = new LinkedList<>();
+            for (Vertex v : reducedNeighborsMap.keySet()){
+                result.add(graph.getVertexMapping(v));
+            }
+            return result;
+        }
+
+        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
+        if(k < graph.getMaxLowerBound(true, false)) {
+            // Putting back the reduced vertices
+            graph.putManyVerticesBack(reducedNeighborsMap);
+            return null;
+        }
 
         LinkedList<String> solution;
         recursiveSteps++;
@@ -30,10 +47,8 @@ public class Solver {
         // Get vertex with the highest degree
         Vertex v = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(v);
-        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = dominationRule ? graph.applyDominationRule() : new HashMap<>();
 
-        solution = vc_branch(graph, k - 1-reducedNeighborsMap.keySet().size());
-        graph.putManyVerticesBack(reducedNeighborsMap);
+        solution = vc_branch(graph, k - 1);
         graph.putVertexBack(v, eliminatedNeighbors);
 
 
@@ -48,12 +63,10 @@ public class Solver {
         // Eliminating the neighbors of the vertex with the highest degree and storing
         // the neighbors of the neighbors with a hashmap
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-        if (dominationRule) reducedNeighborsMap = graph.applyDominationRule();
 
         // Branching with the neighbors
-        solution = vc_branch(graph, k - eliminatedNeighbors.size()-reducedNeighborsMap.keySet().size());
+        solution = vc_branch(graph, k - eliminatedNeighbors.size());
         graph.putManyVerticesBack(eliminatedNeighborsMap);
-        graph.putManyVerticesBack(reducedNeighborsMap);
 
         // Putting back the eliminated vertices
         if (solution != null) {
@@ -65,6 +78,10 @@ public class Solver {
             }
             return solution;
         }
+        
+        // Putting back the reduced vertices
+        graph.putManyVerticesBack(reducedNeighborsMap);
+
         return null;
     }
 
@@ -101,26 +118,26 @@ public class Solver {
             }
         }
 
-        LinkedList<String> reductionResult = null;
-        if (preGraphReduction) {
-            // Apply reduction rules before instatiating graph (+ internally used datastructure(s))
-            ReductionRules r = new ReductionRules(zeroDegreeRule,oneDegreeRule,twoDegreeRule);
-            reductionResult = r.applyReductionRules(edges);
-            // Decrease counter variables for vertices and edges
-            verticesAmount -= reductionResult.size();
-            for (String[] edge : edges){
-                if (reductionResult.contains(edge[0]) || reductionResult.contains(edge[1])){
-                    edgesAmount -= 1;
-                }
-            }
-        }
+        // Apply reduction rules before instatiating graph (+ internally used
+        // datastructure(s))
+        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(verticesAmount, edgesAmount, edges);
 
+
+
+
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = dominationRule ? graph.applyDominationRule() : new HashMap<>();
-        edgesAfterRules.putAll(edgesAfterDominationRule);
+
+        if(dominationRuleBeginning){
+            edgesAfterRules.putAll(graph.applyDominationRule());
+        }
+
+//        if (zeroDegreeRule){
+//            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
+//            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
+//        }
 
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBound, lpBound);
@@ -130,10 +147,6 @@ public class Solver {
             edgesAfterRules.putAll(edgesAfterHighDegreeRule);
         }
 
-        if (zeroDegreeRule){
-            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
-            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
-        }
 
         LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation
@@ -141,7 +154,7 @@ public class Solver {
         int solutionSize = 0;
 
         //Add results from reduction rules
-        if (reductionResult != null) {
+        if (!reductionResult.isEmpty()) {
             for (String s : reductionResult) {
                 sb.append(s).append("\n");
                 solutionSize++;
