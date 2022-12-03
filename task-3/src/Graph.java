@@ -285,10 +285,7 @@ public class Graph {
     }
 
     public boolean applyBussRule(int k){
-        if (verticesAmount > (k*k + k) || edgesAmount > k*k){
-            return false;
-        }
-        return true;
+        return verticesAmount <= (k * k + k) && edgesAmount <= k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
@@ -318,6 +315,36 @@ public class Graph {
             if(!reduced) break;
             }
         return verticesInVertexCover;
+        }
+
+
+        public Vertex findUForUnconfinedRule(Set<Vertex> possibleUnconfinedSet) {
+                HashSet<Vertex> neighborhoodOfSet = new HashSet<>();
+                HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
+                for (Vertex vertex: possibleUnconfinedSet){
+                    neighborhoodOfSet.addAll(this.adjVertices.get(vertex));
+                    neighborhoodWithOwnVertices.addAll(this.adjVertices.get(vertex));
+                    neighborhoodWithOwnVertices.add(vertex);
+                }
+
+                if (neighborhoodOfSet.isEmpty()) return null;
+                Vertex minVertex = null;
+                int minSubtractionSeen = Integer.MAX_VALUE;
+
+                for (Vertex u: neighborhoodOfSet){
+                    Set<Vertex> intersection = new HashSet<>(this.adjVertices.get(u));
+                    intersection.retainAll(possibleUnconfinedSet);
+                    if(intersection.size()==1 && (((new HashSet<>(this.adjVertices.get(u))).removeAll(neighborhoodWithOwnVertices)))){
+                        HashSet<Vertex> setSubtraction = new HashSet<>(this.adjVertices.get(u));
+                        setSubtraction.removeAll(neighborhoodWithOwnVertices);
+                        if(setSubtraction.size()<minSubtractionSeen){
+                            minVertex = u;
+                            minSubtractionSeen=setSubtraction.size();
+                        }
+                    }
+                }
+
+                return minVertex;
         }
 
 }
