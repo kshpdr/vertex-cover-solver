@@ -4,22 +4,33 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean cliqueBound = false;
-    public static boolean lpBound  = false;
+    public static boolean cliqueBound = true;
+    public static boolean lpBound  = true;
     public static boolean zeroDegreeRule = false;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
-    public static boolean dominationRuleBeginning = false;
+    public static boolean dominationRuleBeginning = true;
 
     public static boolean dominationRuleIteration = true;
+
+    public static boolean unconfinedRuleBeginning = true;
+
+    public static boolean unconfinedRuleIteration = true;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
         if(dominationRuleIteration) {
-            reducedNeighborsMap =  graph.applyDominationRule();
-            k -= reducedNeighborsMap.size();
+            reducedNeighborsMap.putAll(graph.applyDominationRule());
         }
+
+        if(unconfinedRuleIteration) {
+            reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
+        }
+
+        k -= reducedNeighborsMap.size();
+
+
 
         if (k < 0) {
             // Putting back the reduced vertices
@@ -34,12 +45,13 @@ public class Solver {
             return result;
         }
 
-        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
         if(k < graph.getMaxLowerBound(true, false)) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
         }
+
+        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
 
         LinkedList<String> solution;
         recursiveSteps++;
@@ -130,8 +142,14 @@ public class Solver {
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
+
+
         if(dominationRuleBeginning){
             edgesAfterRules.putAll(graph.applyDominationRule());
+        }
+
+        if(unconfinedRuleBeginning) {
+            edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
 
 //        if (zeroDegreeRule){

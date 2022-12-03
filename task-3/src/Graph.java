@@ -374,4 +374,21 @@ public class Graph {
             return false;
         }
 
+    public HashMap<Vertex,HashSet<Vertex>> applyUnconfinedRule(){
+        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
+        while(true){
+            boolean reduced = false;
+            for (Vertex currentVertex : this.arrayVertex) {
+
+                if (currentVertex.active && isUnconfined(currentVertex) ) {
+                        verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
+                        reduced = true;
+                }
+
+            }
+            if(!reduced) break;
+        }
+        return verticesInVertexCover;
+    }
+
 }
