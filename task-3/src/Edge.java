@@ -24,7 +24,9 @@ public class Edge {
         if (o == null || getClass() != o.getClass())
             return false;
         Edge edge = (Edge) o;
-        return Objects.equals(v, edge.v) && Objects.equals(w, edge.w);
+        boolean oneSide = Objects.equals(v, edge.v) && Objects.equals(w, edge.w);
+        boolean otherSide = Objects.equals(v, edge.w) && Objects.equals(w, edge.v);
+        return oneSide || otherSide;
     }
 
     @Override

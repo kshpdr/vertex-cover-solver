@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class BipartiteGraph {
-    public Vertex nilVertex = new Vertex(-1);
+    public Vertex nilVertex = new Vertex("nil", -1);
     static final int INF = Integer.MAX_VALUE;
 
     public ArrayList<Vertex> left = new ArrayList<>();
@@ -16,8 +16,8 @@ public class BipartiteGraph {
         nilVertex.dist = INF;
         for (Vertex vertex : graph.getVertices()) {
             if (vertex.active) {
-                left.add(new Vertex(vertex.label));
-                right.add(new Vertex(vertex.label));
+                left.add(new Vertex(vertex.name, vertex.id));
+                right.add(new Vertex(vertex.name, vertex.id));
             }
         }
 

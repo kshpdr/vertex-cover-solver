@@ -1,13 +1,15 @@
 public class Vertex implements Comparable<Vertex> {
-    int label;
+    String name;
+    int id;
     int degree;
     int dist = 0;
 
     boolean active =true;
 
 
-    Vertex(Integer label) {
-        this.label = label;
+    Vertex(String name, int id) {
+        this.name = name;
+        this.id = id;
     }
 
     // equals and hashCode
@@ -24,13 +26,13 @@ public class Vertex implements Comparable<Vertex> {
             return false;
         }
 
-        return this.label == ((Vertex) o).label;
+        return this.id == ((Vertex) o).id;
     }
 
     @Override
     public int hashCode() {
 
-        return this.label;
+        return this.id;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class Vertex implements Comparable<Vertex> {
 
         // sb.append("Vertices: ").append("\n");
 
-        return "Vertex " + this.label + " degree " + this.degree;
+        return "Vertex " + this.name + " degree " + this.degree;
     }
 
     @Override

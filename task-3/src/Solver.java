@@ -4,18 +4,21 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
+    public static int recursiveSteps = 0;
+
     public static boolean cliqueBound = true;
     public static boolean lpBound = false;
     public static boolean zeroDegreeRule = false;
-    public static boolean highDegreeRule = false;
+    public static boolean highDegreeRuleOnce = false;
     public static boolean bussRule = false;
-    public static int recursiveSteps = 0;
+
+    public static boolean highDegreeRuleAlways = false;
+    public static boolean bussRuleAlways = false;
+    public static boolean cliqueBoundAlways = false;
+    public static boolean lpBoundAlways = true;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
-        //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
-        if(k < graph.getMaxLowerBound(false, false)) return null;
-//        if(k < graph.getLpBound()) return null;
-
+        if(k < graph.getMaxLowerBound(cliqueBoundAlways, lpBoundAlways)) return null;
         if (k < 0) return null;
         if (graph.isEmpty())
             return new LinkedList<>();
@@ -34,9 +37,9 @@ public class Solver {
 
 
         if (solution!= null) {
-            solution.add(graph.getVertexMapping(v));
+            solution.add(v.name);
             for (Vertex neighbor : reducedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
+                solution.add(neighbor.name);
             }
             return solution;
         }
@@ -54,10 +57,10 @@ public class Solver {
         // Putting back the eliminated vertices
         if (solution != null) {
             for (Vertex neighbor : eliminatedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
+                solution.add(neighbor.name);
             }
             for (Vertex neighbor : reducedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
+                solution.add(neighbor.name);
             }
             return solution;
         }
@@ -111,9 +114,15 @@ public class Solver {
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBound, lpBound);
 
-        if (highDegreeRule){
+        if (highDegreeRuleOnce){
             HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(lowerbound);
             edgesAfterRules.putAll(edgesAfterHighDegreeRule);
+            if (edgesAfterHighDegreeRule.size() == 0){
+                boolean vcExists = graph.applyBussRule(lowerbound);
+                if (!vcExists){
+                    lowerbound++;
+                }
+            }
         }
 
         if (zeroDegreeRule){
@@ -136,7 +145,7 @@ public class Solver {
 
         //Add results from Domination rule
         for(Vertex vertex: edgesAfterRules.keySet()){
-            sb.append(graph.getVertexMapping(vertex)).append("\n");
+            sb.append(vertex.name).append("\n");
             solutionSize++;
         }
 
