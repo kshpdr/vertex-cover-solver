@@ -21,7 +21,7 @@ public class BipartiteGraph {
             }
         }
 
-        for (Edge edge : graph.getListEdges()) {
+        for (Edge edge : graph.getEdges()) {
             if (edge.v.active && edge.w.active) {
                 Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
                 Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));

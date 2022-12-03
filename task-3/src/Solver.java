@@ -6,19 +6,18 @@ import java.util.*;
 public class Solver {
     public static int recursiveSteps = 0;
 
-    public static boolean cliqueBound = true;
-    public static boolean lpBound = false;
-    public static boolean zeroDegreeRule = false;
-    public static boolean highDegreeRuleOnce = false;
-    public static boolean bussRule = false;
+    public static boolean cliqueBoundOnce = false;
+    public static boolean lpBoundOnce = false;
+    public static boolean highDegreeRuleOnce = false; // implies buss rule
+    public static boolean dominationRuleOnce = false;
 
-    public static boolean highDegreeRuleAlways = false;
-    public static boolean bussRuleAlways = false;
+    public static boolean highDegreeRuleAlways = false; // implies buss rule
     public static boolean cliqueBoundAlways = false;
-    public static boolean lpBoundAlways = true;
+    public static boolean lpBoundAlways = false;
+    public static boolean dominationRuleAlways = false;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
-        if(k < graph.getMaxLowerBound(cliqueBoundAlways, lpBoundAlways)) return null;
+        if (k < graph.getMaxLowerBound(cliqueBoundAlways, lpBoundAlways)) return null;
         if (k < 0) return null;
         if (graph.isEmpty())
             return new LinkedList<>();
@@ -86,15 +85,8 @@ public class Solver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-        int verticesAmount = 0;
-        int edgesAmount = 0;
         while (((line = bi.readLine()) != null)) {
-            if (line.contains("#")){
-                String[] info = line.split("\\s+");
-                verticesAmount = Integer.parseInt(info[0].substring(1));
-                edgesAmount = Integer.parseInt(info[1]);
-            }
-            else if (!line.contains("#") && !line.isEmpty()) {
+            if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 edges.add(nodes);
             }
@@ -105,29 +97,25 @@ public class Solver {
 //        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
-        Graph graph = new Graph(verticesAmount, edgesAmount, edges);
+        Graph graph = new Graph(edges);
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = graph.applyDominationRule();
-        edgesAfterRules.putAll(edgesAfterDominationRule);
 
-        // Call method with the clique lower bound
-        int lowerbound = graph.getMaxLowerBound(cliqueBound, lpBound);
-
-        if (highDegreeRuleOnce){
-            HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(lowerbound);
-            edgesAfterRules.putAll(edgesAfterHighDegreeRule);
-            if (edgesAfterHighDegreeRule.size() == 0){
-                boolean vcExists = graph.applyBussRule(lowerbound);
-                if (!vcExists){
-                    lowerbound++;
-                }
-            }
+        if (dominationRuleOnce){
+            HashMap<Vertex, HashSet<Vertex>> edgesAfterDominationRule = graph.applyDominationRule();
+            edgesAfterRules.putAll(edgesAfterDominationRule);
         }
 
-        if (zeroDegreeRule){
-            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
-            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
+        // Call method with the clique lower bound
+        int lowerbound = graph.getMaxLowerBound(cliqueBoundOnce, lpBoundOnce);
+
+        if (highDegreeRuleOnce){
+            HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(3);
+            edgesAfterRules.putAll(edgesAfterHighDegreeRule);
+            boolean vcExists = graph.applyBussRule(lowerbound);
+            if (!vcExists){
+                lowerbound++;
+            }
         }
 
         LinkedList<String> result = vc(graph, lowerbound);

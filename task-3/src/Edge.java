@@ -17,6 +17,20 @@ public class Edge {
         return w;
     }
 
+    public Vertex getAnotherVertex (Vertex vertex){
+        if (this.v == vertex){
+            return w;
+        }
+        return v;
+    }
+
+    public boolean contains(Vertex vertex){
+        if (this.v == vertex || this.w == vertex){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
