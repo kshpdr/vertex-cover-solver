@@ -1,0 +1,891 @@
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000002.dimacs
+#recursive steps: 0
+#sol size: 0
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000012.dimacs
+2
+1
+#recursive steps: 2
+#sol size: 2
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000004.dimacs
+#recursive steps: 0
+#sol size: 0
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000024.dimacs
+4
+3
+2
+1
+#recursive steps: 4
+#sol size: 4
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000007.dimacs
+2
+#recursive steps: 1
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000036.dimacs
+6
+3
+2
+1
+#recursive steps: 4
+#sol size: 4
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000009.dimacs
+5
+#recursive steps: 1
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000048.dimacs
+7
+6
+5
+4
+3
+1
+2
+#recursive steps: 7
+#sol size: 7
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000010_000000000012.dimacs
+6
+2
+#recursive steps: 2
+#sol size: 2
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000010_000000000060.dimacs
+37
+10
+9
+8
+5
+6
+3
+4
+2
+1
+#recursive steps: 10
+#sol size: 10
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000012_000000000014.dimacs
+4
+#recursive steps: 1
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000012_000000000072.dimacs
+12
+11
+9
+8
+7
+6
+5
+3
+4
+2
+1
+#recursive steps: 11
+#sol size: 11
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000014_000000000016.dimacs
+13
+16
+#recursive steps: 2
+#sol size: 2
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000014_000000000084.dimacs
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+4
+3
+1
+#recursive steps: 13
+#sol size: 13
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000016_000000000019.dimacs
+9
+#recursive steps: 1
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000016_000000000096.dimacs
+14
+12
+13
+10
+15
+9
+16
+7
+11
+6
+8
+3
+5
+2
+1
+#recursive steps: 15
+#sol size: 15
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000018_000000000021.dimacs
+20
+4
+#recursive steps: 2
+#sol size: 2
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000018_000000000108.dimacs
+18
+17
+15
+13
+12
+11
+16
+10
+14
+7
+6
+5
+4
+3
+2
+#recursive steps: 15
+#sol size: 15
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000020_000000000024.dimacs
+15
+19
+#recursive steps: 2
+#sol size: 2
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000020_000000000120.dimacs
+120
+20
+19
+18
+17
+16
+15
+13
+12
+11
+8
+7
+6
+5
+4
+2
+3
+1
+#recursive steps: 18
+#sol size: 18
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000022_000000000026.dimacs
+19
+18
+16
+#recursive steps: 3
+#sol size: 3
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000022_000000000132.dimacs
+22
+21
+20
+19
+18
+17
+16
+15
+12
+11
+10
+9
+8
+6
+7
+5
+4
+3
+2
+#recursive steps: 19
+#sol size: 19
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000024_000000000028.dimacs
+10
+21
+3
+17
+#recursive steps: 4
+#sol size: 4
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000024_000000000144.dimacs
+114
+36
+24
+23
+21
+20
+19
+18
+16
+15
+14
+13
+10
+9
+8
+7
+6
+12
+5
+4
+2
+1
+#recursive steps: 22
+#sol size: 22
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000026_000000000031.dimacs
+22
+4
+20
+29
+16
+#recursive steps: 5
+#sol size: 5
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000026_000000000156.dimacs
+100
+64
+26
+25
+24
+23
+20
+19
+18
+17
+16
+15
+14
+13
+12
+10
+9
+8
+7
+6
+4
+2
+1
+#recursive steps: 23
+#sol size: 23
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000028_000000000033.dimacs
+30
+18
+33
+8
+#recursive steps: 4
+#sol size: 4
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000028_000000000168.dimacs
+147
+57
+27
+25
+24
+22
+21
+20
+19
+18
+17
+16
+15
+11
+14
+9
+13
+8
+10
+7
+6
+4
+5
+3
+2
+1
+#recursive steps: 26
+#sol size: 26
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000030_000000000036.dimacs
+22
+11
+33
+17
+32
+#recursive steps: 5
+#sol size: 5
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000030_000000000180.dimacs
+118
+99
+55
+34
+29
+28
+27
+26
+24
+23
+22
+20
+19
+17
+16
+15
+14
+13
+11
+10
+9
+8
+6
+4
+3
+2
+1
+#recursive steps: 27
+#sol size: 27
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000035_000000000042.dimacs
+21
+20
+8
+9
+34
+33
+#recursive steps: 6
+#sol size: 6
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000035_000000000210.dimacs
+165
+88
+35
+34
+33
+32
+29
+27
+23
+20
+19
+18
+12
+17
+10
+16
+9
+14
+7
+11
+6
+8
+5
+4
+3
+2
+#recursive steps: 26
+#sol size: 26
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000040_000000000048.dimacs
+17
+48
+47
+46
+39
+44
+41
+#recursive steps: 11
+#sol size: 7
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000040_000000000240.dimacs
+66
+40
+39
+38
+37
+36
+34
+33
+32
+12
+31
+30
+29
+28
+27
+26
+25
+24
+23
+22
+20
+18
+17
+16
+15
+14
+10
+13
+9
+7
+5
+6
+2
+4
+1
+#recursive steps: 35
+#sol size: 35
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000045_000000000054.dimacs
+51
+19
+17
+12
+39
+2
+#recursive steps: 6
+#sol size: 6
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000045_000000000270.dimacs
+229
+203
+45
+44
+41
+40
+39
+38
+37
+36
+35
+34
+33
+32
+31
+30
+29
+27
+26
+25
+24
+23
+22
+21
+18
+14
+13
+12
+20
+11
+19
+9
+15
+7
+17
+5
+4
+3
+2
+#recursive steps: 39
+#sol size: 39
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000050_000000000060.dimacs
+55
+54
+21
+52
+51
+49
+53
+1
+33
+#recursive steps: 9
+#sol size: 9
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000050_000000000300.dimacs
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1586)
+	at java.base/java.util.HashMap$KeyIterator.next(HashMap.java:1607)
+	at Graph.getNextNode(Graph.java:141)
+	at Graph.getCliqueLowerBound(Graph.java:205)
+	at Graph.getMaxLowerBound(Graph.java:241)
+	at Solver.vc_branch(Solver.java:42)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc(Solver.java:99)
+	at Solver.main(Solver.java:147)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000055_000000000066.dimacs
+61
+56
+19
+39
+58
+60
+51
+22
+#recursive steps: 8
+#sol size: 8
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000055_000000000330.dimacs
+128
+54
+52
+51
+50
+49
+48
+47
+46
+45
+44
+43
+42
+41
+40
+39
+38
+37
+36
+35
+34
+33
+32
+31
+30
+28
+27
+25
+24
+23
+20
+19
+18
+17
+16
+15
+14
+13
+12
+11
+10
+9
+8
+7
+6
+5
+2
+1
+#recursive steps: 48
+#sol size: 48
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000060_000000000072.dimacs
+50
+17
+72
+69
+57
+1
+65
+33
+64
+32
+#recursive steps: 10
+#sol size: 10
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000060_000000000360.dimacs
+274
+219
+60
+58
+57
+56
+55
+54
+53
+52
+51
+50
+49
+47
+45
+43
+42
+41
+40
+38
+37
+36
+35
+34
+32
+31
+29
+30
+28
+25
+24
+22
+20
+19
+18
+17
+16
+15
+12
+14
+11
+10
+8
+7
+6
+5
+4
+3
+2
+1
+#recursive steps: 50
+#sol size: 50
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000065_000000000078.dimacs
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1586)
+	at java.base/java.util.HashMap$KeyIterator.next(HashMap.java:1607)
+	at Graph.getNextNode(Graph.java:141)
+	at Graph.getCliqueLowerBound(Graph.java:205)
+	at Graph.getMaxLowerBound(Graph.java:241)
+	at Solver.vc_branch(Solver.java:42)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc(Solver.java:99)
+	at Solver.main(Solver.java:147)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000065_000000000390.dimacs
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1586)
+	at java.base/java.util.HashMap$KeyIterator.next(HashMap.java:1607)
+	at Graph.getNextNode(Graph.java:141)
+	at Graph.getCliqueLowerBound(Graph.java:205)
+	at Graph.getMaxLowerBound(Graph.java:241)
+	at Solver.vc_branch(Solver.java:42)
+	at Solver.vc_branch(Solver.java:74)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc(Solver.java:99)
+	at Solver.main(Solver.java:147)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000070_000000000084.dimacs
+32
+56
+21
+84
+83
+81
+80
+79
+73
+70
+2
+1
+#recursive steps: 12
+#sol size: 12
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000070_000000000210.dimacs
+113
+165
+162
+158
+70
+69
+68
+66
+67
+65
+62
+59
+58
+57
+56
+54
+51
+49
+47
+46
+45
+44
+43
+42
+41
+40
+39
+38
+35
+34
+33
+32
+31
+30
+29
+28
+27
+24
+23
+22
+20
+19
+17
+7
+16
+14
+12
+11
+10
+9
+2
+8
+5
+4
+3
+1
+#recursive steps: 56
+#sol size: 56
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000070_000000000420.dimacs
+70
+69
+68
+66
+65
+64
+63
+62
+61
+60
+59
+58
+57
+56
+54
+53
+52
+51
+49
+48
+46
+45
+44
+43
+41
+42
+40
+39
+38
+37
+31
+36
+30
+35
+29
+34
+28
+33
+22
+25
+26
+21
+20
+23
+19
+18
+17
+16
+13
+14
+12
+11
+6
+9
+10
+7
+5
+3
+2
+1
+#recursive steps: 60
+#sol size: 60
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000075_000000000090.dimacs
+Exception in thread "main" java.util.NoSuchElementException
+	at java.base/java.util.HashMap$HashIterator.nextNode(HashMap.java:1586)
+	at java.base/java.util.HashMap$KeyIterator.next(HashMap.java:1607)
+	at Graph.getNextNode(Graph.java:141)
+	at Graph.getCliqueLowerBound(Graph.java:205)
+	at Graph.getMaxLowerBound(Graph.java:241)
+	at Solver.vc_branch(Solver.java:42)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc_branch(Solver.java:74)
+	at Solver.vc_branch(Solver.java:57)
+	at Solver.vc(Solver.java:99)
+	at Solver.main(Solver.java:147)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000075_000000000450.dimacs

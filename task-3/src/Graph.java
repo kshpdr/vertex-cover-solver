@@ -8,7 +8,7 @@ public class Graph {
     private final ArrayList<String> vertexStringMap = new ArrayList<>();
     private final ArrayList<Vertex> arrayVertex = new ArrayList<>();
 
-    private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
+//    private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private final ArrayList<Edge> listEdges = new ArrayList<>();
 
     public Graph(int verticesAmount, int edgesAmount, HashSet<String[]> edges) {
@@ -26,7 +26,7 @@ public class Graph {
                 this.adjVertices.put(vertex1, new HashSet<>());
                 stringVertexMap.put(edge[0], vertex1);
                 this.arrayVertex.add(vertex1);
-                this.degreeOrder.addVertex(vertex1);
+//                this.degreeOrder.addVertex(vertex1);
                 index++;
             }
             if (!stringVertexMap.containsKey(edge[1])) {
@@ -35,7 +35,7 @@ public class Graph {
                 stringVertexMap.put(edge[1], vertex2);
                 this.adjVertices.put(vertex2, new HashSet<>());
                 this.arrayVertex.add(vertex2);
-                this.degreeOrder.addVertex(vertex2);
+//                this.degreeOrder.addVertex(vertex2);
                 index++;
             }
 
@@ -46,8 +46,8 @@ public class Graph {
             // increasing degrees of vertices
             stringVertexMap.get(edge[0]).degree++;
             stringVertexMap.get(edge[1]).degree++;
-            this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[0]), 1);
-            this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[1]), 1);
+//            this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[0]), 1);
+//            this.degreeOrder.increaseDegreeOfVertex(stringVertexMap.get(edge[1]), 1);
             this.listEdges.add(new Edge(stringVertexMap.get(edge[0]), stringVertexMap.get(edge[1])));
 
         }
@@ -74,7 +74,7 @@ public class Graph {
             sb.append("\n");
 
         }
-        sb.append("Degrees of Vertices: ").append(this.degreeOrder);
+//        sb.append("Degrees of Vertices: ").append(this.degreeOrder);
 
         return sb.toString();
     }
@@ -93,18 +93,18 @@ public class Graph {
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
         this.arrayVertex.get(vertexToRemove.label).active = false;
         HashSet<Vertex> adjacentVertices = new HashSet<>();
-        this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
+//        this.degreeOrder.removeVertex(this.arrayVertex.get(vertexToRemove.label));
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
         while (iterator.hasNext()) {
             Vertex tmpVertex = iterator.next();
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)) {
                 this.arrayVertex.get(tmpVertex.label).degree--;
-                this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
+//                this.degreeOrder.decreaseDegreeOfVertex(this.arrayVertex.get(tmpVertex.label), 1);
                 adjacentVertices.add(tmpVertex);
             }
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
-                this.degreeOrder.removeVertex(tmpVertex);
+//                this.degreeOrder.removeVertex(tmpVertex);
                 this.arrayVertex.get(tmpVertex.label).active=false;
             }
         }
@@ -142,9 +142,9 @@ public class Graph {
             }
             adjVertices.get(neighbor).add(originalVertex);
             this.arrayVertex.get(neighbor.label).degree++;
-            this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(neighbor.label), 1);
+//            this.degreeOrder.increaseDegreeOfVertex(this.arrayVertex.get(neighbor.label), 1);
         }
-        this.degreeOrder.putBack(this.arrayVertex.get(originalVertex.label), neighbors.size());
+//        this.degreeOrder.putBack(this.arrayVertex.get(originalVertex.label), neighbors.size());
 
         verticesAmount++;
         edgesAmount += neighbors.size();
@@ -168,7 +168,14 @@ public class Graph {
     }
 
     Vertex getNextNode() {
-        return this.degreeOrder.getVertexWithMaxDegree();
+//        return this.degreeOrder.getVertexWithMaxDegree();
+        Vertex maxDegreeVertex = adjVertices.keySet().iterator().next();
+        for (Vertex vertex : adjVertices.keySet()){
+            if (adjVertices.get(vertex).size() > adjVertices.get(maxDegreeVertex).size()){
+                maxDegreeVertex = vertex;
+            }
+        }
+        return maxDegreeVertex;
     }
 
 
@@ -179,7 +186,7 @@ public class Graph {
             vertexCopy.degree = vertex.degree;
             copy.arrayVertex.add(vertexCopy);
             copy.vertexStringMap.add(this.vertexStringMap.get(vertexCopy.label));
-            copy.degreeOrder.addVertex(vertex);
+//            copy.degreeOrder.addVertex(vertex);
 
         }
 
@@ -217,7 +224,8 @@ public class Graph {
         HashSet<Vertex> maxClique;
         int usedVertices = 0;
 
-        while (!copyGraph.degreeOrder.isEmpty()) {
+//        while (!copyGraph.degreeOrder.isEmpty()) {
+        while (!copyGraph.adjVertices.keySet().isEmpty()) {
             maxClique = copyGraph.getMaximalCliqueFromVertex(copyGraph.getNextNode());
             result.add(maxClique);
             usedVertices+=maxClique.size();

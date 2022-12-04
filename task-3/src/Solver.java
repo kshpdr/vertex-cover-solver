@@ -9,13 +9,13 @@ public class Solver {
     public static boolean zeroDegreeRule = false;
     public static boolean highDegreeRule = false;
     public static boolean bussRule = false;
-    public static boolean dominationRuleBeginning = true;
+    public static boolean dominationRuleBeginning = false;
 
-    public static boolean dominationRuleIteration = true;
+    public static boolean dominationRuleIteration = false;
 
-    public static boolean unconfinedRuleBeginning = true;
+    public static boolean unconfinedRuleBeginning = false;
 
-    public static boolean unconfinedRuleIteration = true;
+    public static boolean unconfinedRuleIteration = false;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
