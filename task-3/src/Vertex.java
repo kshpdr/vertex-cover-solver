@@ -4,7 +4,7 @@ public class Vertex {
     int degree;
     int dist = 0;
 
-    boolean active =true;
+//    boolean active =true;
 
 
     Vertex(String name, Integer id) {

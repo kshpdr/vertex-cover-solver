@@ -96,7 +96,6 @@ public class Solver {
     }
 
     // main function which increases the cover vertex size k every iteration
-
     public static LinkedList<String> vc(Graph graph, int lowerBound) {
         while (true) {
             LinkedList<String> solution = vc_branch(graph, lowerBound);
@@ -114,23 +113,19 @@ public class Solver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-        int verticesAmount = 0;
-        int edgesAmount = 0;
         while (((line = bi.readLine()) != null)) {
-            if (line.contains("#")){
-                String[] info = line.split("\\s+");
-                verticesAmount = Integer.parseInt(info[0].substring(1));
-                edgesAmount = Integer.parseInt(info[1]);
-            }
-            else if (!line.contains("#") && !line.isEmpty()) {
+            if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 edges.add(nodes);
             }
         }
 
+        long start = System.currentTimeMillis();
+
+
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+//        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
@@ -164,12 +159,12 @@ public class Solver {
         int solutionSize = 0;
 
         //Add results from reduction rules
-        if (!reductionResult.isEmpty()) {
-            for (String s : reductionResult) {
-                sb.append(s).append("\n");
-                solutionSize++;
-            }
-        }
+//        if (!reductionResult.isEmpty()) {
+//            for (String s : reductionResult) {
+//                sb.append(s).append("\n");
+//                solutionSize++;
+//            }
+//        }
 
         //Add results from Domination rule
         for(Vertex vertex: edgesAfterRules.keySet()){
@@ -190,5 +185,9 @@ public class Solver {
 
         String resultStr = sb.toString();
         System.out.print(resultStr);
+
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        System.out.println("#time: " + sec);
     }
 }
