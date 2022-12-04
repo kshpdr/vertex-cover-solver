@@ -83,3 +83,8 @@ file;time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-d
 2-social-networks/04-polbooks.graph.dimacs;0.64;105;441; 62;637;1;OK;OK;0;
 2-social-networks/05-football.graph.dimacs;;115;613; 0;;0;;;;
 2-social-networks/06-celegans_metabolic.graph.dimacs;;453;2025; 0;;0;;;;
+2-social-networks/07-jazz.graph.dimacs;;198;2742; 0;;0;;;;
+2-social-networks/08-netscience.graph.dimacs;;1589;2742; 0;;0;;;;
+2-social-networks/09-email.graph.dimacs;;1133;5451; 0;;0;;;;
+2-social-networks/10-add20.graph.dimacs;;2395;7462; 0;;0;;;;
+2-social-networks/11-power.graph.dimacs;;4941;6594; 0;;0;;;;

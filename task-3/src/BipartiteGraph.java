@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class BipartiteGraph {
-    public Vertex nilVertex = new Vertex(-1);
+    public Vertex nilVertex = new Vertex("nil", -1);
     static final int INF = Integer.MAX_VALUE;
 
     public ArrayList<Vertex> left = new ArrayList<>();
@@ -16,20 +16,39 @@ public class BipartiteGraph {
         nilVertex.dist = INF;
         for (Vertex vertex : graph.getVertices()) {
             if (vertex.active) {
-                left.add(new Vertex(vertex.label));
-                right.add(new Vertex(vertex.label));
+                left.add(new Vertex(vertex.name, vertex.id));
+                right.add(new Vertex(vertex.name, vertex.id));
             }
         }
 
         for (Edge edge : graph.getListEdges()) {
             if (edge.v.active && edge.w.active) {
-                Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
-                Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));
+                Vertex leftFirst = null;
+                Vertex leftSecond = null;
+                for (Vertex vertex : left){
+                    if (vertex.equals(edge.getFirstVertex())){
+                        leftFirst = vertex;
+                    }
+                    else if (vertex.equals(edge.getSecondVertex())){
+                        leftSecond = vertex;
+                    }
+                }
 
-                Vertex rightFirst = right.get(right.indexOf(edge.getFirstVertex()));
-                Vertex rightSecond = right.get(right.indexOf(edge.getSecondVertex()));
-                edges.add(new Edge(leftFirst, rightSecond));
-                edges.add(new Edge(leftSecond, rightFirst));
+                Vertex rightFirst = null;
+                Vertex rightSecond = null;
+                for (Vertex vertex : right){
+                    if (vertex.equals(edge.getFirstVertex())){
+                        rightFirst = vertex;
+                    }
+                    else if (vertex.equals(edge.getSecondVertex())){
+                        rightSecond = vertex;
+                    }
+                }
+
+                if (leftFirst != null && leftSecond != null && rightFirst != null && rightSecond != null){
+                    edges.add(new Edge(leftFirst, rightSecond));
+                    edges.add(new Edge(leftSecond, rightFirst));
+                }
             }
         }
     }

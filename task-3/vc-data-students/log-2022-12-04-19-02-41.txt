@@ -1,0 +1,47 @@
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000002.dimacs
+#recursive steps: 0
+#sol size: 0
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000012.dimacs
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index 12 out of bounds for length 12
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:359)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at Graph.removeVertex(Graph.java:97)
+	at Solver.vc_branch(Solver.java:59)
+	at Solver.vc(Solver.java:102)
+	at Solver.main(Solver.java:161)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/2-social-networks/00-karate.graph.dimacs
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index 34 out of bounds for length 34
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:359)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at Graph.removeVertex(Graph.java:90)
+	at Solver.vc_branch(Solver.java:59)
+	at Solver.vc(Solver.java:102)
+	at Solver.main(Solver.java:161)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/3-medium-sized/vc001.dimacs
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index 6160 out of bounds for length 6160
+	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:64)
+	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:70)
+	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:266)
+	at java.base/java.util.Objects.checkIndex(Objects.java:359)
+	at java.base/java.util.ArrayList.get(ArrayList.java:427)
+	at Graph.removeVertex(Graph.java:97)
+	at Graph.removeSetofVertices(Graph.java:154)
+	at Solver.vc_branch(Solver.java:75)
+	at Solver.vc_branch(Solver.java:61)
+	at Solver.vc_branch(Solver.java:61)
+	at Solver.vc_branch(Solver.java:61)
+	at Solver.vc_branch(Solver.java:61)
+	at Solver.vc_branch(Solver.java:61)
+	at Solver.vc_branch(Solver.java:61)
+	at Solver.vc(Solver.java:102)
+	at Solver.main(Solver.java:161)
+

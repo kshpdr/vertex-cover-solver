@@ -4,18 +4,18 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean cliqueBound = true;
-    public static boolean lpBound  = true;
-    public static boolean zeroDegreeRule = false;
-    public static boolean highDegreeRule = false;
-    public static boolean bussRule = false;
-    public static boolean dominationRuleBeginning = false;
+    public static boolean lpBoundBeginning  = true;
+    public static boolean cliqueBoundBeginning = true;
+    public static boolean dominationRuleBeginning = true;
+    public static boolean unconfinedRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = false;
 
-    public static boolean dominationRuleIteration = false;
+    public static boolean cliqueBoundIteration= true;
+    public static boolean lpBoundIteration= false;
+    public static boolean dominationRuleIteration = true;
+    public static boolean unconfinedRuleIteration = true;
+    public static boolean highDegreeRuleIteration = false;
 
-    public static boolean unconfinedRuleBeginning = false;
-
-    public static boolean unconfinedRuleIteration = false;
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
@@ -30,8 +30,6 @@ public class Solver {
 
         k -= reducedNeighborsMap.size();
 
-
-
         if (k < 0) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
@@ -40,12 +38,12 @@ public class Solver {
         if (graph.isEmpty()){
             LinkedList<String> result = new LinkedList<>();
             for (Vertex v : reducedNeighborsMap.keySet()){
-                result.add(graph.getVertexMapping(v));
+                result.add(v.name);
             }
             return result;
         }
 
-        if(k < graph.getMaxLowerBound(true, false)) {
+        if(k < graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning)) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
@@ -65,9 +63,9 @@ public class Solver {
 
 
         if (solution!= null) {
-            solution.add(graph.getVertexMapping(v));
+            solution.add(v.name);
             for (Vertex neighbor : reducedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
+                solution.add(neighbor.name);
             }
             return solution;
         }
@@ -83,10 +81,10 @@ public class Solver {
         // Putting back the eliminated vertices
         if (solution != null) {
             for (Vertex neighbor : eliminatedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
+                solution.add(neighbor.name);
             }
             for (Vertex neighbor : reducedNeighborsMap.keySet()){
-                solution.add(graph.getVertexMapping(neighbor));
+                solution.add(neighbor.name);
             }
             return solution;
         }
@@ -135,7 +133,7 @@ public class Solver {
         LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
-        Graph graph = new Graph(verticesAmount, edgesAmount, edges);
+        Graph graph = new Graph(edges);
 
 
 
@@ -152,19 +150,13 @@ public class Solver {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
 
-//        if (zeroDegreeRule){
-//            HashMap<Vertex, HashSet<Vertex>> edgesAfterZeroDegreeRule = graph.applyZeroDegreeRule();
-//            edgesAfterRules.putAll(edgesAfterZeroDegreeRule);
-//        }
-
         // Call method with the clique lower bound
-        int lowerbound = graph.getMaxLowerBound(cliqueBound, lpBound);
+        int lowerbound = graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration);
 
-        if (highDegreeRule){
+        if (highDegreeRuleBeginning){
             HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(lowerbound);
             edgesAfterRules.putAll(edgesAfterHighDegreeRule);
         }
-
 
         LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation
@@ -181,7 +173,7 @@ public class Solver {
 
         //Add results from Domination rule
         for(Vertex vertex: edgesAfterRules.keySet()){
-            sb.append(graph.getVertexMapping(vertex)).append("\n");
+            sb.append(vertex.name).append("\n");
             solutionSize++;
         }
 
@@ -199,5 +191,4 @@ public class Solver {
         String resultStr = sb.toString();
         System.out.print(resultStr);
     }
-
 }
