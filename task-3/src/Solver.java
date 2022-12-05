@@ -15,11 +15,16 @@ public class Solver {
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
+    public static boolean oneDegreeRuleBeginning = true;
+
 
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
+        if(highDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
+        }
         if(dominationRuleIteration) {
             reducedNeighborsMap.putAll(graph.applyDominationRule());
         }
@@ -43,7 +48,7 @@ public class Solver {
             return result;
         }
 
-        if(k < graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning)) {
+        if(k < graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration)) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
@@ -137,6 +142,8 @@ public class Solver {
 
 
 
+
+
         if(dominationRuleBeginning){
             edgesAfterRules.putAll(graph.applyDominationRule());
         }
@@ -146,7 +153,7 @@ public class Solver {
         }
 
         // Call method with the clique lower bound
-        int lowerbound = graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration);
+        int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
 
         if (highDegreeRuleBeginning){
             HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(lowerbound);
