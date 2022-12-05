@@ -140,8 +140,9 @@ public class Solver {
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-
-
+//        if (highDegreeRuleBeginning){
+//            edgesAfterRules.putAll(graph.applyBussRule(reductionResult.size()));
+//        }
 
 
         if(dominationRuleBeginning){
@@ -155,10 +156,7 @@ public class Solver {
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
 
-        if (highDegreeRuleBeginning){
-            HashMap<Vertex, HashSet<Vertex>> edgesAfterHighDegreeRule = graph.applyHighDegreeRule(lowerbound);
-            edgesAfterRules.putAll(edgesAfterHighDegreeRule);
-        }
+
 
         LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation

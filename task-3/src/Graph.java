@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph {
@@ -209,6 +212,8 @@ public class Graph {
         HashSet<Vertex> maxClique;
         int usedVertices = 0;
 
+
+
         while (!copyGraph.adjVertices.keySet().isEmpty()) {
             maxClique = copyGraph.getMaximalCliqueFromVertex(copyGraph.getNextNode());
             result.add(maxClique);
@@ -378,5 +383,39 @@ public class Graph {
             if(!reduced) break;
         }
         return verticesInVertexCover;
+    }
+
+    public int reducedGraph(){
+        //this.applyHighDegreeRule(0);
+        int numOfReducedVertices = this.applyDominationRule().size();
+        numOfReducedVertices += this.applyUnconfinedRule().size();
+        return numOfReducedVertices;
+    }
+
+    public void printReducedGraph(){
+        int numReducedVertices = this.reducedGraph();
+        System.out.println("# "+ this.vertices.size() + " " + this.edges.size());
+        for (Edge edge: this.edges){
+            System.out.println(edge.getFirstVertex().name + " " + edge.getSecondVertex().name);
+        }
+        System.out.println("#difference: "+ numReducedVertices);
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+
+        HashSet<String[]> edges = new HashSet<>();
+
+        String line;
+        while (((line = bi.readLine()) != null)) {
+            if (!line.contains("#") && !line.isEmpty()) {
+                String[] nodes = line.split("\\s+");
+                edges.add(nodes);
+            }
+        }
+
+
+        Graph graph = new Graph(edges);
+        graph.printReducedGraph();
     }
 }
