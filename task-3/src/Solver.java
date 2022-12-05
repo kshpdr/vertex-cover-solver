@@ -8,13 +8,13 @@ public class Solver {
     public static boolean cliqueBoundBeginning = true;
     public static boolean dominationRuleBeginning = true;
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = false;
+    public static boolean highDegreeRuleBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
-    public static boolean lpBoundIteration= false;
+    public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = false;
+    public static boolean highDegreeRuleIteration = true;
 
     public static int recursiveSteps = 0;
 
@@ -125,7 +125,7 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-//        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
@@ -159,12 +159,12 @@ public class Solver {
         int solutionSize = 0;
 
         //Add results from reduction rules
-//        if (!reductionResult.isEmpty()) {
-//            for (String s : reductionResult) {
-//                sb.append(s).append("\n");
-//                solutionSize++;
-//            }
-//        }
+        if (!reductionResult.isEmpty()) {
+            for (String s : reductionResult) {
+                sb.append(s).append("\n");
+                solutionSize++;
+            }
+        }
 
         //Add results from Domination rule
         for(Vertex vertex: edgesAfterRules.keySet()){
