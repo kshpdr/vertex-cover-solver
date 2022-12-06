@@ -195,14 +195,15 @@ public class Graph {
         return null;
     }
 
-    HashSet<Vertex> getMaximalCliqueFromVertex(Vertex firstVertex) {
+    HashSet<Vertex> getCliqueFromVertex(Vertex firstVertex) {
         HashSet<Vertex> clique = new HashSet<>();
         clique.add(firstVertex);
-        ArrayList<Vertex> vertices = new ArrayList<>(this.adjVertices.keySet());
+        ArrayList<Vertex> vertices = new ArrayList<>(this.adjVertices.get(firstVertex));
         Collections.shuffle(vertices);
-        for (Vertex vertex : this.adjVertices.keySet()) {
+        for (Vertex vertex : vertices) {
             if (!clique.contains(vertex) && this.adjVertices.get(vertex).containsAll(clique) ) {
                     clique.add(vertex);
+                    
             }
         }
         return clique;
@@ -218,7 +219,7 @@ public class Graph {
 
 
         while (!copyGraph.adjVertices.keySet().isEmpty()) {
-            maxClique = copyGraph.getMaximalCliqueFromVertex(copyGraph.getNextNode());
+            maxClique = copyGraph.getCliqueFromVertex(copyGraph.getNextNode());
             result.add(maxClique);
             usedVertices+=maxClique.size();
 
