@@ -4,10 +4,11 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Graph {
+public class Graph  {
     private final Map<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private final HashSet<Edge> edges = new HashSet<>();
+
 
     public Graph(HashSet<String[]> edges) {
 
@@ -169,6 +170,9 @@ public class Graph {
             // new
 //            copy.adjVertices.put(vertexCopy, new HashSet<>(this.adjVertices.get(vertexCopy)));
         }
+        for(Edge edge: this.edges){
+            copy.edges.add(new Edge(findVertex(copy.vertices, edge.getFirstVertex()), findVertex(copy.vertices, edge.getSecondVertex())));
+        }
 
         // why do that now?
         for (Vertex vertex : this.adjVertices.keySet()) {
@@ -180,7 +184,7 @@ public class Graph {
                     tmpNeighbors.add(findVertex(copy.vertices, neighbor));
                     copy.adjVertices.put(findVertex(copy.vertices, vertex), tmpNeighbors);
                 }
-                copy.edges.add(new Edge(findVertex(copy.vertices, vertex), neighbor));
+
             }
         }
         return copy;
@@ -406,43 +410,44 @@ public class Graph {
 
 
         HashSet<String[]> edges = new HashSet<>();
-        // TODO: 05.12.2022 verify why it does not read vc003 properly
 
         String line;
         while (((line = bi.readLine()) != null)) {
             if (!line.contains("#") && !line.isEmpty()) {
-                String[] nodes = line.split("\\s+");
+                String[] nodes = line.split(" ");
                 edges.add(nodes);
             }
         }
 
-        Graph graph = new Graph(edges);
-        final Graph[] lastReducedGraph = {graph.getCopy()};
-        final int[] numOfReducedVertices = {0};
 
-        ExecutorService executor = Executors.newCachedThreadPool();
-        Callable<Object> task = () -> {
-            numOfReducedVertices[0] += graph.applyDominationRule().size();
-            lastReducedGraph[0] =graph.getCopy();
-            numOfReducedVertices[0] += graph.applyUnconfinedRule().size();
-            lastReducedGraph[0] =graph.getCopy();
-            lastReducedGraph[0].printReducedGraph(numOfReducedVertices[0]);
-            return null;
-        };
-        Future<Object> future = executor.submit(task);
+
+        Graph graph = new Graph(edges);
+        Graph copyGraph = graph.getCopy();
+        final int[] numReducedVertices = {0};
+
+
+
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> future = executor.submit(() -> {
+            numReducedVertices[0] += graph.applyDominationRule().size();
+            numReducedVertices[0] += graph.applyUnconfinedRule().size();
+        });
         try {
-            future.get(307, TimeUnit.SECONDS);
-            System.exit(0);
-        } catch (TimeoutException ex) {
-            lastReducedGraph[0].printReducedGraph(numOfReducedVertices[0]);
-            System.exit(0);
-        } catch (InterruptedException e) {
-            // handle the interrupts
-        } catch (ExecutionException e) {
+            future.get(300, TimeUnit.SECONDS);
+            graph.printReducedGraph(numReducedVertices[0]);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            if(future.isCancelled()) {
+                copyGraph.printReducedGraph(0);
+            }
+        } catch (Exception e) {
             // handle other exceptions
         } finally {
-            future.cancel(true);
+            executor.shutdownNow();
         }
+
+
 
 
     }
