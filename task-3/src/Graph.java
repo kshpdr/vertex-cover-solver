@@ -2,12 +2,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Graph  {
     private final Map<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private final HashSet<Edge> edges = new HashSet<>();
+    public boolean completeReduced = true;
 
 
     public Graph(HashSet<String[]> edges) {
@@ -295,6 +295,7 @@ public class Graph  {
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
+        this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
         while(true){
             boolean reduced = false;
@@ -317,11 +318,13 @@ public class Graph  {
             }
             if(!reduced) break;
             }
+        this.completeReduced=true;
         return verticesInVertexCover;
         }
 
 
         public Vertex findUForUnconfinedRule(Set<Vertex> possibleUnconfinedSet) {
+             this.completeReduced = false;
                 HashSet<Vertex> neighborhoodOfSet = new HashSet<>();
                 HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
                 for (Vertex vertex: possibleUnconfinedSet){
@@ -346,7 +349,7 @@ public class Graph  {
                         }
                     }
                 }
-
+                this.completeReduced = true;
                 return minVertex;
         }
 
@@ -393,18 +396,14 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
+    public static int reducedVertices =0;
 
 
-    public void printReducedGraph(int numOfReducedVertices){
 
-        System.out.println("# "+ this.vertices.size() + " " + this.edges.size());
-        for (Edge edge: this.edges){
-            System.out.println(edge.getFirstVertex().name + " " + edge.getSecondVertex().name);
-        }
-        System.out.println("#difference: "+ numOfReducedVertices);
-    }
 
-    public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) throws InterruptedException, IOException {
+
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
@@ -423,29 +422,32 @@ public class Graph  {
 
         Graph graph = new Graph(edges);
         Graph copyGraph = graph.getCopy();
-        final int[] numReducedVertices = {0};
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 
+            if(graph.completeReduced){
+                for(Vertex vertex1: graph.vertices){
+                    for (Vertex vertex2: graph.adjVertices.get(vertex1)){
+                        System.out.println(vertex1.name + " " + vertex2.name);
+                    }
+                }
+                System.out.println("#difference: "+ reducedVertices);
 
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<?> future = executor.submit(() -> {
-            numReducedVertices[0] += graph.applyDominationRule().size();
-            numReducedVertices[0] += graph.applyUnconfinedRule().size();
-        });
-        try {
-            future.get(300, TimeUnit.SECONDS);
-            graph.printReducedGraph(numReducedVertices[0]);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            if(future.isCancelled()) {
-                copyGraph.printReducedGraph(0);
+            }else {
+                for(Vertex vertex1: copyGraph.vertices){
+                    for (Vertex vertex2: copyGraph.adjVertices.get(vertex1)){
+                        System.out.println(vertex1.name + " " + vertex2.name);
+                    }
+                }
+                System.out.println("#difference: "+ 0);
             }
-        } catch (Exception e) {
-            // handle other exceptions
-        } finally {
-            executor.shutdownNow();
-        }
+
+        }));
+
+
+
+        reducedVertices = graph.applyDominationRule().size();
+        reducedVertices+= graph.applyUnconfinedRule().size();
 
 
 
