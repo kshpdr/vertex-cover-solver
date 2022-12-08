@@ -264,6 +264,50 @@ public class Graph  {
         }
     }
 
+    public HashMap<Vertex,HashSet<Vertex>> applyOneDegreeRule(){
+        HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
+        while (true){
+            boolean reduced = false;
+            for (Vertex vertex : adjVertices.keySet()){
+                HashSet<Vertex> neighbors = adjVertices.get(vertex);
+                if (neighbors.size() == 1){
+                    for (Vertex neighbor : adjVertices.get(vertex)){
+                        edges.put(neighbor,removeVertex(neighbor));
+                        reduced = true;
+                        break;
+                    }
+                }
+            }
+            if (!reduced) break;
+        }
+        return edges;
+    }
+
+    public HashMap<Vertex,HashSet<Vertex>> applyTwoDegreeRule(){
+        HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
+        while (true){
+            boolean reduced = false;
+            for (Vertex vertex : adjVertices.keySet()){
+                HashSet<Vertex> neighbors = adjVertices.get(vertex);
+                if (neighbors.size() == 2){
+                    ArrayList<Vertex> arr = new ArrayList<>(neighbors);
+                    Vertex u = arr.get(0);
+                    Vertex w = arr.get(1);
+                    if (adjVertices.get(u).contains(w)){
+                        edges.put(u,removeVertex(u));
+                        edges.put(w,removeVertex(w));
+                        reduced = true;
+                    }
+                    else {
+                        // TODO: Implement merging for degree-rule
+                    }
+                }
+            }
+            if (!reduced) break;
+        }
+        return edges;
+    }
+
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         HashSet<Vertex> verticesToDelete = new HashSet<>();

@@ -9,13 +9,16 @@ public class Solver {
     public static boolean dominationRuleBeginning = true;
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
+    public static boolean oneDegreeRuleBeginning = true;
+    public static boolean twoDegreeRuleBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
     public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleBeginning = true;
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = true;
 
 
     public static int recursiveSteps = 0;
@@ -31,6 +34,14 @@ public class Solver {
 
         if(unconfinedRuleIteration) {
             reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
+        }
+
+        if (oneDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
+        }
+
+        if (twoDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
         }
 
         k -= reducedNeighborsMap.size();
@@ -130,7 +141,7 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+        LinkedList<String> reductionResult = oneDegreeRuleBeginning ? ReductionRules.applyReductionRules(edges) : new LinkedList<>();
 
         // Instantiate graph
         Graph graph = new Graph(edges);
@@ -151,6 +162,14 @@ public class Solver {
 
         if(unconfinedRuleBeginning) {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
+        }
+
+        if (oneDegreeRuleBeginning){
+            edgesAfterRules.putAll(graph.applyOneDegreeRule());
+        }
+
+        if (twoDegreeRuleBeginning){
+            edgesAfterRules.putAll(graph.applyTwoDegreeRule());
         }
 
         // Call method with the clique lower bound
