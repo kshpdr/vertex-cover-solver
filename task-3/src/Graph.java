@@ -414,6 +414,13 @@ public class Graph  {
             }
             return complementGraph;
     }
+    public ArrayList<Vertex> getOrderForColouring(HashMap<Vertex,HashSet<Vertex>> graph, ArrayList<Vertex> vertices){
+        for(Vertex v: vertices){
+            v.degree = graph.get(v).size();
+        }
+        vertices.sort(Comparator.comparingInt(o -> o.degree));
+        return vertices;
+    }
 
     public static int reducedVertices =0;
 
