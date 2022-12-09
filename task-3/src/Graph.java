@@ -396,6 +396,25 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
+    public HashMap<Vertex,HashSet<Vertex>> getComplementGraph(){
+        HashMap<Vertex,HashSet<Vertex>> complementGraph = new HashMap<>();
+            for(Vertex vertex1: this.vertices){
+                for(Vertex vertex2:this.vertices){
+                    if(!vertex1.equals(vertex2)) {
+                        if (!complementGraph.containsKey(vertex1)) {
+                            complementGraph.put(vertex1, new HashSet<>());
+
+                        }
+                        if (!this.adjVertices.get(vertex1).contains(vertex2)) {
+                            complementGraph.get(vertex1).add(vertex2);
+                        }
+                    }
+
+                }
+            }
+            return complementGraph;
+    }
+
     public static int reducedVertices =0;
 
 
@@ -423,14 +442,18 @@ public class Graph  {
         Graph graph = new Graph(edges);
         Graph copyGraph = graph.getCopy();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            StringBuilder sb = new StringBuilder();
             if(graph.completeReduced){
                 for(Vertex vertex1: graph.vertices){
                     for (Vertex vertex2: graph.adjVertices.get(vertex1)){
-                        System.out.println(vertex1.name + " " + vertex2.name);
+                        sb.append(vertex1.name).append(" ").append(vertex2.name);
+
                     }
                 }
+                System.out.println("#");
+                System.out.println(sb);
                 System.out.println("#difference: "+ reducedVertices);
 
             }else {
