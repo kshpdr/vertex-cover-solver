@@ -463,28 +463,59 @@ public class Graph  {
 
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            int numEdges = 0;
+            //Need a Hashmap here to not put 1 2 and 2 1 as an edge but just once
+            HashMap<Vertex,HashSet<Vertex>> edgesSeen = new HashMap<>();
             StringBuilder sb = new StringBuilder();
             if(graph.completeReduced){
                 for(Vertex vertex1: graph.vertices){
                     for (Vertex vertex2: graph.adjVertices.get(vertex1)){
-                        sb.append(vertex1.name).append(" ").append(vertex2.name);
+                        if(!edgesSeen.containsKey(vertex1)){
+                            edgesSeen.put(vertex1, new HashSet<>());
+                        }
+                        if(!edgesSeen.containsKey(vertex2)){
+                            edgesSeen.put(vertex2, new HashSet<>());
+                        }
+                        if(!edgesSeen.get(vertex1).contains(vertex2) && !edgesSeen.get(vertex2).contains(vertex1)){
+                            sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
+                            edgesSeen.get(vertex1).add(vertex2);
+                            edgesSeen.get(vertex2).add(vertex1);
+                            numEdges++;
+                        }
+
 
                     }
                 }
-                System.out.println("#");
+                System.out.println("# " + graph.vertices.size() + " "+ numEdges);
                 System.out.println(sb);
                 System.out.println("#difference: "+ reducedVertices);
 
             }else {
-                for(Vertex vertex1: copyGraph.vertices){
-                    for (Vertex vertex2: copyGraph.adjVertices.get(vertex1)){
-                        System.out.println(vertex1.name + " " + vertex2.name);
-                    }
-                }
-                System.out.println("#difference: "+ 0);
-            }
+                    for(Vertex vertex1: copyGraph.vertices){
+                        for (Vertex vertex2: copyGraph.adjVertices.get(vertex1)){
+                            if(!edgesSeen.containsKey(vertex1)){
+                                edgesSeen.put(vertex1, new HashSet<>());
+                            }
+                            if(!edgesSeen.containsKey(vertex2)){
+                                edgesSeen.put(vertex2, new HashSet<>());
+                            }
+                            if(!edgesSeen.get(vertex1).contains(vertex2) && !edgesSeen.get(vertex2).contains(vertex1)){
+                                sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
+                                edgesSeen.get(vertex1).add(vertex2);
+                                edgesSeen.get(vertex2).add(vertex1);
+                                numEdges++;
+                            }
 
-        }));
+
+                        }
+                    }
+                    System.out.println("# " + copyGraph.vertices.size() + " "+ numEdges);
+                    System.out.println(sb);
+                    System.out.println("#difference: "+ reducedVertices);
+
+
+        }}));
+
 
 
 
