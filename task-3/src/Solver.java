@@ -54,6 +54,7 @@ public class Solver {
             return null;
         }
 
+
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
 
         LinkedList<String> solution;
@@ -121,6 +122,9 @@ public class Solver {
         while (((line = bi.readLine()) != null)) {
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
+//                if(nodes.length==1){
+//                    System.exit(0);
+//                }
                 edges.add(nodes);
             }
         }

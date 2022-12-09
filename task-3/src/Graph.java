@@ -199,38 +199,10 @@ public class Graph  {
         return null;
     }
 
-    HashSet<Vertex> getCliqueFromVertex(Vertex firstVertex) {
-        HashSet<Vertex> clique = new HashSet<>();
-        clique.add(firstVertex);
-        ArrayList<Vertex> vertices = new ArrayList<>(this.adjVertices.get(firstVertex));
-        Collections.shuffle(vertices);
-        for (Vertex vertex : vertices) {
-            if (!clique.contains(vertex) && this.adjVertices.get(vertex).containsAll(clique) ) {
-                    clique.add(vertex);
-                    
-            }
-        }
-        return clique;
-
-    }
 
     int getCliqueLowerBound() {
-        Graph copyGraph = this.getCopy();
-        HashSet<HashSet<Vertex>> result = new HashSet<>();
-        HashSet<Vertex> maxClique;
-        int usedVertices = 0;
 
-
-
-        while (!copyGraph.adjVertices.keySet().isEmpty()) {
-            maxClique = copyGraph.getCliqueFromVertex(copyGraph.getNextNode());
-            result.add(maxClique);
-            usedVertices+=maxClique.size();
-
-            copyGraph.removeSetofVertices(maxClique);
-
-        }
-        return this.adjVertices.size() - result.size()- (this.adjVertices.size()-usedVertices);
+        return this.vertices.size() - this.getHeuristicCliqueCover();
 
     }
 
@@ -447,6 +419,19 @@ public class Graph  {
             }
         }
         return color;
+    }
+
+    public int getHeuristicCliqueCover(){
+        HashMap<Vertex,HashSet<Vertex>> complementGraph = this.getComplementGraph();
+        ArrayList<Vertex> vertices = new ArrayList<>(complementGraph.keySet());
+        ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
+        this.getGraphColoring(complementGraph,orderedVertices);
+        Set<Integer> setColors= new HashSet<>();
+        for(Vertex vertex: orderedVertices){
+            setColors.add(vertex.color);
+        }
+        return setColors.size();
+
     }
 
     public static int reducedVertices =0;
