@@ -406,6 +406,9 @@ public class Graph  {
 
                         }
                         if (!this.adjVertices.get(vertex1).contains(vertex2)) {
+                            //Reinitializing colors in case they come from another iteration
+                            vertex1.color=-1;
+                            vertex2.color=-1;
                             complementGraph.get(vertex1).add(vertex2);
                         }
                     }
@@ -420,6 +423,30 @@ public class Graph  {
         }
         vertices.sort(Comparator.comparingInt(o -> o.degree));
         return vertices;
+    }
+
+    public void getGraphColoring(HashMap<Vertex,HashSet<Vertex>> graph,ArrayList<Vertex> order){
+            for(Vertex vertex: order){
+                vertex.color = this.getNextColorForColouring(graph.get(vertex));
+            }
+    }
+
+    public int getNextColorForColouring(Set<Vertex> neighbors){
+        Set<Integer> setOfColors = new HashSet<>();
+        for(Vertex neighbor: neighbors){
+                setOfColors.add(neighbor.color);
+
+        }
+
+        int color = 1;
+        while(true){
+            if(setOfColors.contains(color)){
+                color++;
+            }else {
+                break;
+            }
+        }
+        return color;
     }
 
     public static int reducedVertices =0;
