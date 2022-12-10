@@ -7,7 +7,7 @@ public class BipartiteGraph {
 
     public ArrayList<Vertex> left = new ArrayList<>();
     public ArrayList<Vertex> right = new ArrayList<>();
-    public List<Edge> edges = new ArrayList<>();
+    public HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
 
     HashMap<Vertex, Vertex> pairLeft, pairRight;
     HashMap<Vertex, Integer> dist;
@@ -50,11 +50,29 @@ public class BipartiteGraph {
                 }
 
                 if (leftFirst != null && leftSecond != null && rightFirst != null && rightSecond != null){
-                    edges.add(new Edge(leftFirst, rightSecond));
-                    edges.add(new Edge(leftSecond, rightFirst));
+                    addEdge(leftFirst, rightSecond);
+                    addEdge(leftSecond, rightFirst);
                 }
             }
         }
+    }
+
+    void addEdge(Vertex from, Vertex to){
+        // Add (u,v) to adjMap
+        HashSet<Vertex> neighbors = adjMap.get(from);
+        if (neighbors == null){
+            neighbors = new HashSet<>();
+            adjMap.put(from,neighbors);
+        }
+        neighbors.add(to);
+
+        // Add (v,u) to adjMap
+        neighbors = adjMap.get(to);
+        if (neighbors == null){
+            neighbors = new HashSet<>();
+            adjMap.put(to,neighbors);
+        }
+        neighbors.add(from);
     }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
@@ -103,13 +121,10 @@ public class BipartiteGraph {
         while (!queue.isEmpty()) {
             Vertex vertex = queue.poll();
             if (dist.get(vertex) < dist.get(nilVertex)) {
-                for (Edge edge : edges) {
-                    if (edge.getFirstVertex() == vertex) {
-                        Vertex neighbor = edge.getSecondVertex();
-                        if (dist.get(pairRight.get(neighbor)) == INF) {
-                            dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
-                            queue.add(pairRight.get(neighbor));
-                        }
+                for (Vertex neighbor : adjMap.get(vertex)){
+                    if (dist.get(pairRight.get(neighbor)) == INF) {
+                        dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
+                        queue.add(pairRight.get(neighbor));
                     }
                 }
             }
@@ -119,17 +134,13 @@ public class BipartiteGraph {
 
     public boolean dfs(Vertex vertex) {
         if (vertex != nilVertex) {
-            for (Edge edge : edges) {
-                if (edge.getFirstVertex() == vertex) {
-                    // Adjacent to u
-                    Vertex neighbor = edge.getSecondVertex();
-                    // Follow the distances set by BFS
-                    if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
-                        if (dfs(pairRight.get(neighbor))) {
-                            pairRight.replace(neighbor, vertex);
-                            pairLeft.replace(vertex, neighbor);
-                            return true;
-                        }
+            for (Vertex neighbor : adjMap.get(vertex)){
+                // Follow the distances set by BFS
+                if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
+                    if (dfs(pairRight.get(neighbor))) {
+                        pairRight.replace(neighbor, vertex);
+                        pairLeft.replace(vertex, neighbor);
+                        return true;
                     }
                 }
             }
