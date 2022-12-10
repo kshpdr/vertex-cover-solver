@@ -4,16 +4,16 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean lpBoundBeginning  = true;
+    public static boolean lpBoundBeginning  = false;
     public static boolean cliqueBoundBeginning = false;
     public static boolean dominationRuleBeginning = false;
     public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = false;
-    public static boolean oneDegreeRuleBeginning = false;
-    public static boolean twoDegreeRuleBeginning = false;
+    public static boolean oneDegreeRuleBeginning = true;
+    public static boolean twoDegreeRuleBeginning = true;
 
     public static boolean cliqueBoundIteration= false;
-    public static boolean lpBoundIteration= true;
+    public static boolean lpBoundIteration= false;
     public static boolean dominationRuleIteration = false;
     public static boolean unconfinedRuleIteration = false;
     public static boolean highDegreeRuleIteration = false;
@@ -141,7 +141,9 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        LinkedList<String> reductionResult = oneDegreeRuleBeginning ? ReductionRules.applyReductionRules(edges) : new LinkedList<>();
+        ReductionRules preReduction = new ReductionRules(oneDegreeRuleBeginning,twoDegreeRuleBeginning);
+
+        LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
@@ -182,26 +184,32 @@ public class Solver {
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
 
+        // Save all results in one list
+        LinkedList<String> allResults = new LinkedList<>();
+
         //Add results from reduction rules
         if (!reductionResult.isEmpty()) {
-            for (String s : reductionResult) {
-                sb.append(s).append("\n");
-                solutionSize++;
-            }
+            allResults.addAll(reductionResult);
         }
 
         //Add results from Domination rule
-        for(Vertex vertex: edgesAfterRules.keySet()){
-            sb.append(vertex.name).append("\n");
-            solutionSize++;
+        for (Vertex v : edgesAfterRules.keySet()){
+            allResults.add(v.name);
         }
 
         // Add results from actual branching algorithm
         if (!result.isEmpty()) {
-            for (String s : result) {
-                solutionSize++;
-                sb.append(s).append("\n");
-            }
+            allResults.addAll(result);
+        }
+
+        if (twoDegreeRuleBeginning){
+            preReduction.undoMerge(allResults);
+        }
+
+        for (String v : allResults){
+            sb.append(v);
+            sb.append("\n");
+            solutionSize++;
         }
 
         sb.append("#recursive steps: ").append(recursiveSteps).append("\n");

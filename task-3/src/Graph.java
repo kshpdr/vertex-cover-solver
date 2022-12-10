@@ -7,21 +7,26 @@ import java.util.concurrent.*;
 public class Graph  {
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
+    private final HashMap<String,Vertex> idxMap = new HashMap<>();
 
 
     public Graph(HashSet<String[]> edges) {
-
+        int indexCounter = 0;
         for (String[] edge : edges) {
-            Vertex vertex1 = new Vertex(edge[0], Integer.parseInt(edge[0]));
-            Vertex vertex2 = new Vertex(edge[1], Integer.parseInt(edge[1]));
-
-            if (!adjVertices.containsKey(vertex1)) {
+            Vertex vertex1 = idxMap.get(edge[0]);
+            if (vertex1 == null) {
+                vertex1 = new Vertex(edge[0], indexCounter++);
                 this.adjVertices.put(vertex1, new HashSet<>());
                 this.vertices.add(vertex1);
+                idxMap.put(edge[0],vertex1);
             }
-            if (!adjVertices.containsKey(vertex2)) {
+
+            Vertex vertex2 = idxMap.get(edge[1]);
+            if (vertex2 == null) {
+                vertex2 = new Vertex(edge[1], indexCounter++);
                 this.adjVertices.put(vertex2, new HashSet<>());
                 this.vertices.add(vertex2);
+                idxMap.put(edge[1],vertex2);
             }
 
             this.adjVertices.get(vertex1).add(vertex2);
