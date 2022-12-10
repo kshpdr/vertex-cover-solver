@@ -434,6 +434,37 @@ public class Graph  {
 
     }
 
+    public HashMap<Vertex,HashSet<Vertex>> lpReduction(){
+        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
+        int originalLpSolution = this.getLpBound();
+        ArrayList<Vertex> tmpVertices;
+        boolean reduced;
+        boolean changedGraph = false;
+        do {
+            reduced = false;
+            tmpVertices = new ArrayList<>(this.vertices);
+            for (Vertex v : tmpVertices) {
+                if (changedGraph) {
+                    originalLpSolution = this.getLpBound();
+                }
+                changedGraph = false;
+                HashSet<Vertex> removedVertices;
+                removedVertices = this.removeVertex(v);
+                int tmpLpSolution = this.getLpBound() + 1;
+                if (tmpLpSolution <= originalLpSolution) {
+                    verticesInVertexCover.put(v, removedVertices);
+                    reduced = true;
+                    changedGraph = true;
+                } else {
+                    this.putVertexBack(v, removedVertices);
+                }
+            }
+        } while (reduced);
+        return verticesInVertexCover;
+
+
+    }
+
     public static int reducedVertices =0;
 
 
