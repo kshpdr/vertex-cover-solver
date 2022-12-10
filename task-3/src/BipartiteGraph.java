@@ -19,32 +19,40 @@ public class BipartiteGraph {
             right.add(new Vertex(vertex.name, vertex.id));
         }
 
-        for (Edge edge : graph.getListEdges()) {
-            Vertex leftFirst = null;
-            Vertex leftSecond = null;
-            for (Vertex vertex : left){
-                if (vertex.equals(edge.getFirstVertex())){
-                    leftFirst = vertex;
-                }
-                else if (vertex.equals(edge.getSecondVertex())){
-                    leftSecond = vertex;
-                }
-            }
+        HashMap<Vertex,HashSet<Vertex>> map = graph.getAdjVertices();
+        for (Vertex firstVertex : map.keySet()){
+            HashSet<Vertex> neighbors = map.get(firstVertex);
+            if (neighbors == null) continue;
+            for (Vertex secondVertex : neighbors){
+                // Skip reverse edges: (0,1) ok, but not (1,0) again => avoid duplicates
+                if (firstVertex.id > secondVertex.id) continue;
 
-            Vertex rightFirst = null;
-            Vertex rightSecond = null;
-            for (Vertex vertex : right){
-                if (vertex.equals(edge.getFirstVertex())){
-                    rightFirst = vertex;
+                Vertex leftFirst = null;
+                Vertex leftSecond = null;
+                for (Vertex vertex : left){
+                    if (vertex.equals(firstVertex)){
+                        leftFirst = vertex;
+                    }
+                    else if (vertex.equals(secondVertex)){
+                        leftSecond = vertex;
+                    }
                 }
-                else if (vertex.equals(edge.getSecondVertex())){
-                    rightSecond = vertex;
-                }
-            }
 
-            if (leftFirst != null && leftSecond != null && rightFirst != null && rightSecond != null){
-                edges.add(new Edge(leftFirst, rightSecond));
-                edges.add(new Edge(leftSecond, rightFirst));
+                Vertex rightFirst = null;
+                Vertex rightSecond = null;
+                for (Vertex vertex : right){
+                    if (vertex.equals(firstVertex)){
+                        rightFirst = vertex;
+                    }
+                    else if (vertex.equals(secondVertex)){
+                        rightSecond = vertex;
+                    }
+                }
+
+                if (leftFirst != null && leftSecond != null && rightFirst != null && rightSecond != null){
+                    edges.add(new Edge(leftFirst, rightSecond));
+                    edges.add(new Edge(leftSecond, rightFirst));
+                }
             }
         }
     }

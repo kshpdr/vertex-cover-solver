@@ -5,9 +5,8 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class Graph  {
-    private final Map<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
+    private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
-    private final HashSet<Edge> edges = new HashSet<>();
 
 
     public Graph(HashSet<String[]> edges) {
@@ -32,7 +31,6 @@ public class Graph  {
             // increasing degrees of vertices
             vertex1.degree++;
             vertex2.degree++;
-            this.edges.add(new Edge(vertex1, vertex2));
         }
     }
 
@@ -65,26 +63,13 @@ public class Graph  {
         return true;
     }
 
-    public void deleteEdgesWith(Vertex vertex){
-        HashSet<Edge> edgesToRemove = new HashSet<>();
-        for (Edge edge : edges){
-            if (edge.contains(vertex)){
-                edgesToRemove.add(edge);
-            }
-        }
-        edges.removeAll(edgesToRemove);
-    }
-
-    public void addEdges(Vertex vertex, HashSet<Vertex> neighbors){
-        for (Vertex neighbor : neighbors){
-            edges.add(new Edge(vertex, neighbor));
-        }
+    public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
+        return adjVertices;
     }
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
 //        vertexToRemove.active = false;
         vertices.remove(vertexToRemove);
-        this.deleteEdgesWith(vertexToRemove);
         HashSet<Vertex> adjacentVertices = new HashSet<>();
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
         while (iterator.hasNext()) {
@@ -97,7 +82,6 @@ public class Graph  {
                 iterator.remove();
 //                tmpVertex.active=false;
                 vertices.remove(tmpVertex);
-                this.deleteEdgesWith(tmpVertex);
             }
         }
 
@@ -114,7 +98,6 @@ public class Graph  {
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
 //        originalVertex.active = true;
         vertices.add(originalVertex);
-        this.addEdges(originalVertex, neighbors);
 
         if (!adjVertices.containsKey(originalVertex))
             adjVertices.put(originalVertex, new HashSet<>());
@@ -169,9 +152,6 @@ public class Graph  {
 
             // new
 //            copy.adjVertices.put(vertexCopy, new HashSet<>(this.adjVertices.get(vertexCopy)));
-        }
-        for(Edge edge: this.edges){
-            copy.edges.add(new Edge(findVertex(copy.vertices, edge.getFirstVertex()), findVertex(copy.vertices, edge.getSecondVertex())));
         }
 
         // why do that now?
@@ -239,9 +219,6 @@ public class Graph  {
         return this.vertices;
     }
 
-    public HashSet<Edge> getListEdges() {
-        return edges;
-    }
 
     public int getLpBound() {
         BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
@@ -335,7 +312,13 @@ public class Graph  {
     }
 
     public boolean applyBussRule(int k){
-        return vertices.size() <= (k * k + k) && edges.size() <= k * k;
+        int totalEdges = 0;
+        for (Vertex v : adjVertices.keySet()){
+            HashSet<Vertex> neighbors = adjVertices.get(v);
+            if (neighbors == null) continue;
+            totalEdges += neighbors.size();
+        }
+        return vertices.size() <= (k * k + k) && totalEdges <= k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
@@ -441,10 +424,20 @@ public class Graph  {
 
     public void printReducedGraph(int numOfReducedVertices){
 
-        System.out.println("# "+ this.vertices.size() + " " + this.edges.size());
-        for (Edge edge: this.edges){
-            System.out.println(edge.getFirstVertex().name + " " + edge.getSecondVertex().name);
+        int totalEdges = 0;
+        for (Vertex firstVertex: this.adjVertices.keySet()){
+
+            HashSet<Vertex> neighbors = this.adjVertices.get(firstVertex);
+            if (neighbors == null) continue;
+
+            for (Vertex secondVertex : neighbors){
+                if (firstVertex.id > secondVertex.id) continue;
+                
+                System.out.println(firstVertex.name + " " + secondVertex.name);
+                totalEdges++;
+            }
         }
+        System.out.println("# "+ this.vertices.size() + " " + totalEdges);
         System.out.println("#difference: "+ numOfReducedVertices);
     }
 
