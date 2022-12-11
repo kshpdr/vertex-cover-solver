@@ -180,9 +180,7 @@ public class Graph  {
 
 
     int getCliqueLowerBound() {
-
         return this.vertices.size() - this.getHeuristicCliqueCover();
-
     }
 
 
@@ -194,7 +192,6 @@ public class Graph  {
     public int getLpBound() {
         BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
         return (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
-
     }
 
     public int getMaxLowerBound(boolean cliqueBound, boolean lpBound) {
@@ -232,7 +229,7 @@ public class Graph  {
         return edges;
     }
 
-    public HashMap<Vertex,HashSet<Vertex>> applyTwoDegreeRule(LinkedList<MergeElement> mergeList){
+    public HashMap<Vertex,HashSet<Vertex>> applyTwoDegreeRule(){
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         while (true){
             boolean reduced = false;
@@ -258,9 +255,9 @@ public class Graph  {
         return edges;
     }
 
-    public void undoMerge(LinkedList<MergeElement> mergeList, LinkedList<String> resultList){
-        // TODO
-    }
+    // public void undoMerge(LinkedList<MergeElement> mergeList, LinkedList<String> resultList){
+    //     // TODO
+    // }
 
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
@@ -512,11 +509,8 @@ public class Graph  {
             }
         }
 
-
-
         Graph graph = new Graph(edges);
         Graph copyGraph = graph.getCopy();
-
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             int numEdges = 0;
