@@ -6,13 +6,13 @@ import java.util.*;
 public class Graph  {
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
+    private int indexCounter = 0;
 
     public int difference = 0;
     public boolean completeReduced = true;
 
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
-        int indexCounter = 0;
         for (String[] edge : edges) {
             Vertex vertex1 = idxMap.get(edge[0]);
             if (vertex1 == null) {
@@ -471,9 +471,7 @@ public class Graph  {
             reduced = false;
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
-                if (changedGraph) {
-                    originalLpSolution = this.getLpBound();
-                }
+                originalLpSolution = this.getLpBound();
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);

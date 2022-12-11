@@ -26,9 +26,6 @@ public class Solver {
     public static boolean twoDegreeRuleIteration = true;
     public static boolean lpReductionIteration = true;
 
-
-
-
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
@@ -56,7 +53,7 @@ public class Solver {
         if (twoDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
         }
-        if(lpReductionIteration && graph.getVertices().size()<300){
+        if(lpReductionIteration && graph.getVertices().size()<30){
             reducedNeighborsMap.putAll(graph.applyLpReduction());
         }
 
@@ -159,7 +156,6 @@ public class Solver {
 
         long start = System.currentTimeMillis();
 
-
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
         ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
@@ -169,10 +165,8 @@ public class Solver {
         // Instantiate graph
         Graph graph = new Graph(edges);
 
-
-
-
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
+        int lowerbound2 = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
 
         if(dominationRuleBeginning){
             edgesAfterRules.putAll(graph.applyDominationRule());
