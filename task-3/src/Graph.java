@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
+//    private BipartiteGraph bipartiteGraph;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private int indexCounter = 0;
@@ -38,6 +39,7 @@ public class Graph  {
             vertex1.degree++;
             vertex2.degree++;
         }
+//        bipartiteGraph = new BipartiteGraph(this);
     }
 
     public Graph() {
@@ -95,6 +97,7 @@ public class Graph  {
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
         }
+//        bipartiteGraph.removeVertex(vertexToRemove);
         return adjacentVertices;
     }
 
@@ -113,6 +116,8 @@ public class Graph  {
             }
             adjVertices.get(neighbor).add(originalVertex);
             neighbor.degree++;
+
+//            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
     }
 
