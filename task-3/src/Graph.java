@@ -8,10 +8,10 @@ public class Graph  {
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private final HashMap<String,Vertex> idxMap = new HashMap<>();
-
+    private int indexCounter = 0;
 
     public Graph(HashSet<String[]> edges) {
-        int indexCounter = 0;
+        
         for (String[] edge : edges) {
             Vertex vertex1 = idxMap.get(edge[0]);
             if (vertex1 == null) {
@@ -250,8 +250,9 @@ public class Graph  {
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         while (true){
             boolean reduced = false;
-            for (Vertex vertex : adjVertices.keySet()){
+            for (Vertex vertex : new LinkedList<>(adjVertices.keySet())){
                 HashSet<Vertex> neighbors = adjVertices.get(vertex);
+                if (neighbors == null) continue;
                 if (neighbors.size() == 1){
                     for (Vertex neighbor : adjVertices.get(vertex)){
                         edges.put(neighbor,removeVertex(neighbor));
@@ -265,12 +266,13 @@ public class Graph  {
         return edges;
     }
 
-    public HashMap<Vertex,HashSet<Vertex>> applyTwoDegreeRule(){
+    public HashMap<Vertex,HashSet<Vertex>> applyTwoDegreeRule(LinkedList<MergeElement> mergeList){
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         while (true){
             boolean reduced = false;
-            for (Vertex vertex : adjVertices.keySet()){
+            for (Vertex vertex : new LinkedList<>(adjVertices.keySet())){
                 HashSet<Vertex> neighbors = adjVertices.get(vertex);
+                if (neighbors == null) continue;
                 if (neighbors.size() == 2){
                     ArrayList<Vertex> arr = new ArrayList<>(neighbors);
                     Vertex u = arr.get(0);
@@ -281,13 +283,17 @@ public class Graph  {
                         reduced = true;
                     }
                     else {
-                        // TODO: Implement merging for degree-rule
+                        // TODO
                     }
                 }
             }
             if (!reduced) break;
         }
         return edges;
+    }
+
+    public void undoMerge(LinkedList<MergeElement> mergeList, LinkedList<String> resultList){
+        // TODO
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){

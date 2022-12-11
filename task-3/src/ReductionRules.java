@@ -1,14 +1,15 @@
 import java.util.*;
 
 public class ReductionRules {
-    private boolean oneDegreeRule, twoDegreeRule, anyRule;
+    private boolean oneDegreeRule, twoDegreeRule, dominationRule, anyRule;
     private HashMap<String,ArrayList<String>> mergeMap;
     private LinkedList<String> mergeOrder;
 
-    public ReductionRules(boolean oneDegreeRule, boolean twoDegreeRule){
+    public ReductionRules(boolean oneDegreeRule, boolean twoDegreeRule, boolean dominationRule){
         this.oneDegreeRule = oneDegreeRule;
         this.twoDegreeRule = twoDegreeRule;
-        this.anyRule = oneDegreeRule || twoDegreeRule;
+        this.dominationRule = dominationRule;
+        this.anyRule = oneDegreeRule || twoDegreeRule || dominationRule;
         this.mergeMap = new HashMap<>();
         this.mergeOrder = new LinkedList<>();
     }
@@ -67,6 +68,7 @@ public class ReductionRules {
                         result.add(w);
                         removeVertex(adjMap, u);
                         removeVertex(adjMap, w);
+                        removeVertex(adjMap, v);
                     }
                     else {
                         arr.add(v);
@@ -76,12 +78,8 @@ public class ReductionRules {
                         mergeMap.put(x,arr);
                         mergeOrder.add(x);
                         HashSet<String> newNeighbors = new HashSet<>();
-                        for (String n : adjMap.get(u)){
-                            newNeighbors.add(n);
-                        }
-                        for (String n : adjMap.get(w)){
-                            newNeighbors.add(n);
-                        }
+                        newNeighbors.addAll(adjMap.get(u));
+                        newNeighbors.addAll(adjMap.get(w));
                         newNeighbors.removeAll(arr);
                         for (String n : newNeighbors){
                             String[] edge = {x,n};
@@ -89,9 +87,28 @@ public class ReductionRules {
                         }
                         removeVertex(adjMap, u);
                         removeVertex(adjMap, w);
+                        removeVertex(adjMap, v);
                         addVertex(adjMap, x, newNeighbors);
                         //System.out.println("#After: "+adjMap);
                         reduced = true;
+                    }
+                }
+                if (dominationRule){
+                    boolean delete = false;
+                    for (String n : neighbors){
+                        HashSet<String> neighbors2 = adjMap.get(n);
+                        neighbors2.remove(v);
+                        if (neighbors.size() >= neighbors2.size() && neighbors.containsAll(neighbors2)){
+                            neighbors2.add(v);
+                            delete = true;
+                            reduced = true;
+                            break;
+                        }
+                        else neighbors2.add(v);
+                    }
+                    if (delete){
+                        removeVertex(adjMap, v);
+                        result.add(v);
                     }
                 }
             }

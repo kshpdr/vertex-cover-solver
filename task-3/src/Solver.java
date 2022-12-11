@@ -4,21 +4,25 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean lpBoundBeginning  = false;
-    public static boolean cliqueBoundBeginning = false;
+    public static boolean oneDegreeRulePre = true;
+    public static boolean twoDegreeRulePre = true;
+    public static boolean dominationRulePre = true;
+
+    public static boolean lpBoundBeginning  = true;
+    public static boolean cliqueBoundBeginning = true;
     public static boolean dominationRuleBeginning = false;
     public static boolean unconfinedRuleBeginning = false;
-    public static boolean highDegreeRuleBeginning = false;
-    public static boolean oneDegreeRuleBeginning = true;
-    public static boolean twoDegreeRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = true;
+    public static boolean oneDegreeRuleBeginning = false;
+    public static boolean twoDegreeRuleBeginning = false;
 
     public static boolean cliqueBoundIteration= false;
-    public static boolean lpBoundIteration= false;
-    public static boolean dominationRuleIteration = false;
-    public static boolean unconfinedRuleIteration = false;
-    public static boolean highDegreeRuleIteration = false;
-    public static boolean oneDegreeRuleIteration = false;
-    public static boolean twoDegreeRuleIteration = false;
+    public static boolean lpBoundIteration= true;
+    public static boolean dominationRuleIteration = true;
+    public static boolean unconfinedRuleIteration = true;
+    public static boolean highDegreeRuleIteration = true;
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = true;
 
 
     public static int recursiveSteps = 0;
@@ -41,12 +45,13 @@ public class Solver {
         }
 
         if (twoDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
+            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule(null));
         }
 
         k -= reducedNeighborsMap.size();
 
         if (k < 0) {
+
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
@@ -141,7 +146,7 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        ReductionRules preReduction = new ReductionRules(oneDegreeRuleBeginning,twoDegreeRuleBeginning);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
 
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
 
@@ -171,7 +176,7 @@ public class Solver {
         }
 
         if (twoDegreeRuleBeginning){
-            edgesAfterRules.putAll(graph.applyTwoDegreeRule());
+            edgesAfterRules.putAll(graph.applyTwoDegreeRule(null));
         }
 
         // Call method with the clique lower bound
@@ -202,7 +207,7 @@ public class Solver {
             allResults.addAll(result);
         }
 
-        if (twoDegreeRuleBeginning){
+        if (twoDegreeRulePre){
             preReduction.undoMerge(allResults);
         }
 
