@@ -53,7 +53,7 @@ public class Solver {
         if (twoDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
         }
-        if(lpReductionIteration && graph.getVertices().size()<30){
+        if(lpReductionIteration && graph.getVertices().size()<20){
             reducedNeighborsMap.putAll(graph.applyLpReduction());
         }
 
@@ -73,7 +73,7 @@ public class Solver {
             return result;
         }
 
-        if(k < graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration)) {
+        if(k < graph.getMaxLowerBound(cliqueBoundIteration  && graph.getVertices().size()<12000, lpBoundIteration)) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
@@ -184,7 +184,7 @@ public class Solver {
         }
 
         // Call method with the clique lower bound
-        int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
+        int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
 
         if (highDegreeRuleBeginning){
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
