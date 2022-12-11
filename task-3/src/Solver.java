@@ -4,18 +4,25 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
+    public static boolean oneDegreeRulePre = true;
+    public static boolean twoDegreeRulePre = true;
+    public static boolean dominationRulePre = true;
+
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
-    public static boolean dominationRuleBeginning = true;
-    public static boolean unconfinedRuleBeginning = true;
+    public static boolean dominationRuleBeginning = false;
+    public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = true;
+    public static boolean oneDegreeRuleBeginning = false;
+    public static boolean twoDegreeRuleBeginning = false;
 
-    public static boolean cliqueBoundIteration= true;
+    public static boolean cliqueBoundIteration= false;
     public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleBeginning = true;
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = true;
 
 
     public static int recursiveSteps = 0;
@@ -33,9 +40,18 @@ public class Solver {
             reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
         }
 
+        if (oneDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
+        }
+
+        if (twoDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule(null));
+        }
+
         k -= reducedNeighborsMap.size();
 
         if (k < 0) {
+
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
@@ -134,7 +150,9 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        LinkedList<String> reductionResult = ReductionRules.applyReductionRules(edges);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
+
+        LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
@@ -157,6 +175,14 @@ public class Solver {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
 
+        if (oneDegreeRuleBeginning){
+            edgesAfterRules.putAll(graph.applyOneDegreeRule());
+        }
+
+        if (twoDegreeRuleBeginning){
+            edgesAfterRules.putAll(graph.applyTwoDegreeRule(null));
+        }
+
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
 
@@ -167,26 +193,32 @@ public class Solver {
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
 
+        // Save all results in one list
+        LinkedList<String> allResults = new LinkedList<>();
+
         //Add results from reduction rules
         if (!reductionResult.isEmpty()) {
-            for (String s : reductionResult) {
-                sb.append(s).append("\n");
-                solutionSize++;
-            }
+            allResults.addAll(reductionResult);
         }
 
         //Add results from Domination rule
-        for(Vertex vertex: edgesAfterRules.keySet()){
-            sb.append(vertex.name).append("\n");
-            solutionSize++;
+        for (Vertex v : edgesAfterRules.keySet()){
+            allResults.add(v.name);
         }
 
         // Add results from actual branching algorithm
         if (!result.isEmpty()) {
-            for (String s : result) {
-                solutionSize++;
-                sb.append(s).append("\n");
-            }
+            allResults.addAll(result);
+        }
+
+        if (twoDegreeRulePre){
+            preReduction.undoMerge(allResults);
+        }
+
+        for (String v : allResults){
+            sb.append(v);
+            sb.append("\n");
+            solutionSize++;
         }
 
         sb.append("#recursive steps: ").append(recursiveSteps).append("\n");

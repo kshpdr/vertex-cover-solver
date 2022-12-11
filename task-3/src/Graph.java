@@ -4,25 +4,32 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
-    private final Map<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
+    private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
-    private final HashSet<Edge> edges = new HashSet<>();
+
+    private final HashMap<String,Vertex> idxMap = new HashMap<>();
+    private int indexCounter = 0;
+
+    public static int reducedVertices = 0;
     public boolean completeReduced = true;
 
-
     public Graph(HashSet<String[]> edges) {
-
+        
         for (String[] edge : edges) {
-            Vertex vertex1 = new Vertex(edge[0], Integer.parseInt(edge[0]));
-            Vertex vertex2 = new Vertex(edge[1], Integer.parseInt(edge[1]));
-
-            if (!adjVertices.containsKey(vertex1)) {
+            Vertex vertex1 = idxMap.get(edge[0]);
+            if (vertex1 == null) {
+                vertex1 = new Vertex(edge[0], indexCounter++);
                 this.adjVertices.put(vertex1, new HashSet<>());
                 this.vertices.add(vertex1);
+                idxMap.put(edge[0],vertex1);
             }
-            if (!adjVertices.containsKey(vertex2)) {
+
+            Vertex vertex2 = idxMap.get(edge[1]);
+            if (vertex2 == null) {
+                vertex2 = new Vertex(edge[1], indexCounter++);
                 this.adjVertices.put(vertex2, new HashSet<>());
                 this.vertices.add(vertex2);
+                idxMap.put(edge[1],vertex2);
             }
 
             this.adjVertices.get(vertex1).add(vertex2);
@@ -32,7 +39,6 @@ public class Graph  {
             // increasing degrees of vertices
             vertex1.degree++;
             vertex2.degree++;
-            this.edges.add(new Edge(vertex1, vertex2));
         }
     }
 
@@ -65,26 +71,12 @@ public class Graph  {
         return true;
     }
 
-    public void deleteEdgesWith(Vertex vertex){
-        HashSet<Edge> edgesToRemove = new HashSet<>();
-        for (Edge edge : edges){
-            if (edge.contains(vertex)){
-                edgesToRemove.add(edge);
-            }
-        }
-        edges.removeAll(edgesToRemove);
-    }
-
-    public void addEdges(Vertex vertex, HashSet<Vertex> neighbors){
-        for (Vertex neighbor : neighbors){
-            edges.add(new Edge(vertex, neighbor));
-        }
+    public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
+        return adjVertices;
     }
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
-//        vertexToRemove.active = false;
         vertices.remove(vertexToRemove);
-        this.deleteEdgesWith(vertexToRemove);
         HashSet<Vertex> adjacentVertices = new HashSet<>();
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
         while (iterator.hasNext()) {
@@ -95,9 +87,7 @@ public class Graph  {
             }
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
-//                tmpVertex.active=false;
                 vertices.remove(tmpVertex);
-                this.deleteEdgesWith(tmpVertex);
             }
         }
 
@@ -105,16 +95,13 @@ public class Graph  {
             adjacentVertices.addAll(adjVertices.get(vertexToRemove));
             vertexToRemove.degree = 0;
             adjVertices.remove(vertexToRemove);
-//            vertexToRemove.active=false;
             vertices.remove(vertexToRemove);
         }
         return adjacentVertices;
     }
 
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
-//        originalVertex.active = true;
         vertices.add(originalVertex);
-        this.addEdges(originalVertex, neighbors);
 
         if (!adjVertices.containsKey(originalVertex))
             adjVertices.put(originalVertex, new HashSet<>());
@@ -124,7 +111,6 @@ public class Graph  {
 
             if (!adjVertices.containsKey(neighbor)) {
                 adjVertices.put(neighbor, new HashSet<>());
-//                neighbor.active = true;
                 vertices.add(neighbor);
             }
             adjVertices.get(neighbor).add(originalVertex);
@@ -166,15 +152,8 @@ public class Graph  {
             Vertex vertexCopy = new Vertex(vertex.name, vertex.id);
             vertexCopy.degree = vertex.degree;
             copy.vertices.add(vertexCopy);
-
-            // new
-//            copy.adjVertices.put(vertexCopy, new HashSet<>(this.adjVertices.get(vertexCopy)));
-        }
-        for(Edge edge: this.edges){
-            copy.edges.add(new Edge(findVertex(copy.vertices, edge.getFirstVertex()), findVertex(copy.vertices, edge.getSecondVertex())));
         }
 
-        // why do that now?
         for (Vertex vertex : this.adjVertices.keySet()) {
             for (Vertex neighbor : this.adjVertices.get(vertex)) {
                 if (copy.adjVertices.containsKey(vertex)) {
@@ -211,9 +190,6 @@ public class Graph  {
         return this.vertices;
     }
 
-    public HashSet<Edge> getListEdges() {
-        return edges;
-    }
 
     public int getLpBound() {
         BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
@@ -234,6 +210,56 @@ public class Graph  {
         else {
             return 0;
         }
+    }
+
+    public HashMap<Vertex,HashSet<Vertex>> applyOneDegreeRule(){
+        HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
+        while (true){
+            boolean reduced = false;
+            for (Vertex vertex : new LinkedList<>(adjVertices.keySet())){
+                HashSet<Vertex> neighbors = adjVertices.get(vertex);
+                if (neighbors == null) continue;
+                if (neighbors.size() == 1){
+                    for (Vertex neighbor : adjVertices.get(vertex)){
+                        edges.put(neighbor,removeVertex(neighbor));
+                        reduced = true;
+                        break;
+                    }
+                }
+            }
+            if (!reduced) break;
+        }
+        return edges;
+    }
+
+    public HashMap<Vertex,HashSet<Vertex>> applyTwoDegreeRule(LinkedList<MergeElement> mergeList){
+        HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
+        while (true){
+            boolean reduced = false;
+            for (Vertex vertex : new LinkedList<>(adjVertices.keySet())){
+                HashSet<Vertex> neighbors = adjVertices.get(vertex);
+                if (neighbors == null) continue;
+                if (neighbors.size() == 2){
+                    ArrayList<Vertex> arr = new ArrayList<>(neighbors);
+                    Vertex u = arr.get(0);
+                    Vertex w = arr.get(1);
+                    if (adjVertices.get(u).contains(w)){
+                        edges.put(u,removeVertex(u));
+                        edges.put(w,removeVertex(w));
+                        reduced = true;
+                    }
+                    else {
+                        // TODO
+                    }
+                }
+            }
+            if (!reduced) break;
+        }
+        return edges;
+    }
+
+    public void undoMerge(LinkedList<MergeElement> mergeList, LinkedList<String> resultList){
+        // TODO
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
@@ -263,7 +289,13 @@ public class Graph  {
     }
 
     public boolean applyBussRule(int k){
-        return vertices.size() <= (k * k + k) && edges.size() <= k * k;
+        int totalEdges = 0;
+        for (Vertex v : adjVertices.keySet()){
+            HashSet<Vertex> neighbors = adjVertices.get(v);
+            if (neighbors == null) continue;
+            totalEdges += neighbors.size();
+        }
+        return vertices.size() <= (k * k + k) && totalEdges <= k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
@@ -384,11 +416,11 @@ public class Graph  {
                             complementGraph.get(vertex1).add(vertex2);
                         }
                     }
-
                 }
             }
             return complementGraph;
     }
+
     public ArrayList<Vertex> getOrderForColouring(HashMap<Vertex,HashSet<Vertex>> graph, ArrayList<Vertex> vertices){
         for(Vertex v: vertices){
             v.degree = graph.get(v).size();
@@ -460,16 +492,9 @@ public class Graph  {
                 }
             }
         } while (reduced);
+
         return verticesInVertexCover;
-
-
     }
-
-    public static int reducedVertices =0;
-
-
-
-
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
@@ -521,40 +546,30 @@ public class Graph  {
                 System.out.println(sb);
                 System.out.println("#difference: "+ reducedVertices);
 
-            }else {
-                    for(Vertex vertex1: copyGraph.vertices){
-                        for (Vertex vertex2: copyGraph.adjVertices.get(vertex1)){
-                            if(!edgesSeen.containsKey(vertex1)){
-                                edgesSeen.put(vertex1, new HashSet<>());
-                            }
-                            if(!edgesSeen.containsKey(vertex2)){
-                                edgesSeen.put(vertex2, new HashSet<>());
-                            }
-                            if(!edgesSeen.get(vertex1).contains(vertex2) && !edgesSeen.get(vertex2).contains(vertex1)){
-                                sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
-                                edgesSeen.get(vertex1).add(vertex2);
-                                edgesSeen.get(vertex2).add(vertex1);
-                                numEdges++;
-                            }
-
-
+            } else {
+                for (Vertex vertex1: copyGraph.vertices) {
+                    for (Vertex vertex2: copyGraph.adjVertices.get(vertex1)){
+                        // if (vertex1.id > vertex2.id) continue;
+                        if (!edgesSeen.containsKey(vertex1)){
+                            edgesSeen.put(vertex1, new HashSet<>());
+                        }
+                        if (!edgesSeen.containsKey(vertex2)){
+                            edgesSeen.put(vertex2, new HashSet<>());
+                        }
+                        if (!edgesSeen.get(vertex1).contains(vertex2) && !edgesSeen.get(vertex2).contains(vertex1)){
+                            sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
+                            edgesSeen.get(vertex1).add(vertex2);
+                            edgesSeen.get(vertex2).add(vertex1);
+                            numEdges++;
                         }
                     }
-                    System.out.println("# " + copyGraph.vertices.size() + " "+ numEdges);
-                    System.out.println(sb);
-                    System.out.println("#difference: "+ reducedVertices);
-
-
+                }
+                System.out.println("# " + copyGraph.vertices.size() + " "+ numEdges);
+                System.out.println(sb);
+                System.out.println("#difference: "+ reducedVertices);
         }}));
-
-
-
 
         reducedVertices = graph.applyDominationRule().size();
         reducedVertices+= graph.applyUnconfinedRule().size();
-
-
-
-
     }
 }
