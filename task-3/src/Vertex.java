@@ -4,6 +4,9 @@ public class Vertex {
     int degree;
     int dist = 0;
 
+    //need color for Clique Bound
+    int color =-1;
+
 //    boolean active =true;
 
 
@@ -40,7 +43,7 @@ public class Vertex {
 
         // sb.append("Vertices: ").append("\n");
 
-        return "Vertex " + this.name + " degree " + this.degree;
+        return "Vertex " + this.name + " degree " + this.degree + " color "+ this.color;
     }
 
 //    @Override

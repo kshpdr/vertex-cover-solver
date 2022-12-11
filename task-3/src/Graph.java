@@ -2,12 +2,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Graph  {
     private final Map<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private final HashSet<Edge> edges = new HashSet<>();
+    public boolean completeReduced = true;
 
 
     public Graph(HashSet<String[]> edges) {
@@ -199,38 +199,10 @@ public class Graph  {
         return null;
     }
 
-    HashSet<Vertex> getCliqueFromVertex(Vertex firstVertex) {
-        HashSet<Vertex> clique = new HashSet<>();
-        clique.add(firstVertex);
-        ArrayList<Vertex> vertices = new ArrayList<>(this.adjVertices.get(firstVertex));
-        Collections.shuffle(vertices);
-        for (Vertex vertex : vertices) {
-            if (!clique.contains(vertex) && this.adjVertices.get(vertex).containsAll(clique) ) {
-                    clique.add(vertex);
-                    
-            }
-        }
-        return clique;
-
-    }
 
     int getCliqueLowerBound() {
-        Graph copyGraph = this.getCopy();
-        HashSet<HashSet<Vertex>> result = new HashSet<>();
-        HashSet<Vertex> maxClique;
-        int usedVertices = 0;
 
-
-
-        while (!copyGraph.adjVertices.keySet().isEmpty()) {
-            maxClique = copyGraph.getCliqueFromVertex(copyGraph.getNextNode());
-            result.add(maxClique);
-            usedVertices+=maxClique.size();
-
-            copyGraph.removeSetofVertices(maxClique);
-
-        }
-        return this.adjVertices.size() - result.size()- (this.adjVertices.size()-usedVertices);
+        return this.vertices.size() - this.getHeuristicCliqueCover();
 
     }
 
@@ -339,6 +311,7 @@ public class Graph  {
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
+        this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
         while(true){
             boolean reduced = false;
@@ -361,11 +334,13 @@ public class Graph  {
             }
             if(!reduced) break;
             }
+        this.completeReduced=true;
         return verticesInVertexCover;
         }
 
 
         public Vertex findUForUnconfinedRule(Set<Vertex> possibleUnconfinedSet) {
+             this.completeReduced = false;
                 HashSet<Vertex> neighborhoodOfSet = new HashSet<>();
                 HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
                 for (Vertex vertex: possibleUnconfinedSet){
@@ -390,7 +365,7 @@ public class Graph  {
                         }
                     }
                 }
-
+                this.completeReduced = true;
                 return minVertex;
         }
 
@@ -437,18 +412,111 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
+    public HashMap<Vertex,HashSet<Vertex>> getComplementGraph(){
+        HashMap<Vertex,HashSet<Vertex>> complementGraph = new HashMap<>();
+            for(Vertex vertex1: this.vertices){
+                for(Vertex vertex2:this.vertices){
+                    if(!vertex1.equals(vertex2)) {
+                        if (!complementGraph.containsKey(vertex1)) {
+                            complementGraph.put(vertex1, new HashSet<>());
 
+                        }
+                        if (!this.adjVertices.get(vertex1).contains(vertex2)) {
+                            //Reinitializing colors in case they come from another iteration
+                            vertex1.color=-1;
+                            vertex2.color=-1;
+                            complementGraph.get(vertex1).add(vertex2);
+                        }
+                    }
 
-    public void printReducedGraph(int numOfReducedVertices){
-
-        System.out.println("# "+ this.vertices.size() + " " + this.edges.size());
-        for (Edge edge: this.edges){
-            System.out.println(edge.getFirstVertex().name + " " + edge.getSecondVertex().name);
+                }
+            }
+            return complementGraph;
+    }
+    public ArrayList<Vertex> getOrderForColouring(HashMap<Vertex,HashSet<Vertex>> graph, ArrayList<Vertex> vertices){
+        for(Vertex v: vertices){
+            v.degree = graph.get(v).size();
         }
-        System.out.println("#difference: "+ numOfReducedVertices);
+        vertices.sort(Comparator.comparingInt(o -> o.degree));
+        return vertices;
     }
 
-    public static void main(String[] args) throws IOException {
+    public void getGraphColoring(HashMap<Vertex,HashSet<Vertex>> graph,ArrayList<Vertex> order){
+            for(Vertex vertex: order){
+                vertex.color = this.getNextColorForColouring(graph.get(vertex));
+            }
+    }
+
+    public int getNextColorForColouring(Set<Vertex> neighbors){
+        Set<Integer> setOfColors = new HashSet<>();
+        for(Vertex neighbor: neighbors){
+                setOfColors.add(neighbor.color);
+
+        }
+
+        int color = 1;
+        while(true){
+            if(setOfColors.contains(color)){
+                color++;
+            }else {
+                break;
+            }
+        }
+        return color;
+    }
+
+    public int getHeuristicCliqueCover(){
+        HashMap<Vertex,HashSet<Vertex>> complementGraph = this.getComplementGraph();
+        ArrayList<Vertex> vertices = new ArrayList<>(complementGraph.keySet());
+        ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
+        this.getGraphColoring(complementGraph,orderedVertices);
+        Set<Integer> setColors= new HashSet<>();
+        for(Vertex vertex: orderedVertices){
+            setColors.add(vertex.color);
+        }
+        return setColors.size();
+
+    }
+
+    public HashMap<Vertex,HashSet<Vertex>> lpReduction(){
+        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
+        int originalLpSolution = this.getLpBound();
+        ArrayList<Vertex> tmpVertices;
+        boolean reduced;
+        boolean changedGraph = false;
+        do {
+            reduced = false;
+            tmpVertices = new ArrayList<>(this.vertices);
+            for (Vertex v : tmpVertices) {
+                if (changedGraph) {
+                    originalLpSolution = this.getLpBound();
+                }
+                changedGraph = false;
+                HashSet<Vertex> removedVertices;
+                removedVertices = this.removeVertex(v);
+                int tmpLpSolution = this.getLpBound() + 1;
+                if (tmpLpSolution <= originalLpSolution) {
+                    verticesInVertexCover.put(v, removedVertices);
+                    reduced = true;
+                    changedGraph = true;
+                } else {
+                    this.putVertexBack(v, removedVertices);
+                }
+            }
+        } while (reduced);
+        return verticesInVertexCover;
+
+
+    }
+
+    public static int reducedVertices =0;
+
+
+
+
+
+    public static void main(String[] args) throws InterruptedException, IOException {
+
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
@@ -467,29 +535,67 @@ public class Graph  {
 
         Graph graph = new Graph(edges);
         Graph copyGraph = graph.getCopy();
-        final int[] numReducedVertices = {0};
+
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            int numEdges = 0;
+            //Need a Hashmap here to not put 1 2 and 2 1 as an edge but just once
+            HashMap<Vertex,HashSet<Vertex>> edgesSeen = new HashMap<>();
+            StringBuilder sb = new StringBuilder();
+            if(graph.completeReduced){
+                for(Vertex vertex1: graph.vertices){
+                    for (Vertex vertex2: graph.adjVertices.get(vertex1)){
+                        if(!edgesSeen.containsKey(vertex1)){
+                            edgesSeen.put(vertex1, new HashSet<>());
+                        }
+                        if(!edgesSeen.containsKey(vertex2)){
+                            edgesSeen.put(vertex2, new HashSet<>());
+                        }
+                        if(!edgesSeen.get(vertex1).contains(vertex2) && !edgesSeen.get(vertex2).contains(vertex1)){
+                            sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
+                            edgesSeen.get(vertex1).add(vertex2);
+                            edgesSeen.get(vertex2).add(vertex1);
+                            numEdges++;
+                        }
+
+
+                    }
+                }
+                System.out.println("# " + graph.vertices.size() + " "+ numEdges);
+                System.out.println(sb);
+                System.out.println("#difference: "+ reducedVertices);
+
+            }else {
+                    for(Vertex vertex1: copyGraph.vertices){
+                        for (Vertex vertex2: copyGraph.adjVertices.get(vertex1)){
+                            if(!edgesSeen.containsKey(vertex1)){
+                                edgesSeen.put(vertex1, new HashSet<>());
+                            }
+                            if(!edgesSeen.containsKey(vertex2)){
+                                edgesSeen.put(vertex2, new HashSet<>());
+                            }
+                            if(!edgesSeen.get(vertex1).contains(vertex2) && !edgesSeen.get(vertex2).contains(vertex1)){
+                                sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
+                                edgesSeen.get(vertex1).add(vertex2);
+                                edgesSeen.get(vertex2).add(vertex1);
+                                numEdges++;
+                            }
+
+
+                        }
+                    }
+                    System.out.println("# " + copyGraph.vertices.size() + " "+ numEdges);
+                    System.out.println(sb);
+                    System.out.println("#difference: "+ reducedVertices);
+
+
+        }}));
 
 
 
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<?> future = executor.submit(() -> {
-            numReducedVertices[0] += graph.applyDominationRule().size();
-            numReducedVertices[0] += graph.applyUnconfinedRule().size();
-        });
-        try {
-            future.get(300, TimeUnit.SECONDS);
-            graph.printReducedGraph(numReducedVertices[0]);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            if(future.isCancelled()) {
-                copyGraph.printReducedGraph(0);
-            }
-        } catch (Exception e) {
-            // handle other exceptions
-        } finally {
-            executor.shutdownNow();
-        }
+        reducedVertices = graph.applyDominationRule().size();
+        reducedVertices+= graph.applyUnconfinedRule().size();
 
 
 
