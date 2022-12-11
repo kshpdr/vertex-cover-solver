@@ -15,6 +15,7 @@ public class Solver {
     public static boolean highDegreeRuleBeginning = true;
     public static boolean oneDegreeRuleBeginning = true;
     public static boolean twoDegreeRuleBeginning = true;
+    public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
     public static boolean lpBoundIteration= true;
@@ -23,6 +24,9 @@ public class Solver {
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true;
+    public static boolean lpReductionIteration = true;
+
+
 
 
     public static int recursiveSteps = 0;
@@ -51,6 +55,9 @@ public class Solver {
 
         if (twoDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
+        }
+        if(lpReductionIteration && graph.getVertices().size()<300){
+            reducedNeighborsMap.putAll(graph.applyLpReduction());
         }
 
         k -= reducedNeighborsMap.size();
@@ -191,6 +198,9 @@ public class Solver {
             while (!graph.applyBussRule(lowerbound)){
                 lowerbound++;
             }
+        }
+        if(lpReductionBeginning && graph.getVertices().size()<300){
+            edgesAfterRules.putAll(graph.applyLpReduction());
         }
 
 
