@@ -121,12 +121,14 @@ public class BipartiteGraph {
         while (!queue.isEmpty()) {
             Vertex vertex = queue.poll();
             if (dist.get(vertex) < dist.get(nilVertex)) {
-                for (Vertex neighbor : adjMap.get(vertex)){
-                    if (dist.get(pairRight.get(neighbor)) == INF) {
-                        dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
-                        queue.add(pairRight.get(neighbor));
+                if (adjMap.containsKey(vertex)){
+                    for (Vertex neighbor : adjMap.get(vertex)) {
+                        if (dist.get(pairRight.get(neighbor)) == INF) {
+                            dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
+                            queue.add(pairRight.get(neighbor));
+                        }
                     }
-                }
+            }
             }
         }
         return (dist.get(nilVertex) != INF);
@@ -134,13 +136,15 @@ public class BipartiteGraph {
 
     public boolean dfs(Vertex vertex) {
         if (vertex != nilVertex) {
-            for (Vertex neighbor : adjMap.get(vertex)){
-                // Follow the distances set by BFS
-                if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
-                    if (dfs(pairRight.get(neighbor))) {
-                        pairRight.replace(neighbor, vertex);
-                        pairLeft.replace(vertex, neighbor);
-                        return true;
+            if (adjMap.containsKey(vertex)) {
+                for (Vertex neighbor : adjMap.get(vertex)) {
+                    // Follow the distances set by BFS
+                    if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
+                        if (dfs(pairRight.get(neighbor))) {
+                            pairRight.replace(neighbor, vertex);
+                            pairLeft.replace(vertex, neighbor);
+                            return true;
+                        }
                     }
                 }
             }
