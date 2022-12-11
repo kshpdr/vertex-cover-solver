@@ -283,13 +283,15 @@ public class Graph  {
 
 
     public boolean applyBussRule(int k){
-        int totalEdges = 0;
+        HashSet<Edge> edges = new HashSet<>();
         for (Vertex v : adjVertices.keySet()){
-            HashSet<Vertex> neighbors = adjVertices.get(v);
-            if (neighbors == null) continue;
-            totalEdges += neighbors.size();
+            for (Vertex neighbor : adjVertices.get(v)){
+                if (!edges.contains(new Edge(v, neighbor)) && !edges.contains(new Edge(neighbor, v))){
+                    edges.add(new Edge(v, neighbor));
+                }
+            }
         }
-        return vertices.size() <= (k * k + k) && totalEdges <= k * k;
+        return vertices.size() <= (k * k + k) && edges.size() <= k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){

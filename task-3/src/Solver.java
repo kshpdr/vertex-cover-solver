@@ -166,7 +166,6 @@ public class Solver {
         Graph graph = new Graph(edges);
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
-        int lowerbound2 = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
 
         if(dominationRuleBeginning){
             edgesAfterRules.putAll(graph.applyDominationRule());
