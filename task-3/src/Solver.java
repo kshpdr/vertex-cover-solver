@@ -6,19 +6,19 @@ import java.util.*;
 public class Solver {
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
-    public static boolean dominationRuleBeginning = true;
-    public static boolean unconfinedRuleBeginning = true;
+    public static boolean dominationRuleBeginning = false;
+    public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean oneDegreeRuleBeginning = true;
-    public static boolean twoDegreeRuleBeginning = true;
+    public static boolean oneDegreeRuleBeginning = false;
+    public static boolean twoDegreeRuleBeginning = false;
 
-    public static boolean cliqueBoundIteration= true;
-    public static boolean lpBoundIteration= true;
-    public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true;
+    public static boolean cliqueBoundIteration= false;
+    public static boolean lpBoundIteration= false;
+    public static boolean dominationRuleIteration = false;
+    public static boolean unconfinedRuleIteration = false;
+    public static boolean highDegreeRuleIteration = false;
+    public static boolean oneDegreeRuleIteration = false;
+    public static boolean twoDegreeRuleIteration = false;
 
 
     public static int recursiveSteps = 0;
@@ -27,6 +27,9 @@ public class Solver {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
         if(highDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
+            while (!graph.applyBussRule(k)){
+                k++;
+            }
         }
         if(dominationRuleIteration) {
             reducedNeighborsMap.putAll(graph.applyDominationRule());
@@ -155,11 +158,6 @@ public class Solver {
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-//        if (highDegreeRuleBeginning){
-//            edgesAfterRules.putAll(graph.applyBussRule(reductionResult.size()));
-//        }
-
-
         if(dominationRuleBeginning){
             edgesAfterRules.putAll(graph.applyDominationRule());
         }
@@ -179,7 +177,12 @@ public class Solver {
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning, lpBoundBeginning);
 
-
+        if (highDegreeRuleBeginning){
+            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
+            while (!graph.applyBussRule(lowerbound)){
+                lowerbound++;
+            }
+        }
 
         LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation
