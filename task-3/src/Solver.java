@@ -11,7 +11,7 @@ public class Solver {
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = false;
+    public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
