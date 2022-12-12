@@ -267,19 +267,28 @@ public class Graph  {
     // }
 
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
+        int newK = k;
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         while (true) {
+            HashMap<Vertex,HashSet<Vertex>> edgesToAdd = new HashMap<>();
             HashSet<Vertex> verticesToDelete = new HashSet<>();
             boolean reducable = false;
             for (Vertex vertex : adjVertices.keySet()) {
-                if (adjVertices.get(vertex).size() > k) {
-                    edges.put(vertex, adjVertices.get(vertex));
+                if (adjVertices.get(vertex).size() > newK) {
+                    edgesToAdd.put(vertex, adjVertices.get(vertex));
                     verticesToDelete.add(vertex);
                     reducable = true;
                 }
             }
-            removeSetofVertices(verticesToDelete);
+            if (verticesToDelete.size() <= newK && !verticesToDelete.isEmpty()){
+                removeSetofVertices(verticesToDelete);
+                edges.putAll(edgesToAdd);
+                newK -= edgesToAdd.size();
+            }
+            else{
+                reducable = false;
+            }
             if (!reducable) break;
         }
         this.completeReduced = true;
