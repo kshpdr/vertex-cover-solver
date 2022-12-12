@@ -8,14 +8,14 @@ public class Solver {
     public static boolean twoDegreeRulePre = false;
     public static boolean dominationRulePre = false;
 
-    public static boolean lpBoundBeginning  = false;
+    public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning =true;
     public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = false;
-    public static boolean lpReductionBeginning = false;
+    public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
-    public static boolean lpBoundIteration= false;
+    public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = false;
     public static boolean unconfinedRuleIteration = false;
     public static boolean highDegreeRuleIteration = false;
@@ -171,6 +171,10 @@ public class Solver {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
 
+        if(lpReductionBeginning){
+            edgesAfterRules.putAll(graph.applyLpReduction());
+        }
+
 
 
         // Call method with the clique lower bound
@@ -185,9 +189,7 @@ public class Solver {
 //        for(Vertex vertex: graph.getVertices()){
 //            System.out.println(vertex.name);
 //        };
-        if(lpReductionBeginning){
-            edgesAfterRules.putAll(graph.applyLpReduction());
-        }
+
 
 
 
