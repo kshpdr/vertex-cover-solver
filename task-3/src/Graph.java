@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
-//    private BipartiteGraph bipartiteGraph;
+    private BipartiteGraph bipartiteGraph;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private int indexCounter = 0;
@@ -39,7 +39,7 @@ public class Graph  {
             vertex1.degree++;
             vertex2.degree++;
         }
-//        bipartiteGraph = new BipartiteGraph(this);
+        bipartiteGraph = new BipartiteGraph(this);
     }
 
     public Graph() {
@@ -97,7 +97,7 @@ public class Graph  {
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
         }
-//        bipartiteGraph.removeVertex(vertexToRemove);
+        bipartiteGraph.removeVertex(vertexToRemove);
         return adjacentVertices;
     }
 
@@ -117,7 +117,7 @@ public class Graph  {
             adjVertices.get(neighbor).add(originalVertex);
             neighbor.degree++;
 
-//            bipartiteGraph.addEdge(originalVertex, neighbor);
+            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
     }
 
@@ -193,7 +193,7 @@ public class Graph  {
 
 
     public int getLpBound() {
-        BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
+        //BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
         return (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
     }
 
@@ -478,11 +478,13 @@ public class Graph  {
             reduced = false;
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
-                originalLpSolution = this.getLpBound();
+                if(changedGraph){
+                    originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
+                }
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);
-                int tmpLpSolution = this.getLpBound() + 1;
+                int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
                 if (tmpLpSolution <= originalLpSolution) {
                     verticesInVertexCover.put(v, removedVertices);
                     reduced = true;
@@ -495,6 +497,8 @@ public class Graph  {
         this.completeReduced = true;
         return verticesInVertexCover;
     }
+
+
 
     public void printReducedGraph(){
         int numEdges = 0;
@@ -552,7 +556,7 @@ public class Graph  {
         graph.difference += graph.applyHighDegreeRule(lowerBound).size();
         graph.difference += graph.applyDominationRule().size();
         graph.difference += graph.applyUnconfinedRule().size();
-        if (graph.getVertices().size() < 150) {
+        if (graph.getVertices().size() < 301) {
             graph.difference += graph.applyLpReduction().size();
         }
 

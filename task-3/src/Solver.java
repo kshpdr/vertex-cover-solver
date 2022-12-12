@@ -4,17 +4,14 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre = true;
+    public static boolean oneDegreeRulePre =true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
 
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
-    public static boolean dominationRuleBeginning = true;
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = true;
-    public static boolean oneDegreeRuleBeginning = true;
-    public static boolean twoDegreeRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = false;
     public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
@@ -24,7 +21,7 @@ public class Solver {
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true;
-    public static boolean lpReductionIteration = true;
+    public static boolean lpReductionIteration = false;
 
     public static int recursiveSteps = 0;
 
@@ -53,7 +50,8 @@ public class Solver {
         if (twoDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
         }
-        if(lpReductionIteration && graph.getVertices().size()<20){
+
+        if(lpReductionIteration && graph.getVertices().size()<91) {
             reducedNeighborsMap.putAll(graph.applyLpReduction());
         }
 
@@ -151,6 +149,7 @@ public class Solver {
 //                    System.exit(0);
 //                }
                 edges.add(nodes);
+
             }
         }
 
@@ -165,23 +164,14 @@ public class Solver {
         // Instantiate graph
         Graph graph = new Graph(edges);
 
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-        if(dominationRuleBeginning){
-            edgesAfterRules.putAll(graph.applyDominationRule());
-        }
+        HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
         if(unconfinedRuleBeginning) {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
 
-        if (oneDegreeRuleBeginning){
-            edgesAfterRules.putAll(graph.applyOneDegreeRule());
-        }
 
-        if (twoDegreeRuleBeginning){
-            edgesAfterRules.putAll(graph.applyTwoDegreeRule());
-        }
 
         // Call method with the clique lower bound
         int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
@@ -192,9 +182,13 @@ public class Solver {
                 lowerbound++;
             }
         }
-        if(lpReductionBeginning && graph.getVertices().size()<300){
+//        for(Vertex vertex: graph.getVertices()){
+//            System.out.println(vertex.name);
+//        };
+        if(lpReductionBeginning){
             edgesAfterRules.putAll(graph.applyLpReduction());
         }
+
 
 
         LinkedList<String> result = vc(graph, lowerbound);

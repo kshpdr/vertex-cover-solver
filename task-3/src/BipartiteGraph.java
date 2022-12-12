@@ -57,32 +57,32 @@ public class BipartiteGraph {
         }
     }
 
-//    public void removeVertex(Vertex vertex){
-//        int leftVertexIndex = left.indexOf(vertex);
-//        if (leftVertexIndex != -1){
-//            Vertex leftVertex = left.get(leftVertexIndex);
-//            edges.removeIf(edge -> edge.contains(leftVertex));
-//            left.remove(leftVertex);
-//        }
-//
-//        int rightVertexIndex = right.indexOf(vertex);
-//        if (rightVertexIndex != -1){
-//            Vertex rightVertex = right.get(rightVertexIndex);
-//            edges.removeIf(edge -> edge.contains(rightVertex));
-//            right.remove(rightVertex);
-//        }
-//    }
-//
-//    public void addEdge(Vertex vertex, Vertex neighbor){
-//        Vertex leftFirst = new Vertex(vertex.name, vertex.id);
-//        Vertex leftSecond = new Vertex(neighbor.name, neighbor.id);
-//
-//        Vertex rightFirst = new Vertex(vertex.name, vertex.id);
-//        Vertex rightSecond = new Vertex(neighbor.name, neighbor.id);
-//
-//        edges.add(new Edge(leftFirst, rightSecond));
-//        edges.add(new Edge(leftSecond, rightFirst));
-//    }
+    public void removeVertex(Vertex vertex){
+        int leftVertexIndex = left.indexOf(vertex);
+        if (leftVertexIndex != -1){
+            Vertex leftVertex = left.get(leftVertexIndex);
+            edges.removeIf(edge -> edge.contains(leftVertex));
+            left.remove(leftVertex);
+        }
+
+        int rightVertexIndex = right.indexOf(vertex);
+        if (rightVertexIndex != -1){
+            Vertex rightVertex = right.get(rightVertexIndex);
+            edges.removeIf(edge -> edge.contains(rightVertex));
+            right.remove(rightVertex);
+        }
+    }
+
+    public void addEdge(Vertex vertex, Vertex neighbor){
+        Vertex leftFirst = new Vertex(vertex.name, vertex.id);
+        Vertex leftSecond = new Vertex(neighbor.name, neighbor.id);
+
+        Vertex rightFirst = new Vertex(vertex.name, vertex.id);
+        Vertex rightSecond = new Vertex(neighbor.name, neighbor.id);
+
+        edges.add(new Edge(leftFirst, rightSecond));
+        edges.add(new Edge(leftSecond, rightFirst));
+    }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
     public int findMaximumMatchingSize() {
