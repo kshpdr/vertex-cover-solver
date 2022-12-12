@@ -18,7 +18,7 @@ public class Solver {
     public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = true;
+    public static boolean highDegreeRuleIteration = false;
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true;
     public static boolean lpReductionIteration = false;
