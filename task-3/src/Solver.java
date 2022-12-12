@@ -4,23 +4,23 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =true;
-    public static boolean twoDegreeRulePre = true;
-    public static boolean dominationRulePre = true;
+    public static boolean oneDegreeRulePre =false;
+    public static boolean twoDegreeRulePre = false;
+    public static boolean dominationRulePre = false;
 
-    public static boolean lpBoundBeginning  = true;
-    public static boolean cliqueBoundBeginning = true;
-    public static boolean unconfinedRuleBeginning = true;
+    public static boolean lpBoundBeginning  = false;
+    public static boolean cliqueBoundBeginning =true;
+    public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = false;
-    public static boolean lpReductionBeginning = true;
+    public static boolean lpReductionBeginning = false;
 
     public static boolean cliqueBoundIteration= true;
-    public static boolean lpBoundIteration= true;
-    public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true;
+    public static boolean lpBoundIteration= false;
+    public static boolean dominationRuleIteration = false;
+    public static boolean unconfinedRuleIteration = false;
+    public static boolean highDegreeRuleIteration = false;
+    public static boolean oneDegreeRuleIteration = false;
+    public static boolean twoDegreeRuleIteration = false;
     public static boolean lpReductionIteration = false;
 
     public static int recursiveSteps = 0;

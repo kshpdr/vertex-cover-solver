@@ -479,7 +479,7 @@ public class Graph  {
     public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(){
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
-        int originalLpSolution = this.getLpBound();
+        int originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
         ArrayList<Vertex> tmpVertices;
         boolean reduced;
         boolean changedGraph = false;
