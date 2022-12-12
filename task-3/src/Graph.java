@@ -487,19 +487,21 @@ public class Graph  {
             reduced = false;
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
-                if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
-                }
-                changedGraph = false;
-                HashSet<Vertex> removedVertices;
-                removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
-                if (tmpLpSolution <= originalLpSolution) {
-                    verticesInVertexCover.put(v, removedVertices);
-                    reduced = true;
-                    changedGraph = true;
-                } else {
-                    this.putVertexBack(v, removedVertices);
+                if (this.adjVertices.containsKey(v)) {
+                    if (changedGraph) {
+                        originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
+                    }
+                    changedGraph = false;
+                    HashSet<Vertex> removedVertices;
+                    removedVertices = this.removeVertex(v);
+                    int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
+                    if (tmpLpSolution <= originalLpSolution) {
+                        verticesInVertexCover.put(v, removedVertices);
+                        reduced = true;
+                        changedGraph = true;
+                    } else {
+                        this.putVertexBack(v, removedVertices);
+                    }
                 }
             }
         } while (reduced);
