@@ -11,7 +11,7 @@ public class Solver {
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning =true;
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = false;
     public static boolean lpReductionBeginning =true;
 
     public static boolean cliqueBoundIteration= true;
@@ -30,9 +30,9 @@ public class Solver {
 
         if(highDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
-//            while (!graph.applyBussRule(k)){
-//                k++;
-//            }
+            while (!graph.applyBussRule(k)){
+                k++;
+            }
         }
 
         if(dominationRuleIteration) {
@@ -182,9 +182,9 @@ public class Solver {
 
         if (highDegreeRuleBeginning){
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
-//            while (!graph.applyBussRule(lowerbound)){
-//                lowerbound++;
-//            }
+            while (!graph.applyBussRule(lowerbound)){
+                lowerbound++;
+            }
         }
 //        for(Vertex vertex: graph.getVertices()){
 //            System.out.println(vertex.name);
