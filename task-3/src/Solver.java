@@ -11,16 +11,16 @@ public class Solver {
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning =true;
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = false;
-    public static boolean lpReductionBeginning =true;
+    public static boolean highDegreeRuleBeginning = true;
+    public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
     public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
+    public static boolean unconfinedRuleIteration = false;
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration =true;
+    public static boolean twoDegreeRuleIteration = true;
     public static boolean lpReductionIteration = false;
 
     public static int recursiveSteps = 0;
@@ -29,10 +29,10 @@ public class Solver {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
 
         if(highDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
-            while (!graph.applyBussRule(k)){
-                k++;
-            }
+            reducedNeighborsMap.putAll( graph.applyHighDegreeRule(k));
+//            if (!graph.applyBussRule(k)){
+//                return null;
+//            }
         }
 
         if(dominationRuleIteration) {
