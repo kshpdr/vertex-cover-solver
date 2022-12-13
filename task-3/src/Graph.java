@@ -315,6 +315,7 @@ public class Graph  {
             boolean reduced = false;
             for (Vertex currentVertex : new HashSet<>(this.vertices)) {
                     boolean delete = false;
+                    HashSet<Vertex> removedVertices = new HashSet<>();
                     if (this.vertices.contains(currentVertex)){
                         for (Vertex n : this.adjVertices.get(currentVertex)) {
                             HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
@@ -322,11 +323,15 @@ public class Graph  {
                             if (tmpNeighbors.containsAll(this.adjVertices.get(n))) {
                                 delete = true;
                                 reduced = true;
-                                break;
                             }
                         }
                         if (delete) {
                             verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
+                            verticesInVertexCover.get(currentVertex).addAll(removedVertices);
+//                            for(HashSet<Vertex> collateralRemovedVertices: this.removeSetofVertices(removedVertices).values()){
+//                                verticesInVertexCover.get(currentVertex).addAll(collateralRemovedVertices);
+//                            }
+
                         }
                     }
             }
