@@ -5,6 +5,7 @@ import java.util.*;
 
 public class Graph  {
 //    private BipartiteGraph bipartiteGraph;
+    private int edgesNumber;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private int indexCounter = 0;
@@ -15,6 +16,7 @@ public class Graph  {
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
         for (String[] edge : edges) {
+            edgesNumber++;
             Vertex vertex1 = idxMap.get(edge[0]);
             if (vertex1 == null) {
                 vertex1 = new Vertex(edge[0], indexCounter++);
@@ -82,6 +84,7 @@ public class Graph  {
         while (iterator.hasNext()) {
             Vertex tmpVertex = iterator.next();
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)) {
+                edgesNumber--;
                 tmpVertex.degree--;
                 adjacentVertices.add(tmpVertex);
             }
@@ -107,6 +110,7 @@ public class Graph  {
         if (!adjVertices.containsKey(originalVertex))
             adjVertices.put(originalVertex, new HashSet<>());
         for (Vertex neighbor : neighbors) {
+            edgesNumber++;
             adjVertices.get(originalVertex).add(neighbor);
             originalVertex.degree++;
 
@@ -311,15 +315,15 @@ public class Graph  {
 
 
     public boolean applyBussRule(int k){
-        HashSet<Edge> edges = new HashSet<>();
-        for (Vertex v : adjVertices.keySet()){
-            for (Vertex neighbor : adjVertices.get(v)){
-                if (!edges.contains(new Edge(v, neighbor)) && !edges.contains(new Edge(neighbor, v))){
-                    edges.add(new Edge(v, neighbor));
-                }
-            }
-        }
-        return vertices.size() <= (k * k + k) && edges.size() <= k * k;
+//        HashSet<Edge> edges = new HashSet<>();
+//        for (Vertex v : adjVertices.keySet()){
+//            for (Vertex neighbor : adjVertices.get(v)){
+//                if (!edges.contains(new Edge(v, neighbor)) && !edges.contains(new Edge(neighbor, v))){
+//                    edges.add(new Edge(v, neighbor));
+//                }
+//            }
+//        }
+        return vertices.size() <= (k * k + k) && edgesNumber <= k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
