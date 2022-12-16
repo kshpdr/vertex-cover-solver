@@ -5,6 +5,7 @@ import java.util.*;
 
 public class Graph  {
 //    private BipartiteGraph bipartiteGraph;
+    private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
@@ -22,6 +23,7 @@ public class Graph  {
                 vertex1 = new Vertex(edge[0], indexCounter++);
                 this.adjVertices.put(vertex1, new HashSet<>());
                 this.vertices.add(vertex1);
+                this.degreeOrder.addVertex(vertex1);
                 idxMap.put(edge[0],vertex1);
             }
 
@@ -30,6 +32,7 @@ public class Graph  {
                 vertex2 = new Vertex(edge[1], indexCounter++);
                 this.adjVertices.put(vertex2, new HashSet<>());
                 this.vertices.add(vertex2);
+                this.degreeOrder.addVertex(vertex2);
                 idxMap.put(edge[1],vertex2);
             }
 
@@ -40,6 +43,8 @@ public class Graph  {
             // increasing degrees of vertices
             vertex1.degree++;
             vertex2.degree++;
+            this.degreeOrder.increaseDegreeOfVertex(vertex1, 1);
+            this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
 //        bipartiteGraph = new BipartiteGraph(this);
     }
@@ -61,6 +66,7 @@ public class Graph  {
             }
             sb.append("\n");
         }
+        sb.append("Degrees of Vertices: ").append(this.degreeOrder);
         return sb.toString();
     }
 
@@ -80,17 +86,20 @@ public class Graph  {
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
         vertices.remove(vertexToRemove);
         HashSet<Vertex> adjacentVertices = new HashSet<>();
+        this.degreeOrder.removeVertex(vertexToRemove);
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
         while (iterator.hasNext()) {
             Vertex tmpVertex = iterator.next();
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)) {
                 edgesNumber--;
                 tmpVertex.degree--;
+                this.degreeOrder.decreaseDegreeOfVertex(tmpVertex, 1);
                 adjacentVertices.add(tmpVertex);
             }
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
                 vertices.remove(tmpVertex);
+                this.degreeOrder.removeVertex(tmpVertex);
             }
         }
 
@@ -120,9 +129,11 @@ public class Graph  {
             }
             adjVertices.get(neighbor).add(originalVertex);
             neighbor.degree++;
+            this.degreeOrder.increaseDegreeOfVertex(originalVertex, 1);
 
 //            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
+        this.degreeOrder.putBack(originalVertex, neighbors.size());
     }
 
     HashMap<Vertex, HashSet<Vertex>> removeSetofVertices(HashSet<Vertex> verticesToRemove) {
@@ -143,13 +154,7 @@ public class Graph  {
     }
 
     Vertex getNextNode() {
-        Vertex maxDegreeVertex = adjVertices.keySet().iterator().next();
-        for (Vertex vertex : adjVertices.keySet()){
-            if (adjVertices.get(vertex).size() > adjVertices.get(maxDegreeVertex).size()){
-                maxDegreeVertex = vertex;
-            }
-        }
-        return maxDegreeVertex;
+        return this.degreeOrder.getVertexWithMaxDegree();
     }
 
 
@@ -159,6 +164,7 @@ public class Graph  {
             Vertex vertexCopy = new Vertex(vertex.name, vertex.id);
             vertexCopy.degree = vertex.degree;
             copy.vertices.add(vertexCopy);
+            copy.degreeOrder.addVertex(vertex); // TODO: maybee use vertexCopy?
         }
 
         for (Vertex vertex : this.adjVertices.keySet()) {
