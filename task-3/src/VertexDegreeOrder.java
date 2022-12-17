@@ -53,6 +53,10 @@ public class VertexDegreeOrder {
         return degreeMap + " Max Degree: " + maxDegree;
     }
 
+    public HashSet<Vertex> getDegreeVertices(int degree){
+        return this.degreeMap.get(degree);
+    }
+
     public void increaseDegreeOfVertex(Vertex v, int delta) {
 
         if (degreeMap.containsKey(v.degree - delta))
