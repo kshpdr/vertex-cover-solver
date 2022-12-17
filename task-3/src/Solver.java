@@ -12,7 +12,7 @@ public class Solver {
     public static boolean cliqueBoundBeginning = true;
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = false;
+    public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration = true;
     public static boolean lpBoundIteration = true;

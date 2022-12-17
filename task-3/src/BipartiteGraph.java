@@ -137,10 +137,13 @@ public class BipartiteGraph {
         while (!queue.isEmpty()) {
             Vertex vertex = queue.poll();
             if (dist.get(vertex) < dist.get(nilVertex)) {
-                for (Vertex neighbor : adjacentMap.get(vertex)){
-                    if (dist.get(pairRight.get(neighbor)) == INF) {
-                        dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
-                        queue.add(pairRight.get(neighbor));
+                HashSet<Vertex> neighbors = adjacentMap.get(vertex);
+                if (neighbors != null){
+                    for (Vertex neighbor : neighbors){
+                        if (dist.get(pairRight.get(neighbor)) == INF) {
+                            dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
+                            queue.add(pairRight.get(neighbor));
+                        }
                     }
                 }
             }
@@ -150,12 +153,15 @@ public class BipartiteGraph {
 
     public boolean dfs(Vertex vertex) {
         if (vertex != nilVertex) {
-            for (Vertex neighbor : adjacentMap.get(vertex)){
-                if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
-                    if (dfs(pairRight.get(neighbor))) {
-                        pairRight.replace(neighbor, vertex);
-                        pairLeft.replace(vertex, neighbor);
-                        return true;
+            HashSet<Vertex> neighbors = adjacentMap.get(vertex);
+            if (neighbors != null){
+                for (Vertex neighbor : neighbors){
+                    if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
+                        if (dfs(pairRight.get(neighbor))) {
+                            pairRight.replace(neighbor, vertex);
+                            pairLeft.replace(vertex, neighbor);
+                            return true;
+                        }
                     }
                 }
             }
