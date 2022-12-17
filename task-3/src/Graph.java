@@ -4,8 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
-//    private BipartiteGraph bipartiteGraph;
-    private int edgesNumber;
+    private BipartiteGraph bipartiteGraph;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
     private int indexCounter = 0;
@@ -16,7 +15,6 @@ public class Graph  {
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
         for (String[] edge : edges) {
-            edgesNumber++;
             Vertex vertex1 = idxMap.get(edge[0]);
             if (vertex1 == null) {
                 vertex1 = new Vertex(edge[0], indexCounter++);
@@ -41,7 +39,7 @@ public class Graph  {
             vertex1.degree++;
             vertex2.degree++;
         }
-//        bipartiteGraph = new BipartiteGraph(this);
+        bipartiteGraph = new BipartiteGraph(this);
     }
 
     public Graph() {
@@ -84,7 +82,6 @@ public class Graph  {
         while (iterator.hasNext()) {
             Vertex tmpVertex = iterator.next();
             if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)) {
-                edgesNumber--;
                 tmpVertex.degree--;
                 adjacentVertices.add(tmpVertex);
             }
@@ -100,7 +97,7 @@ public class Graph  {
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
         }
-//        bipartiteGraph.removeVertex(vertexToRemove);
+        bipartiteGraph.removeVertex(vertexToRemove);
         return adjacentVertices;
     }
 
@@ -110,7 +107,6 @@ public class Graph  {
         if (!adjVertices.containsKey(originalVertex))
             adjVertices.put(originalVertex, new HashSet<>());
         for (Vertex neighbor : neighbors) {
-            edgesNumber++;
             adjVertices.get(originalVertex).add(neighbor);
             originalVertex.degree++;
 
@@ -121,7 +117,7 @@ public class Graph  {
             adjVertices.get(neighbor).add(originalVertex);
             neighbor.degree++;
 
-//            bipartiteGraph.addEdge(originalVertex, neighbor);
+            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
     }
 
@@ -197,7 +193,7 @@ public class Graph  {
 
 
     public int getLpBound() {
-        BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
+        //BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
         return (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
     }
 
@@ -297,33 +293,19 @@ public class Graph  {
         }
         this.completeReduced = true;
         return edges;
-//        this.completeReduced = false;
-//        HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
-//        HashSet<Vertex> verticesToDelete = new HashSet<>();
-//        for (Vertex vertex : adjVertices.keySet()) {
-//            if (adjVertices.get(vertex).size() > k) {
-//                edges.put(vertex, adjVertices.get(vertex));
-//                verticesToDelete.add(vertex);
-//            }
-//        }
-//        if (verticesToDelete.size() <= k && !verticesToDelete.isEmpty()){
-//            removeSetofVertices(verticesToDelete);
-//        }
-//        this.completeReduced = true;
-//        return edges;
     }
 
 
     public boolean applyBussRule(int k){
-//        HashSet<Edge> edges = new HashSet<>();
-//        for (Vertex v : adjVertices.keySet()){
-//            for (Vertex neighbor : adjVertices.get(v)){
-//                if (!edges.contains(new Edge(v, neighbor)) && !edges.contains(new Edge(neighbor, v))){
-//                    edges.add(new Edge(v, neighbor));
-//                }
-//            }
-//        }
-        return vertices.size() <= (k * k + k) && edgesNumber <= k * k;
+        HashSet<Edge> edges = new HashSet<>();
+        for (Vertex v : adjVertices.keySet()){
+            for (Vertex neighbor : adjVertices.get(v)){
+                if (!edges.contains(new Edge(v, neighbor)) && !edges.contains(new Edge(neighbor, v))){
+                    edges.add(new Edge(v, neighbor));
+                }
+            }
+        }
+        return vertices.size() <= (k * k + k) && edges.size() <= k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
@@ -333,7 +315,6 @@ public class Graph  {
             boolean reduced = false;
             for (Vertex currentVertex : new HashSet<>(this.vertices)) {
                     boolean delete = false;
-                    HashSet<Vertex> removedVertices = new HashSet<>();
                     if (this.vertices.contains(currentVertex)){
                         for (Vertex n : this.adjVertices.get(currentVertex)) {
                             HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
@@ -341,15 +322,11 @@ public class Graph  {
                             if (tmpNeighbors.containsAll(this.adjVertices.get(n))) {
                                 delete = true;
                                 reduced = true;
+                                break;
                             }
                         }
                         if (delete) {
                             verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
-                            verticesInVertexCover.get(currentVertex).addAll(removedVertices);
-//                            for(HashSet<Vertex> collateralRemovedVertices: this.removeSetofVertices(removedVertices).values()){
-//                                verticesInVertexCover.get(currentVertex).addAll(collateralRemovedVertices);
-//                            }
-
                         }
                     }
             }

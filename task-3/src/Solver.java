@@ -4,60 +4,62 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =false;
-    public static boolean twoDegreeRulePre = false;
-    public static boolean dominationRulePre = false;
+    public static boolean oneDegreeRulePre =true;
+    public static boolean twoDegreeRulePre = true;
+    public static boolean dominationRulePre = true;
 
     public static boolean lpBoundBeginning  = true;
-    public static boolean cliqueBoundBeginning =true;
-    public static boolean unconfinedRuleBeginning = false;
-    public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = false;
+    public static boolean cliqueBoundBeginning = true;
+    public static boolean unconfinedRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = false;
+    public static boolean lpReductionBeginning = true;
 
     public static boolean cliqueBoundIteration= true;
     public static boolean lpBoundIteration= true;
-    public static boolean dominationRuleIteration = false;
-    public static boolean unconfinedRuleIteration = false;
+    public static boolean dominationRuleIteration = true;
+    public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleIteration = false;
-    public static boolean twoDegreeRuleIteration = false;
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = true;
     public static boolean lpReductionIteration = false;
 
     public static int recursiveSteps = 0;
+    public static int applyReductionInIteration = 5;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
 
-        if(highDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
-            if (!graph.applyBussRule(k - reducedNeighborsMap.size())){
-                graph.putManyVerticesBack(reducedNeighborsMap);
-                return null;
+        // Apply reduction only in each n'th iteration
+        if (recursiveSteps % applyReductionInIteration == 0){
+            if(highDegreeRuleIteration){
+                reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
+                while (!graph.applyBussRule(k)){
+                    k++;
+                }
             }
+
+            if(dominationRuleIteration) {
+                reducedNeighborsMap.putAll(graph.applyDominationRule());
+            }
+
+            if(unconfinedRuleIteration) {
+                reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
+            }
+
+            if (oneDegreeRuleIteration){
+                reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
+            }
+
+            if (twoDegreeRuleIteration){
+                reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
+            }
+
+            if(lpReductionIteration && graph.getVertices().size()<91) {
+                reducedNeighborsMap.putAll(graph.applyLpReduction());
+            }
+
+            k -= reducedNeighborsMap.size();
         }
-
-        if(dominationRuleIteration) {
-            reducedNeighborsMap.putAll(graph.applyDominationRule());
-        }
-
-        if(unconfinedRuleIteration) {
-            reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
-        }
-
-        if (oneDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
-        }
-
-        if (twoDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
-        }
-
-        if(lpReductionIteration && graph.getVertices().size()<91) {
-            reducedNeighborsMap.putAll(graph.applyLpReduction());
-        }
-
-        k -= reducedNeighborsMap.size();
-
         if (k < 0) {
 
             // Putting back the reduced vertices
@@ -72,7 +74,7 @@ public class Solver {
             return result;
         }
 
-        if(k < graph.getMaxLowerBound(cliqueBoundIteration  && graph.getVertices().size()<90, lpBoundIteration)) {
+        if(k < graph.getMaxLowerBound(cliqueBoundIteration  && graph.getVertices().size()<12000, lpBoundIteration)) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             return null;
@@ -172,10 +174,6 @@ public class Solver {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
 
-        if(lpReductionBeginning){
-            edgesAfterRules.putAll(graph.applyLpReduction());
-        }
-
 
 
         // Call method with the clique lower bound
@@ -190,7 +188,9 @@ public class Solver {
 //        for(Vertex vertex: graph.getVertices()){
 //            System.out.println(vertex.name);
 //        };
-
+        if(lpReductionBeginning){
+            edgesAfterRules.putAll(graph.applyLpReduction());
+        }
 
 
 
