@@ -115,6 +115,14 @@ public class VertexDegreeOrder {
         return this.degreeMap.get(this.maxDegree).iterator().next();
     }
 
+    public ArrayList<Vertex> getOrderedVerticesDegree() {
+        ArrayList<Vertex> orderedVertices = new ArrayList<>();
+        for (int degree: sortedAvailableDegrees){
+            orderedVertices.addAll(this.degreeMap.get(degree));
+        }
+        return orderedVertices;
+    }
+
     public boolean isEmpty() {
         return this.degreeMap.isEmpty() || this.degreeMap.get(this.maxDegree).isEmpty();
     }

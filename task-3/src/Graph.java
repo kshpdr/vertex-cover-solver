@@ -9,13 +9,13 @@ public class Graph  {
     private int edgesNumber;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
-    private int indexCounter = 0;
 
     public int difference = 0;
     public boolean completeReduced = true;
 
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
+        int indexCounter = 0;
         for (String[] edge : edges) {
             edgesNumber++;
             Vertex vertex1 = idxMap.get(edge[0]);
@@ -262,9 +262,7 @@ public class Graph  {
                         edges.put(w,removeVertex(w));
                         reduced = true;
                     }
-                    else {
-                        // TODO
-                    }
+
                 }
             }
             if (!reduced) break;
@@ -330,7 +328,7 @@ public class Graph  {
 //                }
 //            }
 //        }
-        return vertices.size() <= (k * k + k) && edgesNumber <= k * k;
+        return vertices.size() > (k * k + k) || edgesNumber > k * k;
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
@@ -340,7 +338,7 @@ public class Graph  {
             boolean reduced = false;
             for (Vertex currentVertex : new HashSet<>(this.vertices)) {
                     boolean delete = false;
-                    HashSet<Vertex> removedVertices = new HashSet<>();
+
                     if (this.vertices.contains(currentVertex)){
                         for (Vertex n : this.adjVertices.get(currentVertex)) {
                             HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
@@ -352,7 +350,6 @@ public class Graph  {
                         }
                         if (delete) {
                             verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
-                            verticesInVertexCover.get(currentVertex).addAll(removedVertices);
 //                            for(HashSet<Vertex> collateralRemovedVertices: this.removeSetofVertices(removedVertices).values()){
 //                                verticesInVertexCover.get(currentVertex).addAll(collateralRemovedVertices);
 //                            }
@@ -461,13 +458,6 @@ public class Graph  {
             return complementGraph;
     }
 
-    public ArrayList<Vertex> getOrderForColouring(HashMap<Vertex,HashSet<Vertex>> graph, ArrayList<Vertex> vertices){
-        for(Vertex v: vertices){
-            v.complementDegree = graph.get(v).size();
-        }
-        vertices.sort(Comparator.comparingInt(o -> o.complementDegree));
-        return vertices;
-    }
 
     public void getGraphColoring(HashMap<Vertex,HashSet<Vertex>> graph,ArrayList<Vertex> order){
             for(Vertex vertex: order){
@@ -495,8 +485,8 @@ public class Graph  {
 
     public int getHeuristicCliqueCover(){
         HashMap<Vertex,HashSet<Vertex>> complementGraph = this.getComplementGraph();
-        ArrayList<Vertex> vertices = new ArrayList<>(complementGraph.keySet());
-        ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
+        //ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
+        ArrayList<Vertex> orderedVertices = this.degreeOrder.getOrderedVerticesDegree();
         this.getGraphColoring(complementGraph,orderedVertices);
         Set<Integer> setColors= new HashSet<>();
         for(Vertex vertex: orderedVertices){
