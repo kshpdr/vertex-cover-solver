@@ -2,6 +2,7 @@ public class Vertex {
     String name;
     int id;
     int degree;
+    int complementDegree;
     int dist = 0;
 
     //need color for Clique Bound

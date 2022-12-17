@@ -129,7 +129,7 @@ public class Graph  {
             }
             adjVertices.get(neighbor).add(originalVertex);
             neighbor.degree++;
-            this.degreeOrder.increaseDegreeOfVertex(originalVertex, 1);
+            this.degreeOrder.increaseDegreeOfVertex(neighbor, 1);
 
 //            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
@@ -163,8 +163,9 @@ public class Graph  {
         for (Vertex vertex : this.vertices) {
             Vertex vertexCopy = new Vertex(vertex.name, vertex.id);
             vertexCopy.degree = vertex.degree;
+            vertexCopy.complementDegree = vertex.complementDegree;
             copy.vertices.add(vertexCopy);
-            copy.degreeOrder.addVertex(vertex); // TODO: maybee use vertexCopy?
+            copy.degreeOrder.addVertex(vertexCopy);
         }
 
         for (Vertex vertex : this.adjVertices.keySet()) {
@@ -462,9 +463,9 @@ public class Graph  {
 
     public ArrayList<Vertex> getOrderForColouring(HashMap<Vertex,HashSet<Vertex>> graph, ArrayList<Vertex> vertices){
         for(Vertex v: vertices){
-            v.degree = graph.get(v).size();
+            v.complementDegree = graph.get(v).size();
         }
-        vertices.sort(Comparator.comparingInt(o -> o.degree));
+        vertices.sort(Comparator.comparingInt(o -> o.complementDegree));
         return vertices;
     }
 
