@@ -1,0 +1,23 @@
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000002.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000012.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000004.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000024.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000007.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000036.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000009.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000048.dimacs
+setsid: невозможно выполнить /usr/bin/local/gtime: No such file or directory

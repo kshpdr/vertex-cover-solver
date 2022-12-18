@@ -1,0 +1,41 @@
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000002.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000012.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000004.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000024.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000007.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000036.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000009.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000048.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000010_000000000012.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000010_000000000060.dimacs
+/usr/bin/time: illegal option -- f
+usage: time [-al] [-h | -p] [-o file] utility [argument ...]
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000012_000000000014.dimacs

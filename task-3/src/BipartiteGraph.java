@@ -2,34 +2,75 @@ import java.io.IOException;
 import java.util.*;
 
 public class BipartiteGraph {
-    public Vertex nilVertex = new Vertex(-1);
+    public Vertex nilVertex = new Vertex("nil", -1);
     static final int INF = Integer.MAX_VALUE;
 
     public ArrayList<Vertex> left = new ArrayList<>();
     public ArrayList<Vertex> right = new ArrayList<>();
-    public List<Edge> edges = new ArrayList<>();
+    public HashMap<Vertex,HashSet<Vertex>> adjacentMap = new HashMap<>();
 
     HashMap<Vertex, Vertex> pairLeft, pairRight;
     HashMap<Vertex, Integer> dist;
 
     public BipartiteGraph(Graph graph) {
         nilVertex.dist = INF;
+        int indexCounter = 0;
         for (Vertex vertex : graph.getVertices()) {
-            if (vertex.active) {
-                left.add(new Vertex(vertex.label));
-                right.add(new Vertex(vertex.label));
-            }
+            Vertex v = new Vertex(vertex.name, indexCounter++);
+            v.originalId = vertex.id;
+            left.add(v);
+
+            Vertex u = new Vertex(vertex.name, indexCounter++);
+            u.originalId = vertex.id;
+            right.add(u);
         }
 
-        for (Edge edge : graph.getListEdges()) {
-            if (edge.v.active && edge.w.active) {
-                Vertex leftFirst = left.get(left.indexOf(edge.getFirstVertex()));
-                Vertex leftSecond = left.get(left.indexOf(edge.getSecondVertex()));
+        HashMap<Vertex,HashSet<Vertex>> map = graph.getAdjVertices();
+        for (Vertex firstVertex : map.keySet()){
+            HashSet<Vertex> neighbors = map.get(firstVertex);
+            if (neighbors == null) continue;
+            for (Vertex secondVertex : neighbors){
+                // Skip reverse edges: (0,1) ok, but not (1,0) again => avoid duplicates
+                if (firstVertex.id > secondVertex.id) continue;
 
-                Vertex rightFirst = right.get(right.indexOf(edge.getFirstVertex()));
-                Vertex rightSecond = right.get(right.indexOf(edge.getSecondVertex()));
-                edges.add(new Edge(leftFirst, rightSecond));
-                edges.add(new Edge(leftSecond, rightFirst));
+                Vertex leftFirst = null;
+                Vertex leftSecond = null;
+                for (Vertex vertex : left){
+                    if (vertex.originalId == firstVertex.id){
+                        leftFirst = vertex;
+                    }
+                    else if (vertex.originalId == secondVertex.id){
+                        leftSecond = vertex;
+                    }
+                }
+
+                Vertex rightFirst = null;
+                Vertex rightSecond = null;
+                for (Vertex vertex : right){
+                    if (vertex.originalId == firstVertex.id){
+                        rightFirst = vertex;
+                    }
+                    else if (vertex.originalId == secondVertex.id){
+                        rightSecond = vertex;
+                    }
+                }
+
+                if (leftFirst != null && leftSecond != null && rightFirst != null && rightSecond != null){
+                
+                    // leftFirst -> rightSecond
+                    HashSet<Vertex> neighborSet = adjacentMap.computeIfAbsent(leftFirst, k -> new HashSet<>());
+                    neighborSet.add(rightSecond);
+                    // leftFirst <- rightSecond
+                    neighborSet = adjacentMap.computeIfAbsent(rightSecond, k -> new HashSet<>());
+                    neighborSet.add(leftFirst);
+                    
+                    // leftSecond -> rightFirst
+                    neighborSet = adjacentMap.computeIfAbsent(leftSecond, k -> new HashSet<>());
+                    neighborSet.add(rightFirst);
+                    // leftSecond <- rightFirst
+                    neighborSet = adjacentMap.computeIfAbsent(rightFirst, k -> new HashSet<>());
+                    neighborSet.add(leftSecond);
+                }
             }
         }
     }
@@ -80,9 +121,9 @@ public class BipartiteGraph {
         while (!queue.isEmpty()) {
             Vertex vertex = queue.poll();
             if (dist.get(vertex) < dist.get(nilVertex)) {
-                for (Edge edge : edges) {
-                    if (edge.getFirstVertex() == vertex) {
-                        Vertex neighbor = edge.getSecondVertex();
+                HashSet<Vertex> neighbors = adjacentMap.get(vertex);
+                if (neighbors != null){
+                    for (Vertex neighbor : neighbors){
                         if (dist.get(pairRight.get(neighbor)) == INF) {
                             dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
                             queue.add(pairRight.get(neighbor));
@@ -96,11 +137,9 @@ public class BipartiteGraph {
 
     public boolean dfs(Vertex vertex) {
         if (vertex != nilVertex) {
-            for (Edge edge : edges) {
-                if (edge.getFirstVertex() == vertex) {
-                    // Adjacent to u
-                    Vertex neighbor = edge.getSecondVertex();
-                    // Follow the distances set by BFS
+            HashSet<Vertex> neighbors = adjacentMap.get(vertex);
+            if (neighbors != null){
+                for (Vertex neighbor : neighbors){
                     if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
                         if (dfs(pairRight.get(neighbor))) {
                             pairRight.replace(neighbor, vertex);
@@ -117,20 +156,21 @@ public class BipartiteGraph {
     }
 
     public static void main(String[] args) throws IOException {
-        InputParser inputParser = new InputParser();
+//        InputParser inputParser = new InputParser();
 
-        List<String> stringEdges = inputParser.parseEdges();
+//        List<String> stringEdges = inputParser.parseEdges();
 
-        HashSet<String[]> edges = new HashSet<>();
-        for (String stringEdge : stringEdges) {
-
-            String[] nodes = stringEdge.split("\\s+");
-            edges.add(nodes);
-
-        }
+//        HashSet<String[]> edges = new HashSet<>();
+//        for (String stringEdge : stringEdges) {
+//
+//            String[] nodes = stringEdge.split("\\s+");
+//            edges.add(nodes);
+//
+//        }
 
 //        Graph graph = new Graph(edges);
 //        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
 //        System.out.println(bipartiteGraph.findMaximumMatchingSize());
     }
 }
+

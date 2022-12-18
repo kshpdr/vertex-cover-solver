@@ -17,6 +17,13 @@ public class Edge {
         return w;
     }
 
+    public boolean contains(Vertex vertex){
+        if (vertex.equals(v) || vertex.equals(w)){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

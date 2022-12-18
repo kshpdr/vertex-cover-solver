@@ -1,0 +1,228 @@
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000002.dimacs
+#recursive steps: 0
+#sol size: 0
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000002_000000000012.dimacs
+1
+2
+#recursive steps: 5
+#sol size: 2
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000004.dimacs
+#recursive steps: 0
+#sol size: 0
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000004_000000000024.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000007.dimacs
+2
+#recursive steps: 2
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000006_000000000036.dimacs
+1
+2
+3
+6
+#recursive steps: 14
+#sol size: 4
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000009.dimacs
+5
+#recursive steps: 2
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000008_000000000048.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000010_000000000012.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000010_000000000060.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000012_000000000014.dimacs
+4
+#recursive steps: 2
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000012_000000000072.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000014_000000000016.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000014_000000000084.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000016_000000000019.dimacs
+9
+#recursive steps: 2
+#sol size: 1
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000016_000000000096.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000018_000000000021.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000018_000000000108.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000020_000000000024.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000020_000000000120.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000022_000000000026.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000022_000000000132.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000024_000000000028.dimacs
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.util.HashSet.size()" because the return value of "java.util.Map.get(Object)" is null
+	at Graph.getNextNode(Graph.java:128)
+	at Solver.vc_branch(Solver.java:52)
+	at Solver.vc_branch(Solver.java:55)
+	at Solver.vc(Solver.java:97)
+	at Solver.main(Solver.java:145)
+
+/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-3/vc-data-students/1-random/000024_000000000144.dimacs

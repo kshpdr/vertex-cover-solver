@@ -1,13 +1,20 @@
-public class Vertex implements Comparable<Vertex> {
-    int label;
+public class Vertex {
+    String name;
+    int id;
+    int originalId; // Used in Bipartite-Graph
     int degree;
+    int complementDegree;
     int dist = 0;
 
-    boolean active =true;
+    //need color for Clique Bound
+    int color =-1;
+
+//    boolean active =true;
 
 
-    Vertex(Integer label) {
-        this.label = label;
+    Vertex(String name, Integer id) {
+        this.name = name;
+        this.id = id;
     }
 
     // equals and hashCode
@@ -24,13 +31,12 @@ public class Vertex implements Comparable<Vertex> {
             return false;
         }
 
-        return this.label == ((Vertex) o).label;
+        return this.id == ((Vertex) o).id;
     }
 
     @Override
     public int hashCode() {
-
-        return this.label;
+        return this.id;
     }
 
     @Override
@@ -38,13 +44,13 @@ public class Vertex implements Comparable<Vertex> {
 
         // sb.append("Vertices: ").append("\n");
 
-        return "Vertex " + this.label + " degree " + this.degree;
+        return "Vertex " + this.name + " degree " + this.degree + " color "+ this.color;
     }
 
-    @Override
-    public int compareTo(Vertex o) {
-
-        return Integer.compare(this.degree, o.degree);
-    }
+//    @Override
+//    public int compareTo(Vertex o) {
+//
+//        return Integer.compare(this.degree, o.degree);
+//    }
 
 }

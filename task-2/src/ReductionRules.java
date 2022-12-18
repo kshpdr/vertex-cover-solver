@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class ReductionRules {
-    public static Solver.SolverResult applyReductionRules(HashSet<String[]> edges) {
+    public static LinkedList<String> applyReductionRules(HashSet<String[]> edges) {
         // Build Adjacency-Map (to extract node-degree) from HashSet (of Edges)
         HashMap<String, HashSet<String>> adjMap = new HashMap<>();
         for (String[] edge : edges) {
@@ -18,15 +18,14 @@ public class ReductionRules {
 
         // Instatiate solver result (for partial solution obtained from applying
         // reduction rules multiple times)
-        Solver.SolverResult result = new Solver.SolverResult();
-        result.setEmptyResultsList();
+        LinkedList<String> result = new LinkedList<>();
 
         // Repeatedly apply reduction rules ...
         String v = reductionRules(adjMap);
         // Until no more reduction possible!
         while (v != null) {
             // Save partial solution
-            result.addVertexToResult(v);
+            result.add(v);
             v = reductionRules(adjMap);
         }
 

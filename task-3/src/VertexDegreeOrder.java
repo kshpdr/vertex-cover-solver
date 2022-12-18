@@ -53,6 +53,10 @@ public class VertexDegreeOrder {
         return degreeMap + " Max Degree: " + maxDegree;
     }
 
+    public HashSet<Vertex> getDegreeVertices(int degree){
+        return this.degreeMap.get(degree);
+    }
+
     public void increaseDegreeOfVertex(Vertex v, int delta) {
 
         if (degreeMap.containsKey(v.degree - delta))
@@ -113,6 +117,14 @@ public class VertexDegreeOrder {
     public Vertex getVertexWithMaxDegree() {
 
         return this.degreeMap.get(this.maxDegree).iterator().next();
+    }
+
+    public ArrayList<Vertex> getOrderedVerticesDegree() {
+        ArrayList<Vertex> orderedVertices = new ArrayList<>();
+        for (int degree: sortedAvailableDegrees){
+            orderedVertices.addAll(this.degreeMap.get(degree));
+        }
+        return orderedVertices;
     }
 
     public boolean isEmpty() {
