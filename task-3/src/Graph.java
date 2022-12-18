@@ -228,7 +228,9 @@ public class Graph  {
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         while (true){
             boolean reduced = false;
-            for (Vertex vertex : new LinkedList<>(adjVertices.keySet())){
+            HashSet<Vertex> degreeOneVertices = degreeOrder.getDegreeVertices(1);
+            if (degreeOneVertices == null) break;
+            for (Vertex vertex : new HashSet<>(degreeOneVertices)){
                 HashSet<Vertex> neighbors = adjVertices.get(vertex);
                 if (neighbors == null) continue;
                 if (neighbors.size() == 1){
@@ -250,7 +252,9 @@ public class Graph  {
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
         while (true){
             boolean reduced = false;
-            for (Vertex vertex : new LinkedList<>(adjVertices.keySet())){
+            HashSet<Vertex> degreeTwoVertices = degreeOrder.getDegreeVertices(2);
+            if (degreeTwoVertices == null) break;
+            for (Vertex vertex : new HashSet<>(degreeTwoVertices)){
                 HashSet<Vertex> neighbors = adjVertices.get(vertex);
                 if (neighbors == null) continue;
                 if (neighbors.size() == 2){
@@ -283,20 +287,22 @@ public class Graph  {
             HashMap<Vertex,HashSet<Vertex>> edgesToAdd = new HashMap<>();
             HashSet<Vertex> verticesToDelete = new HashSet<>();
             boolean reducable = false;
-            for (Vertex vertex : adjVertices.keySet()) {
-                if (adjVertices.get(vertex).size() > newK) {
-                    edgesToAdd.put(vertex, adjVertices.get(vertex));
-                    verticesToDelete.add(vertex);
-                    reducable = true;
+            for (int degree : degreeOrder.sortedAvailableDegrees){
+                for (Vertex vertex : degreeOrder.getDegreeVertices(degree)) {
+                    if (adjVertices.get(vertex).size() > newK) {
+                        edgesToAdd.put(vertex, adjVertices.get(vertex));
+                        verticesToDelete.add(vertex);
+                        reducable = true;
+                    }
                 }
-            }
-            if (verticesToDelete.size() <= newK && !verticesToDelete.isEmpty()){
-                removeSetofVertices(verticesToDelete);
-                edges.putAll(edgesToAdd);
-                newK -= edgesToAdd.size();
-            }
-            else{
-                reducable = false;
+                if (verticesToDelete.size() <= newK && !verticesToDelete.isEmpty()){
+                    removeSetofVertices(verticesToDelete);
+                    edges.putAll(edgesToAdd);
+                    newK -= edgesToAdd.size();
+                }
+                else{
+                    reducable = false;
+                }
             }
             if (!reducable) break;
         }

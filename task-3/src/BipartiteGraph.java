@@ -7,16 +7,22 @@ public class BipartiteGraph {
 
     public ArrayList<Vertex> left = new ArrayList<>();
     public ArrayList<Vertex> right = new ArrayList<>();
-    public List<Edge> edges = new ArrayList<>();
+    public HashMap<Vertex,HashSet<Vertex>> adjacentMap = new HashMap<>();
 
     HashMap<Vertex, Vertex> pairLeft, pairRight;
     HashMap<Vertex, Integer> dist;
 
     public BipartiteGraph(Graph graph) {
         nilVertex.dist = INF;
+        int indexCounter = 0;
         for (Vertex vertex : graph.getVertices()) {
-            left.add(new Vertex(vertex.name, vertex.id));
-            right.add(new Vertex(vertex.name, vertex.id));
+            Vertex v = new Vertex(vertex.name, indexCounter++);
+            v.originalId = vertex.id;
+            left.add(v);
+
+            Vertex u = new Vertex(vertex.name, indexCounter++);
+            u.originalId = vertex.id;
+            right.add(u);
         }
 
         HashMap<Vertex,HashSet<Vertex>> map = graph.getAdjVertices();
@@ -30,10 +36,10 @@ public class BipartiteGraph {
                 Vertex leftFirst = null;
                 Vertex leftSecond = null;
                 for (Vertex vertex : left){
-                    if (vertex.equals(firstVertex)){
+                    if (vertex.originalId == firstVertex.id){
                         leftFirst = vertex;
                     }
-                    else if (vertex.equals(secondVertex)){
+                    else if (vertex.originalId == secondVertex.id){
                         leftSecond = vertex;
                     }
                 }
@@ -41,47 +47,32 @@ public class BipartiteGraph {
                 Vertex rightFirst = null;
                 Vertex rightSecond = null;
                 for (Vertex vertex : right){
-                    if (vertex.equals(firstVertex)){
+                    if (vertex.originalId == firstVertex.id){
                         rightFirst = vertex;
                     }
-                    else if (vertex.equals(secondVertex)){
+                    else if (vertex.originalId == secondVertex.id){
                         rightSecond = vertex;
                     }
                 }
 
                 if (leftFirst != null && leftSecond != null && rightFirst != null && rightSecond != null){
-                    edges.add(new Edge(leftFirst, rightSecond));
-                    edges.add(new Edge(leftSecond, rightFirst));
+                
+                    // leftFirst -> rightSecond
+                    HashSet<Vertex> neighborSet = adjacentMap.computeIfAbsent(leftFirst, k -> new HashSet<>());
+                    neighborSet.add(rightSecond);
+                    // leftFirst <- rightSecond
+                    neighborSet = adjacentMap.computeIfAbsent(rightSecond, k -> new HashSet<>());
+                    neighborSet.add(leftFirst);
+                    
+                    // leftSecond -> rightFirst
+                    neighborSet = adjacentMap.computeIfAbsent(leftSecond, k -> new HashSet<>());
+                    neighborSet.add(rightFirst);
+                    // leftSecond <- rightFirst
+                    neighborSet = adjacentMap.computeIfAbsent(rightFirst, k -> new HashSet<>());
+                    neighborSet.add(leftSecond);
                 }
             }
         }
-    }
-
-    public void removeVertex(Vertex vertex){
-        int leftVertexIndex = left.indexOf(vertex);
-        if (leftVertexIndex != -1){
-            Vertex leftVertex = left.get(leftVertexIndex);
-            edges.removeIf(edge -> edge.contains(leftVertex));
-            left.remove(leftVertex);
-        }
-
-        int rightVertexIndex = right.indexOf(vertex);
-        if (rightVertexIndex != -1){
-            Vertex rightVertex = right.get(rightVertexIndex);
-            edges.removeIf(edge -> edge.contains(rightVertex));
-            right.remove(rightVertex);
-        }
-    }
-
-    public void addEdge(Vertex vertex, Vertex neighbor){
-        Vertex leftFirst = new Vertex(vertex.name, vertex.id);
-        Vertex leftSecond = new Vertex(neighbor.name, neighbor.id);
-
-        Vertex rightFirst = new Vertex(vertex.name, vertex.id);
-        Vertex rightSecond = new Vertex(neighbor.name, neighbor.id);
-
-        edges.add(new Edge(leftFirst, rightSecond));
-        edges.add(new Edge(leftSecond, rightFirst));
     }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
@@ -130,9 +121,9 @@ public class BipartiteGraph {
         while (!queue.isEmpty()) {
             Vertex vertex = queue.poll();
             if (dist.get(vertex) < dist.get(nilVertex)) {
-                for (Edge edge : edges) {
-                    if (edge.getFirstVertex() == vertex) {
-                        Vertex neighbor = edge.getSecondVertex();
+                HashSet<Vertex> neighbors = adjacentMap.get(vertex);
+                if (neighbors != null){
+                    for (Vertex neighbor : neighbors){
                         if (dist.get(pairRight.get(neighbor)) == INF) {
                             dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
                             queue.add(pairRight.get(neighbor));
@@ -146,11 +137,9 @@ public class BipartiteGraph {
 
     public boolean dfs(Vertex vertex) {
         if (vertex != nilVertex) {
-            for (Edge edge : edges) {
-                if (edge.getFirstVertex() == vertex) {
-                    // Adjacent to u
-                    Vertex neighbor = edge.getSecondVertex();
-                    // Follow the distances set by BFS
+            HashSet<Vertex> neighbors = adjacentMap.get(vertex);
+            if (neighbors != null){
+                for (Vertex neighbor : neighbors){
                     if (dist.get(pairRight.get(neighbor)) == dist.get(vertex) + 1) {
                         if (dfs(pairRight.get(neighbor))) {
                             pairRight.replace(neighbor, vertex);
@@ -167,17 +156,17 @@ public class BipartiteGraph {
     }
 
     public static void main(String[] args) throws IOException {
-        InputParser inputParser = new InputParser();
+//        InputParser inputParser = new InputParser();
 
-        List<String> stringEdges = inputParser.parseEdges();
+//        List<String> stringEdges = inputParser.parseEdges();
 
-        HashSet<String[]> edges = new HashSet<>();
-        for (String stringEdge : stringEdges) {
-
-            String[] nodes = stringEdge.split("\\s+");
-            edges.add(nodes);
-
-        }
+//        HashSet<String[]> edges = new HashSet<>();
+//        for (String stringEdge : stringEdges) {
+//
+//            String[] nodes = stringEdge.split("\\s+");
+//            edges.add(nodes);
+//
+//        }
 
 //        Graph graph = new Graph(edges);
 //        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);

@@ -1,6 +1,7 @@
 public class Vertex {
     String name;
     int id;
+    int originalId; // Used in Bipartite-Graph
     int degree;
     int complementDegree;
     int dist = 0;
