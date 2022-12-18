@@ -1,7 +1,0 @@
-file;time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-diff-to-opt
-1-random/000002_000000000002.dimacs;0.11;2;0; 1;0;1;OK;>>INCORRECT Size; Solution too large:<< ;1;
-1-random/000002_000000000012.dimacs;0.10;12;10; 3;0;1;OK;>>INCORRECT Size; Solution too large:<< ;1;
-1-random/000004_000000000004.dimacs;0.09;4;0; 1;0;1;OK;>>INCORRECT Size; Solution too large:<< ;1;
-1-random/000004_000000000024.dimacs;0.10;24;20; 5;0;1;OK;>>INCORRECT Size; Solution too large:<< ;1;
-1-random/000006_000000000007.dimacs;0.09;7;1; 2;0;1;OK;>>INCORRECT Size; Solution too large:<< ;1;
-1-random/000006_000000000036.dimacs;0.11;36;30; 5;0;1;OK;>>INCORRECT Size; Solution too large:<< ;1;
