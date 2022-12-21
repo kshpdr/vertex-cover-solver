@@ -24,7 +24,7 @@ build-and-test-job:       # This job runs in the build stage, which runs first.
   script:
     - echo "[*] Compiling the code..."
     - cd task-4/src
-    - find . -name "*.java" -print | xargs javac
+    - javac *.java
     - jar cfm Solver.jar manifest.txt *.class
     - echo "[*] Compile complete."
     - cd ../vc-data-students
