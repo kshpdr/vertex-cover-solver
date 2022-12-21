@@ -14,13 +14,20 @@ def run():
     names,constraints = set(),list()
 
     # Parse input from stdin
+    reduced_vertices = []
     for line in stdin:
+        if line.startswith("#reduced-vertex: "):
+            reduced_vertices.append(line[17:].strip())
         if line.startswith("#") or len(line.strip()) == 0: continue
         u,v = match(r"([a-zA-Z0-9_]+)\s([a-zA-Z0-9_]+)",line).groups()
         # Save vertices and edges
         names.add(u)
         names.add(v)
         constraints.append([[u,v],[1,1]])
+    
+    # Print already reduced vertices
+    if len(reduced_vertices) > 0: print("\n".join(reduced_vertices))
+
     names = list(names)
 
     # Call solver if not empty graph
