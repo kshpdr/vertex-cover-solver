@@ -22,19 +22,17 @@ def run():
         names.add(v)
         constraints.append([[u,v],[1,1]])
     names = list(names)
-    
+
     # Call solver if not empty graph
     if len(constraints) > 0:
         # Prepare lower+upper bound and objective
-        w_obj,low_bnd,upr_bnd = [],[],[]
-        for i in range(len(names)):
-            w_obj.append(1)
-            low_bnd.append(0)
-            upr_bnd.append(1)
+        w_obj = [1] * len(names)
+        low_bnd = [0] * len(names)
+        upr_bnd = [1] * len(names)
         
         prob.variables.add(names=names,obj=w_obj,lb=low_bnd,ub=upr_bnd)
 
-        # Set constraint types
+        # Set variable + constraint types
         all_int = [(var,prob.variables.type.integer) for var in names]
         prob.variables.set_types(all_int)
 
