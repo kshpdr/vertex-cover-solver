@@ -535,7 +535,7 @@ public class Graph  {
 
 
 
-    public void printReducedGraph(){
+    public void printReducedGraph(HashMap<Vertex,HashSet<Vertex>> reducedMap){
         int numEdges = 0;
         StringBuilder sb = new StringBuilder();
         for (Vertex vertex1: this.vertices) {
@@ -544,6 +544,11 @@ public class Graph  {
 
                  sb.append(vertex1.name).append(" ").append(vertex2.name).append("\n");
                  numEdges++;
+            }
+        }
+        if (reducedMap != null){
+            for (Vertex v : reducedMap.keySet()){
+                sb.append("#reduced-vertex: ").append(v.name).append("\n");
             }
         }
         System.out.println("# " + this.vertices.size() + " "+ numEdges);
@@ -569,31 +574,37 @@ public class Graph  {
             }
         }
 
+        HashMap<Vertex,HashSet<Vertex>> reducedMap = new HashMap<>();
         Graph graph = new Graph(edges);
         Graph copyGraph = graph.getCopy();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if(graph.completeReduced){
-                graph.printReducedGraph();
+                graph.printReducedGraph(reducedMap);
 
             } else {
-                copyGraph.printReducedGraph();
+                copyGraph.printReducedGraph(null);
             }
 
         }));
 
 //        ReductionRules reductionRules = new ReductionRules(true,true,true);
 //        reducedVertices = reductionRules.applyReductionRules();
-
-        graph.difference += graph.applyOneDegreeRule().size();
-        graph.difference += graph.applyTwoDegreeRule().size();
+        
+        reducedMap.putAll(graph.applyOneDegreeRule());
+        reducedMap.putAll(graph.applyTwoDegreeRule());
+        
         int lowerBound = graph.getMaxLowerBound(true, true);
-        graph.difference += graph.applyHighDegreeRule(lowerBound).size();
-        graph.difference += graph.applyDominationRule().size();
-        graph.difference += graph.applyUnconfinedRule().size();
+        reducedMap.putAll(graph.applyHighDegreeRule(lowerBound));
+        
+        reducedMap.putAll(graph.applyDominationRule());
+        reducedMap.putAll(graph.applyUnconfinedRule());
+
         if (graph.getVertices().size() < 301) {
-            graph.difference += graph.applyLpReduction().size();
+            reducedMap.putAll(graph.applyLpReduction());
         }
+
+        graph.difference += reducedMap.size();
 
     }
 }
