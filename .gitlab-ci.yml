@@ -37,9 +37,10 @@ run-job:
   stage: run
   artifacts:
     paths:
-      - task-4/vc-data-students/*.csv # Save result.csv file (for 'verify' stage)
+      - task-4/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
+      - task-4/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
   script:
-    - echo "[*] Executing benchmark (60s timeout) ..."
+    - echo "[*] Executing benchmark (20s timeout) ..."
     - cd task-4/vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/master/vc-data ]; then cp -r /home/master/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => private VM
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data ]; then cp -r /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data/* . ; fi fi  # Copy testcases to workdir (if not exist) => UNI-Server
@@ -51,8 +52,10 @@ verify-job:
   stage: verify
   script:
     - csv_file=$(find . -name "*.csv" | tail -n 1)
+    - log_file=$(find . name "*.log" | tail -n 1)
     - echo "[*] Verifing result in CSV file:" $csv_file
     - echo "Solved instances:" $(grep "OK" $csv_file | wc -l) "/ 266" # Print number of solved instances
     - if [ $(grep "OK" $csv_file | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi # Check if there exists at least one 'OK' record in CSV file
     - if [ $(grep "Not a VC:" $csv_file | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi # Check if there exists any 'NOT a VC:' in CSV file
+    - if [ ! -z "$(grep Exception $log_file)" ] ; then echo "[ERROR] Some tests caused an Exception (see log-file artifact)"; fi # Check if ther exists any exceptions in LOG file
     - echo "[*] Verification done. All tests passed!"
