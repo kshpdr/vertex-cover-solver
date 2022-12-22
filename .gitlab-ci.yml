@@ -22,16 +22,20 @@ stages:
 build-and-test-job:       # This job runs in the build stage, which runs first.
   stage: test
   script:
+    # Compile code
     - echo "[*] Compiling the code..."
     - cd task-4/src
     - javac *.java
     - jar cfm Solver.jar manifest.txt *.class
+    # Execute benchmark
     - echo "[*] Executing benchmark ..."
     - cd ../vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then cp -r /home/master/vc-data/* . ; fi
     - chmod +x benchmark-fast.sh verify verifier.py
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar"
+    # Verify CSV file
     - echo "[*] Verifing result in CSV file ..."
+    - echo "Solved instances:" $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l)
     - if [ $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi
-    - if [ $(greg "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check)"; exit 1; fi
+    - if [ $(greg "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi
     - echo "[*] Benchmark done. All tests passed!"
