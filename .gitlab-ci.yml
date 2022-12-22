@@ -24,7 +24,7 @@ stages:
 build-job:
   stage: build
   artifacts:
-    path:
+    paths:
       - task-4/vc-data-students/*.jar
   script:
     - echo "[*] Compiling the code..."
@@ -36,7 +36,7 @@ build-job:
 run-job:
   stage: run
   artifacts:
-    path:
+    paths:
       - task-4/vc/data-studens/*.csv
   script:
     - echo "[*] Executing benchmark ..."
