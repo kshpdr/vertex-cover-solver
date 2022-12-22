@@ -25,32 +25,32 @@ build-job:
   stage: build
   artifacts:
     paths:
-      - task-4/src/*.jar
+      - task-4/src/*.jar # Save Solver.jar file (for 'run' stage)
   script:
     - echo "[*] Compiling the code..."
     - cd task-4/src
-    - javac *.java
-    - jar cfm Solver.jar manifest.txt *.class
+    - javac *.java # Compile Java code
+    - jar cfm Solver.jar manifest.txt *.class # Create 'jar' file
     - echo "[*] Compilation successfull."
 
 run-job:
   stage: run
   artifacts:
     paths:
-      - task-4/vc/data-studens/*.csv
+      - task-4/vc-data-studens/*.csv # Save result.csv file (for 'verify' stage)
   script:
-    - echo "[*] Executing benchmark ..."
+    - echo "[*] Executing benchmark (30s timeout) ..."
     - cd task-4/vc-data-students
-    - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then cp -r /home/master/vc-data/* . ; fi
-    - chmod +x benchmark-fast.sh verify verifier.py
-    - ./benchmark-fast.sh "java -jar ../src/Solver.jar"
+    - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then cp -r /home/master/vc-data/* . ; fi # Copy testcases to workdir (if not exist)
+    - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
+    - ./benchmark-fast.sh "java -jar ../src/Solver.jar" 30 # Run benchmark with solver
     - echo "[*] Benchmark script done."
 
 verify-job:
   stage: verify
   script:
     - echo "[*] Verifing result in CSV file:" $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l)
-    - echo "Solved instances:" $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l)
-    - if [ $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi
-    - if [ $(grep "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi
+    - echo "Solved instances:" $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) "/ 266" # Print number of solved instances
+    - if [ $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi # Check if there exists at least one 'OK' record in CSV file
+    - if [ $(grep "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi # Check if there exists any 'NOT a VC:' in CSV file
     - echo "[*] Verification done. All tests passed!"
