@@ -26,14 +26,14 @@ LAST_K = 0
     
 # Main method
 def main():
-    try: E = read_input()                         # Parse input from stdin
+    try: V,E = read_input()                         # Parse input from stdin
     except Exception as e: return print("[ERROR] Could not parse input graph: "+str(e))
-    S = vertex_cover(E)                           # Execute V.C. algorithm (on reduced graph if possible)
+    S = vertex_cover(V,E)                           # Execute V.C. algorithm (on reduced graph if possible)
     if len(S) > 0: print("\n".join(S))            # Print result
 
 # Parse input graph from stdin
 def read_input():
-    E = dict()
+    V,E = set(),dict()
     for line in stdin:                                        	# Parse each following edge line
         line = line.strip()
         if line.startswith("#") or len(line) == 0: continue		# Skip comment lines and empty lines
@@ -43,19 +43,28 @@ def read_input():
         else: E[u] = [v]
         if v in E: E[v].append(u)
         else: E[v] = [u]
-    return E
+        for n in e: V.add(n)
+    return V,E
 
 # Find minimal vertex cover (method from lecture)
-def vertex_cover(E):
+def vertex_cover(V,E):
 
     def get_max(k):
         return len(E[k])
+
+    def cmp_func(v):
+        return len(E[v]) + sum(n in V for n in E[v])/(len(E[v])*10) if v in E else 0
     
     S = list()
+    
+    # Sort list of nodes by vertex degree
+    V = list(V)
+    V.sort(key=cmp_func,reverse=True)
 
-    while len(E) > 0:
-        # Find max degree vertex
-        vertex = max(E,key=get_max)
+    # Iterate over all vertices (by DESC vertex degree)
+    for vertex in V:
+        if len(E) == 0: break
+        if vertex not in E: continue
         # Add it to the solution
         S.append(vertex)
         # Remove it from graph
