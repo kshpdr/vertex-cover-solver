@@ -32,6 +32,6 @@ build-and-test-job:       # This job runs in the build stage, which runs first.
     - chmod +x benchmark-fast.sh verify verifier.py
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar"
     - echo "[*] Verifing result in CSV file ..."
-    - if [ $(grep "OK" $(find . -name *.csv | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi
-    - if [ $(greg "Not a VC:" $(find . -name *.csv | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check)"; exit 1; fi
+    - if [ $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi
+    - if [ $(greg "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check)"; exit 1; fi
     - echo "[*] Benchmark done. All tests passed!"
