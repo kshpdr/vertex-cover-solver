@@ -55,27 +55,61 @@ def vertex_cover(V,E):
     def cmp_func(v):
         return len(E[v]) + sum(n in V for n in E[v])/(len(E[v])*10) if v in E else 0
     
+    def contains_all(E,v,u):
+        nv = E[v]
+        for n in E[u]:
+            if n == v: continue
+            if n not in nv:
+                return False
+        return True
+    
     S = list()
     
     # Sort list of nodes by vertex degree
     V = list(V)
     V.sort(key=cmp_func,reverse=True)
-
+    
     # Iterate over all vertices (by DESC vertex degree)
     for vertex in V:
         if len(E) == 0: break
         if vertex not in E: continue
+
+        # Some reduction rules
+        ne = E[vertex]
+        if len(ne) == 1:
+            n = ne[0]
+            S.append(n)
+            remove_vertex(E,n)
+        elif len(ne) == 2:
+            u,w = ne
+            if w in E[u]:
+                S.append(u)
+                S.append(w)
+                remove_vertex(E,u)
+                remove_vertex(E,w)
+        else:
+            for n in ne:
+                if contains_all(E,vertex,n):
+                    S.append(vertex)
+                    remove_vertex(E,vertex)
+                    break
+                
+        if vertex not in E: continue
+        
         # Add it to the solution
         S.append(vertex)
         # Remove it from graph
-        ne = E[vertex]
-        del E[vertex]
-        for n in ne:
-            E[n].remove(vertex)
-            if len(E[n]) == 0:
-                del E[n]
+        remove_vertex(E,vertex)
     
     return S
+
+def remove_vertex(E,vertex):
+    ne = E[vertex]
+    del E[vertex]
+    for n in ne:
+        E[n].remove(vertex)
+        if len(E[n]) == 0:
+            del E[n]
 
 # print additional comment lines when SIGINT received
 def debug_before_shutdown(sig,frame):
