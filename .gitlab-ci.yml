@@ -41,7 +41,8 @@ run-job:
   script:
     - echo "[*] Executing benchmark (30s timeout) ..."
     - cd task-4/vc-data-students
-    - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then cp -r /home/master/vc-data/* . ; fi # Copy testcases to workdir (if not exist)
+    - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/master/vc-data ]; then cp -r /home/master/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => private VM
+    - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data ]; then cp -r /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => UNI-Server
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar" 30 # Run benchmark with solver
     - echo "[*] Benchmark script done."
