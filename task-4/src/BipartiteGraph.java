@@ -81,8 +81,8 @@ public class BipartiteGraph {
 
     public void removeVertex(Vertex v){
         Integer[] indices = idMap.get(v.id);
-        Vertex vertex = new Vertex(v.name,indices[0]);
         if (indices != null){
+            Vertex vertex = new Vertex(v.name,indices[0]);
             int leftVertexIndex = left.indexOf(vertex);
             if (leftVertexIndex != -1){
                 Vertex leftVertex = left.get(leftVertexIndex);
@@ -90,6 +90,7 @@ public class BipartiteGraph {
                 left.remove(leftVertex);
             }
 
+            vertex = new Vertex(v.name,indices[1]);
             int rightVertexIndex = right.indexOf(vertex);
             if (rightVertexIndex != -1){
                 Vertex rightVertex = right.get(rightVertexIndex);
@@ -110,14 +111,10 @@ public class BipartiteGraph {
         Vertex rightSecond = new Vertex(neighbor.name, idsNeighbors[1]);
 
         // REMOVE: vertex from left,right lists
-        int index = left.indexOf(leftFirst);
-        if (index != -1) left.remove(index);
-        index = left.indexOf(leftSecond);
-        if (index != -1) left.remove(leftSecond);
-        index = right.indexOf(rightFirst);
-        if (index != -1) right.remove(rightFirst);
-        index = right.indexOf(rightSecond);
-        if (index != -1) right.remove(rightSecond);
+        if (!left.contains(leftFirst)) left.add(leftFirst);
+        if (!left.contains(leftSecond)) left.add(leftSecond);
+        if (!right.contains(rightFirst)) right.add(rightFirst);
+        if (!right.contains(rightSecond)) right.add(rightSecond);
 
         // REMOVE: vertex from adjMap
         // leftFirst -> rightSecond
