@@ -56,7 +56,7 @@ verify-job:
   stage: verify
   script:
     - csv_file=$(find . -name "*.csv" | tail -n 1)
-    - log_file=$(find . name "*.log" | tail -n 1)
+    - log_file=$(find . -name "*.log" | tail -n 1)
     - echo "[*] Verifing result in CSV file:" $csv_file
     - echo "Solved instances:" $(grep "OK" $csv_file | wc -l) "/ 266" # Print number of solved instances
     - if [ $(grep "OK" $csv_file | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi # Check if there exists at least one 'OK' record in CSV file
