@@ -37,5 +37,5 @@ build-and-test-job:       # This job runs in the build stage, which runs first.
     - echo "[*] Verifing result in CSV file ..."
     - echo "Solved instances:" $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l)
     - if [ $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi
-    - if [ $(greg "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi
+    - if [ $(grep "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi
     - echo "[*] Benchmark done. All tests passed!"
