@@ -25,8 +25,8 @@ build-job:       # This job runs in the build stage, which runs first.
   script:
     - echo "[*] Compiling the code..."
     - cd task-4/src
-    - echo 1
-    - echo 2
+    - echo 1.1
+    - echo 1.2
     - echo "[*] Compile complete."
 
 test-job:
@@ -34,5 +34,5 @@ test-job:
   script:
     - echo "[*] Testing the code ..."
     - cd ../vc-data-students
-    - echo 3
+    - echo 2.1
     - echo "[*] Testing complete."
