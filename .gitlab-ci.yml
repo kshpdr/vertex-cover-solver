@@ -33,6 +33,6 @@ test-job:
   stage: test
   script:
     - echo "[*] Testing the code ..."
-    - cd ../vc-data-students
-    - echo 2.1
+    - cd task-4/vc-data-students
+    - bash benchmark-fast.sh "java -jar ../src/Solver.jar"
     - echo "[*] Testing complete."
