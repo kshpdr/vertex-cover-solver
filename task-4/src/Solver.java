@@ -25,7 +25,7 @@ public class Solver {
 
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
-    public static int depthThreshold = 25;
+    public static int depthThreshold = 5;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
@@ -77,6 +77,7 @@ public class Solver {
             for (Vertex v : reducedNeighborsMap.keySet()){
                 result.add(v.name);
             }
+            recursionDepth--;
             return result;
         }
 
@@ -105,6 +106,7 @@ public class Solver {
             for (Vertex neighbor : reducedNeighborsMap.keySet()){
                 solution.add(neighbor.name);
             }
+            recursionDepth--;
             return solution;
         }
 
@@ -124,6 +126,7 @@ public class Solver {
             for (Vertex neighbor : reducedNeighborsMap.keySet()){
                 solution.add(neighbor.name);
             }
+            recursionDepth--;
             return solution;
         }
         
