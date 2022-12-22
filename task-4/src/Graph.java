@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
-//    private BipartiteGraph bipartiteGraph;
+    private BipartiteGraph bipartiteGraph;
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
@@ -46,7 +46,7 @@ public class Graph  {
             this.degreeOrder.increaseDegreeOfVertex(vertex1, 1);
             this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
-//        bipartiteGraph = new BipartiteGraph(this);
+        bipartiteGraph = new BipartiteGraph(this);
     }
 
     public Graph() {
@@ -109,7 +109,7 @@ public class Graph  {
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
         }
-//        bipartiteGraph.removeVertex(vertexToRemove);
+        bipartiteGraph.removeVertex(vertexToRemove);
         return adjacentVertices;
     }
 
@@ -131,7 +131,7 @@ public class Graph  {
             neighbor.degree++;
             this.degreeOrder.increaseDegreeOfVertex(neighbor, 1);
 
-//            bipartiteGraph.addEdge(originalVertex, neighbor);
+            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
         this.degreeOrder.putBack(originalVertex, neighbors.size());
     }
@@ -204,7 +204,7 @@ public class Graph  {
 
 
     public int getLpBound() {
-        BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
+        //BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
         return (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
     }
 
@@ -514,12 +514,12 @@ public class Graph  {
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
                 if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
+                    originalLpSolution = (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
                 }
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
+                int tmpLpSolution = ((int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2)) + 1;
                 if (tmpLpSolution <= originalLpSolution) {
                     verticesInVertexCover.put(v, removedVertices);
                     reduced = true;

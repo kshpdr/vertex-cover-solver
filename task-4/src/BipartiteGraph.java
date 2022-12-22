@@ -8,13 +8,14 @@ public class BipartiteGraph {
     public ArrayList<Vertex> left = new ArrayList<>();
     public ArrayList<Vertex> right = new ArrayList<>();
     public HashMap<Vertex,HashSet<Vertex>> adjacentMap = new HashMap<>();
+    public HashMap<Integer,Integer[]> idMap = new HashMap<>();
+    public int indexCounter = 0;
 
     HashMap<Vertex, Vertex> pairLeft, pairRight;
     HashMap<Vertex, Integer> dist;
 
     public BipartiteGraph(Graph graph) {
         nilVertex.dist = INF;
-        int indexCounter = 0;
         for (Vertex vertex : graph.getVertices()) {
             Vertex v = new Vertex(vertex.name, indexCounter++);
             v.originalId = vertex.id;
@@ -23,6 +24,9 @@ public class BipartiteGraph {
             Vertex u = new Vertex(vertex.name, indexCounter++);
             u.originalId = vertex.id;
             right.add(u);
+
+            Integer[] indices = {indexCounter-2,indexCounter-1};
+            idMap.put(vertex.id,indices);
         }
 
         HashMap<Vertex,HashSet<Vertex>> map = graph.getAdjVertices();
@@ -70,6 +74,78 @@ public class BipartiteGraph {
                     // leftSecond <- rightFirst
                     neighborSet = adjacentMap.computeIfAbsent(rightFirst, k -> new HashSet<>());
                     neighborSet.add(leftSecond);
+                }
+            }
+        }
+    }
+
+    public void removeVertex(Vertex v){
+        Integer[] indices = idMap.get(v.id);
+        Vertex vertex = new Vertex(v.name,indices[0]);
+        if (indices != null){
+            int leftVertexIndex = left.indexOf(vertex);
+            if (leftVertexIndex != -1){
+                Vertex leftVertex = left.get(leftVertexIndex);
+                removeVertexFromAdjacencyMap(leftVertex);
+                left.remove(leftVertex);
+            }
+
+            int rightVertexIndex = right.indexOf(vertex);
+            if (rightVertexIndex != -1){
+                Vertex rightVertex = right.get(rightVertexIndex);
+                removeVertexFromAdjacencyMap(rightVertex);
+                right.remove(rightVertex);
+            }
+        }
+    }
+
+    public void addEdge(Vertex vertex, Vertex neighbor){
+        Integer[] idsVertex = idMap.get(vertex.id);
+        Integer[] idsNeighbors = idMap.get(neighbor.id);
+
+        Vertex leftFirst = new Vertex(vertex.name, idsVertex[0]);
+        Vertex leftSecond = new Vertex(neighbor.name, idsNeighbors[0]);
+
+        Vertex rightFirst = new Vertex(vertex.name, idsVertex[1]);
+        Vertex rightSecond = new Vertex(neighbor.name, idsNeighbors[1]);
+
+        // REMOVE: vertex from left,right lists
+        int index = left.indexOf(leftFirst);
+        if (index != -1) left.remove(index);
+        index = left.indexOf(leftSecond);
+        if (index != -1) left.remove(leftSecond);
+        index = right.indexOf(rightFirst);
+        if (index != -1) right.remove(rightFirst);
+        index = right.indexOf(rightSecond);
+        if (index != -1) right.remove(rightSecond);
+
+        // REMOVE: vertex from adjMap
+        // leftFirst -> rightSecond
+        HashSet<Vertex> neighborSet = adjacentMap.computeIfAbsent(leftFirst, k -> new HashSet<>());
+        neighborSet.add(rightSecond);
+        // leftFirst <- rightSecond
+        neighborSet = adjacentMap.computeIfAbsent(rightSecond, k -> new HashSet<>());
+        neighborSet.add(leftFirst);
+        
+        // leftSecond -> rightFirst
+        neighborSet = adjacentMap.computeIfAbsent(leftSecond, k -> new HashSet<>());
+        neighborSet.add(rightFirst);
+        // leftSecond <- rightFirst
+        neighborSet = adjacentMap.computeIfAbsent(rightFirst, k -> new HashSet<>());
+        neighborSet.add(leftSecond);
+    }
+
+
+    private void removeVertexFromAdjacencyMap(Vertex v){
+        HashSet<Vertex> neighbors = adjacentMap.remove(v);
+        if (neighbors != null){
+            for (Vertex n : neighbors){
+                HashSet<Vertex> nextNeighbors = adjacentMap.get(n);
+                if (nextNeighbors != null){
+                    nextNeighbors.remove(v);
+                    if (nextNeighbors.size() == 0){
+                        adjacentMap.remove(n);
+                    }
                 }
             }
         }
