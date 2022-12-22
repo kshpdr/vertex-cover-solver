@@ -23,6 +23,9 @@ stages:
 
 build-job:
   stage: build
+  artifacts:
+    path:
+      - task-4/vc-data-students/*.jar
   script:
     - echo "[*] Compiling the code..."
     - cd task-4/src
@@ -32,9 +35,12 @@ build-job:
 
 run-job:
   stage: run
+  artifacts:
+    path:
+      - task-4/vc/data-studens/*.csv
   script:
     - echo "[*] Executing benchmark ..."
-    - cd ../vc-data-students
+    - cd task-4/vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then cp -r /home/master/vc-data/* . ; fi
     - chmod +x benchmark-fast.sh verify verifier.py
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar"
