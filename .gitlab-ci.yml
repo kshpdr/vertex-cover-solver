@@ -16,34 +16,22 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-stages:          # List of stages for jobs, and their order of execution
-  - build
+stages:
   - test
-  - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
+build-and-test-job:       # This job runs in the build stage, which runs first.
+  stage: test
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
-
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
-
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
-
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - echo "[*] Compiling the code..."
+    - cd task-4/src
+    - javac *.java
+    - jar cfm Solver.jar manifest.txt *.class
+    - echo "[*] Executing benchmark ..."
+    - cd ../vc-data-students
+    - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then cp -r /home/master/vc-data/* . ; fi
+    - chmod +x benchmark-fast.sh verify verifier.py
+    - ./benchmark-fast.sh "java -jar ../src/Solver.jar"
+    - echo "[*] Verifing result in CSV file ..."
+    - if [ $(grep "OK" $(find . -name "*.csv" | tail -n 1) | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi
+    - if [ $(greg "Not a VC:" $(find . -name "*.csv" | tail -n 1) | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check)"; exit 1; fi
+    - echo "[*] Benchmark done. All tests passed!"
