@@ -21,11 +21,20 @@ public class Solver {
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true;
+    public static boolean lpReductionIteration = true;
 
     public static int recursiveSteps = 0;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
+
+        if (oneDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
+        }
+
+        if (twoDegreeRuleIteration){
+            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
+        }
 
         if(highDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
@@ -43,14 +52,9 @@ public class Solver {
             reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
         }
 
-        if (oneDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
+        if(lpReductionIteration) {
+            reducedNeighborsMap.putAll(graph.applyLpReduction());
         }
-
-        if (twoDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
-        }
-
 
         k -= reducedNeighborsMap.size();
 
