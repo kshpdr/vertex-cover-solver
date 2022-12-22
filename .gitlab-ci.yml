@@ -29,5 +29,6 @@ build-and-test-job:       # This job runs in the build stage, which runs first.
     - echo "[*] Compilation completed."
     - echo "[*] Execute benchmark ..."
     - cd ../vc-data-students
-    - bash benchmark-fast.sh "java -jar ../src/Solver.jar"
+    - chmod +x benchmark-fast.sh verify verifier.py
+    - ./benchmark-fast.sh "java -jar ../src/Solver.jar"
     - echo "[*] Benchmark done."
