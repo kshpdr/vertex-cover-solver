@@ -21,14 +21,18 @@ stages:
   - run
   - verify
 
+variables:
+  - TASK_NR: 4
+  - BENCHMARK_TIMEOUT: 30
+
 build-job:
   stage: build
   artifacts:
     paths:
-      - task-4/src/*.jar # Save Solver.jar file (for 'run' stage)
+      - task-$TASK_NR/src/*.jar # Save Solver.jar file (for 'run' stage)
   script:
     - echo "[*] Compiling the code..."
-    - cd task-4/src
+    - cd task-$TASK_NR/src
     - javac *.java # Compile Java code
     - jar cfm Solver.jar manifest.txt *.class # Create 'jar' file
     - echo "[*] Compilation successfull."
@@ -37,15 +41,15 @@ run-job:
   stage: run
   artifacts:
     paths:
-      - task-4/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
-      - task-4/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
+      - task-$TASK_NR/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
+      - task-$TASK_NR/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
   script:
-    - echo "[*] Executing benchmark (20s timeout) ..."
-    - cd task-4/vc-data-students
+    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUTs timeout) ..."
+    - cd task-$TASK_NR/vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/master/vc-data ]; then cp -r /home/master/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => private VM
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data ]; then cp -r /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data/* . ; fi fi  # Copy testcases to workdir (if not exist) => UNI-Server
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
-    - ./benchmark-fast.sh "java -jar ../src/Solver.jar" 60 # Run benchmark with solver
+    - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT # Run benchmark with solver
     - echo "[*] Benchmark script done."
 
 verify-job:
