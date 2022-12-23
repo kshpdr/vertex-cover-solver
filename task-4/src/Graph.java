@@ -71,12 +71,7 @@ public class Graph  {
     }
 
     public boolean isEmpty() {
-        for (Vertex vertex : this.adjVertices.keySet()) {
-            if(!this.adjVertices.get(vertex).isEmpty()){
-                return false;
-            }
-        }
-        return true;
+        return this.vertices.size() > 0;
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
@@ -111,6 +106,32 @@ public class Graph  {
         }
 //        bipartiteGraph.removeVertex(vertexToRemove);
         return adjacentVertices;
+    }
+
+    void removeVertexVoid(Vertex vertexToRemove) {
+        vertices.remove(vertexToRemove);
+        this.degreeOrder.removeVertex(vertexToRemove);
+        Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
+        while (iterator.hasNext()) {
+            Vertex tmpVertex = iterator.next();
+            if (this.adjVertices.get(tmpVertex).remove(vertexToRemove)) {
+                edgesNumber--;
+                tmpVertex.degree--;
+                this.degreeOrder.decreaseDegreeOfVertex(tmpVertex, 1);
+            }
+            if (this.adjVertices.get(tmpVertex).isEmpty()) {
+                iterator.remove();
+                vertices.remove(tmpVertex);
+                this.degreeOrder.removeVertex(tmpVertex);
+            }
+        }
+
+        if (adjVertices.containsKey(vertexToRemove)) {
+            vertexToRemove.degree = 0;
+            adjVertices.remove(vertexToRemove);
+            vertices.remove(vertexToRemove);
+        }
+//        bipartiteGraph.removeVertex(vertexToRemove);
     }
 
     void putVertexBack(Vertex originalVertex, HashSet<Vertex> neighbors) {
