@@ -50,6 +50,7 @@ public class Solver {
                 if (maxVertex == null || maxDegree < degree){
                     maxVertex = v;
                     maxDegree = degree;
+                    // Speed-Up trick: if lastMaxDegree same as current maxDegree we can stop iterating ... there will be no vertex with higher degree!
                     if (lastMaxDegree == maxDegree) break;
                 }
             }
