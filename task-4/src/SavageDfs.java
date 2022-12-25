@@ -39,29 +39,9 @@ public class SavageDfs {
 
     }
 
-    public static void savageAlgorithmRecursive(ArrayList<ArrayList<Integer>> graph, ArrayList<String> verticesMapping){
-        boolean[] visited = new boolean[graph.size()];
-        boolean[] printed = new boolean[graph.size()];
-        for(int index = 0; index < graph.size(); index++){
-            dfsSavage(graph,index,verticesMapping, visited,printed);
-        }
-    }
 
-    private static void dfsSavage(ArrayList<ArrayList<Integer>> graph, int vertex, ArrayList<String> verticesMapping, boolean[] visited, boolean[] printed) {
 
-        if(!visited[vertex]){
-            visited[vertex] = true;
-            for (int neighbor: graph.get(vertex)){
-                if(!visited[neighbor]){
-                    if(!printed[vertex]){
-                        System.out.println(verticesMapping.get(vertex));
-                        printed[vertex] = true;
-                    }
-                    dfsSavage(graph,neighbor,verticesMapping,visited,printed);
-                }
-            }
-        }
-    }
+
 
 
 
@@ -108,7 +88,6 @@ public class SavageDfs {
 
         StringBuilder sb = new StringBuilder();
         savageAlgorithmIterative(graph,verticesMapping,sb);
-        //savageAlgorithmRecursive(graph,verticesMapping);
         String resultStr = sb.toString();
         System.out.print(resultStr);
 
