@@ -4,9 +4,9 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =false;
-    public static boolean twoDegreeRulePre = false;
-    public static boolean dominationRulePre = false;
+    public static boolean oneDegreeRulePre =true;
+    public static boolean twoDegreeRulePre = true;
+    public static boolean dominationRulePre = true;
 
     public static boolean lpBoundBeginning  = false;
     public static boolean cliqueBoundBeginning =false;
