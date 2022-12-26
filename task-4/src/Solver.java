@@ -6,7 +6,7 @@ import java.util.*;
 public class Solver {
     public static boolean oneDegreeRulePre =true;
     public static boolean twoDegreeRulePre = false;
-    public static boolean dominationRulePre = true;
+    public static boolean dominationRulePre = false;
 
     public static boolean lpBoundBeginning  = false;
     public static boolean cliqueBoundBeginning =false;
@@ -141,7 +141,7 @@ public class Solver {
         while(!vertexStack.isEmpty()){
             Vertex vertex;
             vertex = vertexStack.pop();
-            if(vertex.visited){
+            if(vertex.visited || !graph.getAdjVertices().containsKey(vertex)){
                 continue;
             }
             vertex.visited = true;
