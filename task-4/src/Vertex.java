@@ -9,6 +9,8 @@ public class Vertex {
     //need color for Clique Bound
     int color =-1;
 
+    boolean visited = false;
+
 //    boolean active =true;
 
 

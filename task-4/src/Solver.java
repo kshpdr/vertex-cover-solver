@@ -4,23 +4,23 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =true;
-    public static boolean twoDegreeRulePre = true;
-    public static boolean dominationRulePre = true;
+    public static boolean oneDegreeRulePre =false;
+    public static boolean twoDegreeRulePre = false;
+    public static boolean dominationRulePre = false;
 
-    public static boolean lpBoundBeginning  = true;
-    public static boolean cliqueBoundBeginning =true;
-    public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = true;
+    public static boolean lpBoundBeginning  = false;
+    public static boolean cliqueBoundBeginning =false;
+    public static boolean unconfinedRuleBeginning = false;
+    public static boolean highDegreeRuleBeginning = false;
+    public static boolean lpReductionBeginning = false;
 
-    public static boolean cliqueBoundIteration= true;
-    public static boolean lpBoundIteration= true;
-    public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true;
+    public static boolean cliqueBoundIteration= false;
+    public static boolean lpBoundIteration= false;
+    public static boolean dominationRuleIteration = false;
+    public static boolean unconfinedRuleIteration = false;
+    public static boolean highDegreeRuleIteration = false;
+    public static boolean oneDegreeRuleIteration = false;
+    public static boolean twoDegreeRuleIteration = false;
 
     public static int recursiveSteps = 0;
 
@@ -132,6 +132,37 @@ public class Solver {
         }
     }
 
+    public static LinkedList<String> savageAlgorithmIterative(Graph graph){
+        Stack<Vertex> vertexStack = new Stack<>();
+        LinkedList<String> result = new LinkedList<>();
+        if(!graph.isEmpty()){
+            vertexStack.addAll(graph.getVertices());
+        }
+        while(!vertexStack.isEmpty()){
+            Vertex vertex;
+            vertex = vertexStack.pop();
+            if(vertex.visited){
+                continue;
+            }
+            vertex.visited = true;
+            boolean toPrint = false;
+
+            for (Vertex neighbor: graph.getAdjVertices().get(vertex)){
+                if(!neighbor.visited){
+                    vertexStack.add(neighbor);
+                    toPrint = true;
+                }
+            }
+            if(toPrint){
+                //System.out.println(verticesMapping.get(vertex));
+               result.add(vertex.name);
+            }
+
+        }
+        return result;
+
+    }
+
     public static void main(String[] args) throws IOException {
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
@@ -190,7 +221,8 @@ public class Solver {
 
 
 
-        LinkedList<String> result = vc(graph, lowerbound);
+        //LinkedList<String> result = vc(graph, lowerbound);
+        LinkedList<String> result = savageAlgorithmIterative(graph);
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
