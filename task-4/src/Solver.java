@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Solver {
     public static boolean oneDegreeRulePre =true;
-    public static boolean twoDegreeRulePre = true;
+    public static boolean twoDegreeRulePre = false;
     public static boolean dominationRulePre = true;
 
     public static boolean lpBoundBeginning  = false;
