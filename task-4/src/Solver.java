@@ -141,7 +141,7 @@ public class Solver {
         while(!vertexStack.isEmpty()){
             Vertex vertex;
             vertex = vertexStack.pop();
-            if(vertex.visited || !graph.getAdjVertices().containsKey(vertex)){
+            if(vertex.visited){
                 continue;
             }
             vertex.visited = true;
