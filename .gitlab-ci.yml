@@ -51,6 +51,7 @@ run-job:
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT # Run benchmark with solver
     - echo "[*] Benchmark script done."
+    - bash stats.sh $(find . -name "*.csv" | tail -n 1) # Execute stats.sh script to collect some stats from csv-file
 
 verify-job:
   stage: verify
