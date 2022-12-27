@@ -42,6 +42,7 @@ run-job:
   artifacts:
     paths:
       - task-$TASK_NR/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
+      - task-$TASK_NR/vc-data-students/stats-*.csv
       - task-$TASK_NR/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
   script:
     - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUTs timeout) ..."
