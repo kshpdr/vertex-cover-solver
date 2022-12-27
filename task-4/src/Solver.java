@@ -114,7 +114,7 @@ public class Solver {
             }
             return solution;
         }
-        
+
         // Putting back the reduced vertices
         graph.putManyVerticesBack(reducedNeighborsMap);
 
@@ -132,54 +132,63 @@ public class Solver {
         }
     }
 
-    public static LinkedList<String> savageAlgorithmIterative(Graph graph){
-        Stack<Vertex> vertexStack = new Stack<>();
-        LinkedList<String> result = new LinkedList<>();
+    public static void savageAlgorithmIterative(ArrayList<ArrayList<Integer>> graph, ArrayList<String> verticesMapping, StringBuilder sb){
+        boolean[] visited = new boolean[graph.size()];
+        Stack<Integer> vertexStack = new Stack<>();
         if(!graph.isEmpty()){
-            vertexStack.addAll(graph.getVertices());
+            for (int vertex = graph.size()-1;vertex>=0;vertex--){
+                vertexStack.add(vertex);
+            }
         }
         while(!vertexStack.isEmpty()){
-            Vertex vertex;
+            int vertex;
             vertex = vertexStack.pop();
-            if(vertex.visited){
+            if(visited[vertex]){
                 continue;
             }
-            vertex.visited = true;
+            visited[vertex] = true;
             boolean toPrint = false;
 
-            for (Vertex neighbor: graph.getAdjVertices().get(vertex)){
-                if(!neighbor.visited){
-                    vertexStack.add(neighbor);
+            for (int neighborIndex = graph.get(vertex).size()-1;neighborIndex>=0;neighborIndex--){
+                if(!visited[graph.get(vertex).get(neighborIndex)]){
+                    vertexStack.add(graph.get(vertex).get(neighborIndex));
                     toPrint = true;
                 }
             }
             if(toPrint){
                 //System.out.println(verticesMapping.get(vertex));
-               result.add(vertex.name);
+                sb.append(verticesMapping.get(vertex));
+                sb.append(System.getProperty("line.separator"));
             }
 
         }
-        return result;
 
     }
 
+
+
+
     public static void main(String[] args) throws IOException {
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+
+        ArrayList<ArrayList<Integer>> graphForDFS = new ArrayList<>();
+        ArrayList<String> verticesMapping = new ArrayList<>();
+        HashMap<String,Integer> stringVertexMapping = new HashMap<>();
+
 
         // Storing edges to call the graph constructor afterwards
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
+        int index =0;
+
         while (((line = bi.readLine()) != null)) {
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
-//                if(nodes.length==1){
-//                    System.exit(0);
-//                }
                 edges.add(nodes);
-
             }
         }
+
 
         long start = System.currentTimeMillis();
 
@@ -189,31 +198,60 @@ public class Solver {
 
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
 
+        for(String[] nodes: edges){
+            int index1;
+            if(stringVertexMapping.containsKey(nodes[0])){
+                index1 = stringVertexMapping.get(nodes[0]);
+            }else {
+                stringVertexMapping.put(nodes[0],index);
+                graphForDFS.add(new ArrayList<>());
+                verticesMapping.add(nodes[0]);
+                index1=index;
+                index++;
+            }
+            int index2;
+            if(stringVertexMapping.containsKey(nodes[1])){
+                index2 = stringVertexMapping.get(nodes[1]);
+            }else {
+                stringVertexMapping.put(nodes[1],index);
+                index2=index;
+                graphForDFS.add(new ArrayList<>());
+                verticesMapping.add(nodes[1]);
+                index++;
+            }
+            graphForDFS.get(index1).add(index2);
+            graphForDFS.get(index2).add(index1);
+
+
+
+
+        }
+
         // Instantiate graph
-        Graph graph = new Graph(edges);
+       // Graph graph = new Graph(edges);
 
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-        if(unconfinedRuleBeginning) {
-            edgesAfterRules.putAll(graph.applyUnconfinedRule());
-        }
-
-        if(lpReductionBeginning){
-            edgesAfterRules.putAll(graph.applyLpReduction());
-        }
-
-
-
-        // Call method with the clique lower bound
-        int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
-
-        if (highDegreeRuleBeginning){
-            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
-            while (graph.applyBussRule(lowerbound)){
-                lowerbound++;
-            }
-        }
+//        if(unconfinedRuleBeginning) {
+//            edgesAfterRules.putAll(graph.applyUnconfinedRule());
+//        }
+//
+//        if(lpReductionBeginning){
+//            edgesAfterRules.putAll(graph.applyLpReduction());
+//        }
+//
+//
+//
+//        // Call method with the clique lower bound
+//        int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
+//
+//        if (highDegreeRuleBeginning){
+//            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
+//            while (graph.applyBussRule(lowerbound)){
+//                lowerbound++;
+//            }
+//        }
 //        for(Vertex vertex: graph.getVertices()){
 //            System.out.println(vertex.name);
 //        };
@@ -222,9 +260,11 @@ public class Solver {
 
 
         //LinkedList<String> result = vc(graph, lowerbound);
-        LinkedList<String> result = savageAlgorithmIterative(graph);
+
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
+
+        savageAlgorithmIterative(graphForDFS,verticesMapping,sb);
         int solutionSize = 0;
 
         // Save all results in one list
@@ -241,9 +281,9 @@ public class Solver {
         }
 
         // Add results from actual branching algorithm
-        if (!result.isEmpty()) {
-            allResults.addAll(result);
-        }
+//        if (!result.isEmpty()) {
+//            allResults.addAll(result);
+//        }
 
         if (twoDegreeRulePre){
             preReduction.undoMerge(allResults);
