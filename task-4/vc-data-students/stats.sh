@@ -9,6 +9,7 @@ fi
 tests_total=$(find . -name *.dimacs | wc -l)
 tests_solved=$(grep -P "(OK;OK|1;OK;;)" $csv_file | wc -l)
 tests_failed=$(grep "Not a VC" $csv_file | wc -l)
+tests_timeout=$(grep -Po "^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;0;" $csv_file | wc -l)
 too_large=$(grep -P ">>INCORRECT" $csv_file)
 tests_larger=$(echo "$too_large" | wc -l)
 
@@ -22,7 +23,7 @@ len=${#size_diffs[@]}
 max=0
 avg=0
 
-stats_file="${csv_file%%.csv}.stats.csv"
+stats_file="stats-${csv_file##results-}"
 echo "file;time;solver;diff;opt;pct;avg;max" > $stats_file
 
 for ((i=0;i<len;i++))
@@ -44,7 +45,8 @@ done
 
 echo "====== STATS ======"
 echo "[*] Solved (OK;OK)          : $tests_solved / $tests_total" "("$(echo $tests_solved $tests_total | awk '{print int($1 / $2 * 100 + 0.5)}')"%)"
-echo "[*] Failed (Not a VC)       : $tests_failed / $tests_total" "("$(echo $tests_failed $tests_total | awk '{print int($1 / $2 * 100 + 0.5)}')"%)"
+echo "[*] Timeout (0)             : $tests_timeout / $tests_total" "("$(echo $tests_timeout $tests_total | awk '{print int($1 / $2 * 100 + 0.5)}')"%)"
+echo "[*] Invalid (Not a VC)      : $tests_failed / $tests_total" "("$(echo $tests_failed $tests_total | awk '{print int($1 / $2 * 100 + 0.5)}')"%)"
 echo "[*] Too-Large (>>INCORRECT) : $tests_larger / $tests_total" "("$(echo $tests_larger $tests_total | awk '{print int($1 / $2 * 100 + 0.5)}')"%)"
 echo "[*] AVG Too-Large           : $avg %"
 echo "[*] MAX Too-Large           : $max %"
