@@ -71,7 +71,7 @@ public class Graph  {
     }
 
     public boolean isEmpty() {
-        return this.vertices.size() > 0;
+        return this.vertices.size() == 0;
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
