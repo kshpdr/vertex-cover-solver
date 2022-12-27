@@ -17,6 +17,6 @@ public class Solver {
 			}
 		}
 		sc.close();
-		System.out.println(sb);
+		System.out.print(sb);
 	}
 }
