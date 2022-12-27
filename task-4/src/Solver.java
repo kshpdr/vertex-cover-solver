@@ -12,7 +12,7 @@ public class Solver {
 			String u = edge[0];
 			String v = edge[1];
 			if (!solution.contains(u) && !solution.contains(v)){
-				solution.add(u);
+				solution.add(v);
 				sb.append(u+"\n");
 			}
 		}
