@@ -4,9 +4,9 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =true;
+    public static boolean oneDegreeRulePre =false;
     public static boolean twoDegreeRulePre = false;
-    public static boolean dominationRulePre = false;
+    public static boolean dominationRulePre = true;
 
     public static boolean lpBoundBeginning  = false;
     public static boolean cliqueBoundBeginning =false;
@@ -136,16 +136,29 @@ public class Solver {
         boolean[] visited = new boolean[graph.size()];
         Stack<Integer> vertexStack = new Stack<>();
         if(!graph.isEmpty()){
-            for (int vertex = graph.size()-1;vertex>=0;vertex--){
-                vertexStack.add(vertex);
-            }
+            vertexStack.add(0);
         }
-        while(!vertexStack.isEmpty()){
-            int vertex;
-            vertex = vertexStack.pop();
+        int numberVisited=0;
+
+        while(!vertexStack.isEmpty() || numberVisited<graph.size()){
+
+
+            int vertex = 0;
+            if(vertexStack.isEmpty()){
+                for(int i=1; i<visited.length;i++){
+                    if(!visited[i]){
+                        vertex = i;
+                        break;
+                    }
+                }
+            }else{
+             vertex = vertexStack.pop();
+            }
+
             if(visited[vertex]){
                 continue;
             }
+            numberVisited+=1;
             visited[vertex] = true;
             boolean toPrint = false;
 
