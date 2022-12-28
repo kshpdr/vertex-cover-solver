@@ -23,7 +23,7 @@ stages:
 
 variables:
   TASK_NR: "4"
-  BENCHMARK_TIMEOUT: "30"
+  BENCHMARK_TIMEOUT: "60"
 
 build-job:
   stage: build
@@ -44,21 +44,24 @@ run-job:
       - task-$TASK_NR/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
       - task-$TASK_NR/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
   script:
-    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUTs timeout) ..."
+    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUT sec timeout) ..."
     - cd task-$TASK_NR/vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/master/vc-data ]; then cp -r /home/master/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => private VM
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data ]; then cp -r /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data/* . ; fi fi  # Copy testcases to workdir (if not exist) => UNI-Server
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
-    - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT # Run benchmark with solver
+    - ./benchmark-fast.sh "bash ../src/only_ilp.sh" $BENCHMARK_TIMEOUT # Run benchmark with solver
     - echo "[*] Benchmark script done."
 
 verify-job:
   stage: verify
+  artifacts:
+    paths:
+      - task-$TASK_NR/vc-data-students/stats-*.csv
   script:
-    - csv_file=$(find . -name "*.csv" | tail -n 1)
-    - log_file=$(find . -name "*.log" | tail -n 1)
+    - csv_file=$(find . -name "results-*.csv" | tail -n 1)
+    - log_file=$(find . -name "log-*.txt" | tail -n 1)
+    - bash task-$TASK_NR/vc-data-students/stats.sh $csv_file # Execute stats.sh script to collect some stats from csv-file
     - echo "[*] Verifing result in CSV file:" $csv_file
-    - echo "Solved instances:" $(grep "OK" $csv_file | wc -l) "/ 266" # Print number of solved instances
     - if [ $(grep "OK" $csv_file | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi # Check if there exists at least one 'OK' record in CSV file
     - if [ $(grep "Not a VC:" $csv_file | wc -l)  -gt 0 ]; then echo "[ERROR] Some tests failed with 'Not a VC:' (in column VC-check). Please fix them before commiting!"; exit 1; fi # Check if there exists any 'NOT a VC:' in CSV file
     - if [ ! -z "$(grep Exception $log_file)" ] ; then echo "[ERROR] Some tests caused an Exception (see log-file artifact)"; fi # Check if ther exists any exceptions in LOG file
