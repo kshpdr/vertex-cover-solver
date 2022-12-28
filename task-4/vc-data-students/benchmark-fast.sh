@@ -163,9 +163,9 @@ run_ce_solver()
 	done
 }
 
-echo "file;time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-diff-to-opt" > $CSV
+echo "file;model[cover(v) - 1]time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-diff-to-opt" > $CSV
 ## now loop through data set directories
-for data in $(find $DIR -mindepth 1 -maxdepth 1 -type d); do
+for data in $(find $DIR -mindepth 1 -maxdepth 1 -type d | sort); do
 	FILENAME=$(basename $data)
 	echo "run $data instances with $PROGRAMM_NAME"
 	echo "(Tab-separated columns: File, Time in seconds, solution size, recursive steps, finished, VC verified, solution size verified, diff-to-opt, last-k-diff-to-opt)"
