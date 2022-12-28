@@ -6,7 +6,7 @@ if [ -z "$csv_file" ] ; then
 	exit 1
 fi
 
-tests_total=$(find . -name *.dimacs | wc -l)
+tests_total=266
 tests_solved=$(grep -P "(OK;OK|1;OK;;)" $csv_file | wc -l)
 tests_failed=$(grep "Not a VC" $csv_file | wc -l)
 tests_timeout=$(grep -Po "^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;0;" $csv_file | wc -l)
@@ -26,7 +26,7 @@ len=${#size_diffs[@]}
 max=0
 avg=0
 
-stats_file="stats-${csv_file##results-}"
+stats_file=$(echo $csv_file | sed 's/results-/stats-/')
 echo "file;time;solver;diff;opt;pct;avg;max" > $stats_file
 
 for ((i=0;i<len;i++))
