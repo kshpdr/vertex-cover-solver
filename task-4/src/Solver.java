@@ -1,75 +1,146 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =false;
-    public static boolean twoDegreeRulePre = false;
-    public static boolean dominationRulePre = false;
+    public static void main(String[] args){
+        HashMap<MyVertex,HashSet<MyVertex>> adjMap = new HashMap<>();
+        HashMap<String,MyVertex> idMap = new HashMap<>();
+        int idCounter = 0;
+        Scanner sc = new Scanner(System.in);
+        // Parse input graph (line by line ...)
+        while (sc.hasNextLine()){
+            String line = sc.nextLine();
+            // Skip comments and empty lines
+            if (line.startsWith("#") || line.length() == 0) continue;
 
-    public static boolean lpBoundBeginning  = false;
-    public static boolean cliqueBoundBeginning =false;
-    public static boolean unconfinedRuleBeginning = false;
-    public static boolean highDegreeRuleBeginning = false;
-    public static boolean lpReductionBeginning = false;
+            // Parse edge line
+            String[] edge = line.split("\\s");
 
-    public static boolean cliqueBoundIteration= false;
-    public static boolean lpBoundIteration= false;
-    public static boolean dominationRuleIteration = false;
-    public static boolean unconfinedRuleIteration = false;
-    public static boolean highDegreeRuleIteration = false;
-    public static boolean oneDegreeRuleIteration = false;
-    public static boolean twoDegreeRuleIteration = false;
-    public static StringBuilder sb = new StringBuilder();
-
-    public static int recursiveSteps = 0;
-
-    // main function which increases the cover vertex size k every iteration
-    public static void vc_greedy_heuristic(Graph graph) {
-        while (!graph.isEmpty()){
-            // Get vertex with the highest degree
-            Vertex v = graph.getNextNode();
-            // Remove it from graph
-            graph.removeVertexVoid(v);
-            // Add it to result
-            sb.append(v.name).append("\n");
-            recursiveSteps++;
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
-
-        // Storing edges to call the graph constructor afterwards
-        HashSet<String[]> edges = new HashSet<>();
-
-        String line;
-        while (((line = bi.readLine()) != null)) {
-            if (!line.contains("#") && !line.isEmpty()) {
-                String[] nodes = line.split("\\s+");
-//                if(nodes.length==1){
-//                    System.exit(0);
-//                }
-                edges.add(nodes);
+            MyVertex u = idMap.get(edge[0]);
+            if (u == null){
+                u = new MyVertex(edge[0],idCounter++);
+                idMap.put(edge[0],u);
+            }
+            MyVertex v = idMap.get(edge[1]);
+            if (v == null){
+                v = new MyVertex(edge[1],idCounter++);
+                idMap.put(edge[1],v);
+            }
+            
+            // Add (u -> v) to graph
+            HashSet<MyVertex> neighbors = adjMap.get(u);
+            if (neighbors == null){
+                neighbors = new HashSet<>();
+                adjMap.put(u,neighbors);
 
             }
+            neighbors.add(v);
+            // Add (v -> u) to graph
+            neighbors = adjMap.get(v);
+            if (neighbors == null){
+                neighbors = new HashSet<>();
+                adjMap.put(v,neighbors);
+            }
+            neighbors.add(u);
+        }
+        sc.close();
+
+        // Initialize additional datastructure
+        HashMap<Integer,HashSet<MyVertex>> degreeMap = new HashMap<>();
+        MyVertex maxDegreeMyVertex = null;
+        int maxDegree = 0;
+        // Loop all vertices in graph
+        for (MyVertex v : adjMap.keySet()){
+            // Save max-degree-vertex (for future use ...)
+            int degree = adjMap.get(v).size();
+            if (degree > maxDegree){
+                maxDegreeMyVertex = v;
+                maxDegree = degree;
+            }
+
+            // Add vertex to degreeMap datastructure
+            HashSet<MyVertex> bucket = degreeMap.get(degree);
+            if (bucket == null){
+                bucket = new HashSet<>();
+                degreeMap.put(degree,bucket);
+            }
+            bucket.add(v);
         }
 
-        long start = System.currentTimeMillis();
-    
-        // Instantiate graph
-        Graph graph = new Graph(edges);
+        StringBuilder sb = new StringBuilder();
+        // Apply (max-degree) greedy heuristic
+        while (adjMap.size() > 0){
+            // Choose max-degree vertex v
+            MyVertex v = maxDegreeMyVertex;
+            
+            //System.out.println("# cur: "+maxDegreeMyVertex+" (d="+maxDegree+")");
 
-        vc_greedy_heuristic(graph);
+            // Add v to the VC-solution
+            sb.append(v.name).append("\n");
 
-        sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
+            // remove v from graph (adjacency datastructure)
+            HashSet<MyVertex> neighbors = adjMap.remove(v);
+            // remove v from (degree datastructure)
+            HashSet<MyVertex> bucket = degreeMap.get(neighbors.size());
+            bucket.remove(v);
+            if (bucket.size() == 0) degreeMap.remove(neighbors.size());
+            
 
-        String resultStr = sb.toString();
-        System.out.print(resultStr);
+            // remove v from it's neighbors
+            for (MyVertex n : neighbors){
+                // remove v from neighbor n (adjacency datasturcture)
+                HashSet<MyVertex> nextNeighbors = adjMap.get(n);
+                // decrease degree of neighbor n (delete from bucket ... later: put one bucket below)
+                HashSet<MyVertex> oldBucket = degreeMap.get(nextNeighbors.size());
+                oldBucket.remove(n);
+                if (oldBucket.size() == 0) degreeMap.remove(nextNeighbors.size());
+                
+                nextNeighbors.remove(v);
+                // delete 0-degree vertices
+                if (nextNeighbors.size() == 0) adjMap.remove(n);
+                else {
+                    // decrease degree of neigbor n (re-insert one bucket below)
+                    HashSet<MyVertex> nextBucket = degreeMap.get(nextNeighbors.size());
+                    if (nextBucket == null){
+                        nextBucket = new HashSet<>();
+                        degreeMap.put(nextNeighbors.size(),nextBucket);
+                    }
+                    nextBucket.add(n);
+                }
+            }
+            // Update pointer to max-degree-vertex
+            if (bucket.size() == 0){
+                if (degreeMap.size() > 0){
+                    maxDegree = Collections.max(degreeMap.keySet());
+                    maxDegreeMyVertex = degreeMap.get(maxDegree).iterator().next();
+                }
+            }
+            else {
+                maxDegreeMyVertex = bucket.iterator().next();
+            }
+        }
+        // Print solution
+        System.out.print(sb);
+    }
+}
 
-        long end = System.currentTimeMillis();
-        float sec = (end - start) / 1000F;
-        System.out.println("#time: " + sec);
+class MyVertex {
+    String name;
+    int id;
+
+    public MyVertex(String name, int id){
+        this.name = name;
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        else if (!(o instanceof MyVertex)) return false;
+        else return this.id == ((MyVertex) o).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
     }
 }
