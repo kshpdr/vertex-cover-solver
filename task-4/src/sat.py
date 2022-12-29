@@ -35,7 +35,8 @@ def main():
                 V.add(v)
 
     # Set solver algorithm for Weighted SAT Solver
-    with RC2(wcnf, solver="m22") as rc2:
+    with RC2(wcnf) as rc2:
+    #with RC2(wcnf, solver="m22") as rc2:
         t2 = time()
         print("### PARSE INPUT + INIT WCNF: {:.2f}".format(t2-t1))
 
