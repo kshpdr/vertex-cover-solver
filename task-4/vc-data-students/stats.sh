@@ -6,7 +6,7 @@ if [ -z "$csv_file" ] ; then
 	exit 1
 fi
 
-tests_total=265
+tests_total=266
 tests_solved=$(grep -P "(OK;OK|1;OK;;)" $csv_file | wc -l)
 tests_failed=$(grep "Not a VC" $csv_file | wc -l)
 tests_timeout=$(grep -Po "^[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;[^;]*;0;" $csv_file | wc -l)
@@ -40,7 +40,7 @@ do
 	else
 		pct="0"
 	fi
-	avg=$(echo $avg $pct $len | awk '{print $1 + $2 / $3}')
+	avg=$(echo $avg $pct $tests_total | awk '{print $1 + $2 / $3}')
 	max=$(echo $max $pct | awk '{print ($1 >= $2 ? $1 : $2)}')
 	f=${files[$i]}
 	tm=${times[$i]}
