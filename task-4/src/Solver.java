@@ -46,16 +46,16 @@ public class Solver {
 
         // Initialize additional datastructure
         HashMap<Integer,HashSet<MyVertex>> degreeMap = new HashMap<>();
-        TreeSet<Integer> degrees = new TreeSet<>(Collections.reverseOrder());
-        MyVertex maxDegreeMyVertex = null;
-        int maxDegree = 0;
+        TreeSet<Integer> degrees = new TreeSet<>();
+        MyVertex minDegreeVertex = null;
+        int minDegree = adjMap.keySet().size();
         // Loop all vertices in graph
         for (MyVertex v : adjMap.keySet()){
             // Save max-degree-vertex (for future use ...)
             int degree = adjMap.get(v).size();
-            if (degree > maxDegree){
-                maxDegreeMyVertex = v;
-                maxDegree = degree;
+            if (degree < minDegree){
+                minDegreeVertex = v;
+                minDegree = degree;
             }
             degrees.add(degree);
 
@@ -69,16 +69,24 @@ public class Solver {
         }
 
         StringBuilder sb = new StringBuilder();
-        // Apply (max-degree) greedy heuristic
+        // Apply (min-to-min) greedy heuristic
         while (adjMap.size() > 0){
-            // Choose max-degree vertex v
-            MyVertex v = maxDegreeMyVertex;
-            
-            //System.out.println("# cur: "+maxDegreeMyVertex+" (d="+maxDegree+")");
+            // Choose in-degree vertex tmp
+            MyVertex tmp = minDegreeVertex;
+            // Find next min-degree vertex from neighbors from tmp
+            MyVertex v = null;
+            int deg = 0;
+            for (MyVertex n : adjMap.get(tmp)){
+                int d = adjMap.get(n).size();
+                if (deg < d){
+                    deg = d;
+                    v = n;
+                }
+            }
 
             // Add v to the VC-solution
             sb.append(v.name).append("\n");
-
+            
             // remove v from graph (adjacency datastructure)
             HashSet<MyVertex> neighbors = adjMap.remove(v);
             // remove v from (degree datastructure)
@@ -89,7 +97,6 @@ public class Solver {
                 degreeMap.remove(degree);
                 degrees.remove(degree);
             }
-            
 
             // remove v from it's neighbors
             for (MyVertex n : neighbors){
@@ -117,20 +124,14 @@ public class Solver {
                     nextBucket.add(n);
                 }
             }
-            // Update pointer to max-degree-vertex
-            if (bucket.size() == 0){
-                if (degrees.size() > 0){
-                    //maxDegree = Collections.max(degreeMap.keySet());
-                    maxDegree = degrees.first();
-                    maxDegreeMyVertex = degreeMap.get(maxDegree).iterator().next();
-                }
-                else {
-                    maxDegree = 0;
-                    maxDegreeMyVertex = null;
-                }
+            // Re-calculate min-degree vertex
+            if (degrees.size() > 0){
+                minDegree = degrees.first();
+                minDegreeVertex = degreeMap.get(minDegree).iterator().next();
             }
             else {
-                maxDegreeMyVertex = bucket.iterator().next();
+                minDegree = 0;
+                minDegreeVertex = null;
             }
         }
         // Print solution
@@ -157,5 +158,10 @@ class MyVertex {
     @Override
     public int hashCode() {
         return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
