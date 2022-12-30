@@ -30,6 +30,7 @@ stats_file=$(echo $csv_file | sed 's/results-/stats-/')
 echo "file;time;solver;diff;opt;pct;avg;max" > $stats_file
 
 pct_arr=( )
+echo ${size_diffs[@]}
 for ((i=0;i<len;i++))
 do
 	sol=${solution_sizes[$i]}
@@ -40,7 +41,8 @@ do
 	else
 		pct="0"
 	fi
-	avg=$(echo $avg $pct $tests_total | awk '{print $1 + $2 / $3}')
+	avg=$(echo $avg $pct $tests_total | awk '{print $1 + ($2 / $3)}')
+	echo $pct
 	max=$(echo $max $pct | awk '{print ($1 >= $2 ? $1 : $2)}')
 	f=${files[$i]}
 	tm=${times[$i]}
