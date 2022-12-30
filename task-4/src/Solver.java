@@ -4,15 +4,10 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean oneDegreeRulePre =false;
+    public static boolean oneDegreeRulePre =true;
     public static boolean twoDegreeRulePre = false;
     public static boolean dominationRulePre = true;
-
-    public static boolean lpBoundBeginning  = false;
-    public static boolean cliqueBoundBeginning =false;
-    public static boolean unconfinedRuleBeginning = false;
-    public static boolean highDegreeRuleBeginning = false;
-    public static boolean lpReductionBeginning = false;
+    
 
     public static boolean cliqueBoundIteration= false;
     public static boolean lpBoundIteration= false;
@@ -208,11 +203,7 @@ public class Solver {
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
         ReductionRules preReduction;
-        if(edges.size()<=800000) {
-           preReduction = new ReductionRules(false,false,true);
-        } else{
-            preReduction = new ReductionRules(true,false,false);
-        }
+        preReduction = new ReductionRules((dominationRulePre && oneDegreeRulePre && edges.size()>800000) || (!dominationRulePre && oneDegreeRulePre),twoDegreeRulePre,dominationRulePre && edges.size()<=800000);
         LinkedList<String> reductionResult;
 
         reductionResult = preReduction.applyReductionRules(edges);
