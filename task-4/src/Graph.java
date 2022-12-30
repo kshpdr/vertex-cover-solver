@@ -279,6 +279,33 @@ public class Graph  {
     //     // TODO
     // }
 
+    public Vertex getVertexWithGreaterGain(HashSet<Vertex> solution){
+        for (Vertex vertex : getVertices()){
+            for (Vertex neighbor : getAdjVertices().get(vertex)){
+                if (!solution.contains(vertex) && !solution.contains(neighbor)){
+                    if (vertex.gain > neighbor.gain){
+                        return vertex;
+                    }
+                    else {
+                        return neighbor;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean isVertexCover(HashSet<Vertex> solution){
+        for (Vertex vertex : getVertices()){
+            for (Vertex neighbor : getAdjVertices().get(vertex)){
+                if (!solution.contains(vertex) || !solution.contains(neighbor)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
         int newK = k;
         this.completeReduced = false;

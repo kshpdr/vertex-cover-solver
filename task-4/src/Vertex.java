@@ -6,6 +6,9 @@ public class Vertex {
     int complementDegree;
     int dist = 0;
 
+    int loss = 0;
+    int gain;
+
     //need color for Clique Bound
     int color =-1;
 
