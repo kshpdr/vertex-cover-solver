@@ -46,6 +46,7 @@ public class Solver {
 
         // Initialize additional datastructure
         HashMap<Integer,HashSet<MyVertex>> degreeMap = new HashMap<>();
+        TreeSet<Integer> degrees = new TreeSet<>(Collections.reverseOrder());
         MyVertex maxDegreeMyVertex = null;
         int maxDegree = 0;
         // Loop all vertices in graph
@@ -56,6 +57,7 @@ public class Solver {
                 maxDegreeMyVertex = v;
                 maxDegree = degree;
             }
+            degrees.add(degree);
 
             // Add vertex to degreeMap datastructure
             HashSet<MyVertex> bucket = degreeMap.get(degree);
@@ -80,9 +82,13 @@ public class Solver {
             // remove v from graph (adjacency datastructure)
             HashSet<MyVertex> neighbors = adjMap.remove(v);
             // remove v from (degree datastructure)
-            HashSet<MyVertex> bucket = degreeMap.get(neighbors.size());
+            int degree = neighbors.size();
+            HashSet<MyVertex> bucket = degreeMap.get(degree);
             bucket.remove(v);
-            if (bucket.size() == 0) degreeMap.remove(neighbors.size());
+            if (bucket.size() == 0) {
+                degreeMap.remove(degree);
+                degrees.remove(degree);
+            }
             
 
             // remove v from it's neighbors
@@ -92,7 +98,10 @@ public class Solver {
                 // decrease degree of neighbor n (delete from bucket ... later: put one bucket below)
                 HashSet<MyVertex> oldBucket = degreeMap.get(nextNeighbors.size());
                 oldBucket.remove(n);
-                if (oldBucket.size() == 0) degreeMap.remove(nextNeighbors.size());
+                if (oldBucket.size() == 0) {
+                    degreeMap.remove(nextNeighbors.size());
+                    degrees.remove(nextNeighbors.size());
+                }
                 
                 nextNeighbors.remove(v);
                 // delete 0-degree vertices
@@ -103,15 +112,21 @@ public class Solver {
                     if (nextBucket == null){
                         nextBucket = new HashSet<>();
                         degreeMap.put(nextNeighbors.size(),nextBucket);
+                        degrees.add(nextNeighbors.size());
                     }
                     nextBucket.add(n);
                 }
             }
             // Update pointer to max-degree-vertex
             if (bucket.size() == 0){
-                if (degreeMap.size() > 0){
-                    maxDegree = Collections.max(degreeMap.keySet());
+                if (degrees.size() > 0){
+                    //maxDegree = Collections.max(degreeMap.keySet());
+                    maxDegree = degrees.first();
                     maxDegreeMyVertex = degreeMap.get(maxDegree).iterator().next();
+                }
+                else {
+                    maxDegree = 0;
+                    maxDegreeMyVertex = null;
                 }
             }
             else {
