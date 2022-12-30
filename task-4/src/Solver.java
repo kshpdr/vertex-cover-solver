@@ -13,7 +13,8 @@ public class Solver {
 			String v = edge[1];
 			if (!solution.contains(u) && !solution.contains(v)){
 				solution.add(v);
-				sb.append(v+"\n");
+                solution.add(u);
+				sb.append(v+"\n"+u+"\n");
 			}
 		}
 		sc.close();
