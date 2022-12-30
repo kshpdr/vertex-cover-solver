@@ -208,7 +208,7 @@ public class Solver {
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
         ReductionRules preReduction;
-        if(edges.size()<=600000) {
+        if(edges.size()<=800000) {
            preReduction = new ReductionRules(false,false,true);
         } else{
             preReduction = new ReductionRules(true,false,false);
@@ -304,7 +304,7 @@ public class Solver {
         if (!reductionResult.isEmpty()) {
             allResults.addAll(reductionResult);
         }
-        
+
 
         // Add results from actual branching algorithm
 //        if (!result.isEmpty()) {
