@@ -207,9 +207,16 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
+        ReductionRules preReduction;
+        if(edges.size()<=600000) {
+           preReduction = new ReductionRules(false,false,true);
+        } else{
+            preReduction = new ReductionRules(true,false,false);
+        }
+        LinkedList<String> reductionResult;
 
-        LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
+        reductionResult = preReduction.applyReductionRules(edges);
+
 
         for(String[] nodes: edges){
             int index1;
@@ -244,7 +251,6 @@ public class Solver {
        // Graph graph = new Graph(edges);
 
 
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
 //        if(unconfinedRuleBeginning) {
 //            edgesAfterRules.putAll(graph.applyUnconfinedRule());
@@ -278,6 +284,17 @@ public class Solver {
         StringBuilder sb = new StringBuilder();
 
         savageAlgorithmIterative(graphForDFS,verticesMapping,sb);
+
+//        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//            if(graph.completeReduced){
+//                graph.printReducedGraph();
+//
+//            } else {
+//                copyGraph.printReducedGraph();
+//            }
+//
+//        }));
+
         int solutionSize = 0;
 
         // Save all results in one list
@@ -287,11 +304,7 @@ public class Solver {
         if (!reductionResult.isEmpty()) {
             allResults.addAll(reductionResult);
         }
-
-        //Add results from Domination rule
-        for (Vertex v : edgesAfterRules.keySet()){
-            allResults.add(v.name);
-        }
+        
 
         // Add results from actual branching algorithm
 //        if (!result.isEmpty()) {
