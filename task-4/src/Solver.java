@@ -147,104 +147,6 @@ public class Solver {
         }
     }
 
-    public static LinkedList<String> fastVc(Graph graph){
-        long startTime = System.nanoTime();
-        int step = 1;
-        HashSet<Vertex> newC = new HashSet<>();
-        HashSet<Vertex> C = constructVc(graph);
-        for (Vertex vertex : graph.getVertices()){
-            if (!C.contains(vertex)){
-                vertex.gain = 0;
-            }
-        }
-        while (true){
-            if (step % 10 == 0) {
-                long finishTime = System.nanoTime();
-                long elapsedTime = finishTime - startTime;
-                long cutoffTimeInNanos = (long) (60 * 1e9);
-                if (elapsedTime >= cutoffTimeInNanos) {
-                    break;
-                }
-            }
-
-            if (graph.isVertexCover(C)){
-                newC = C;
-                removeMinLossVertex(C);
-                continue;
-            }
-            Vertex u = chooseRmVertex(C);
-            C.remove(u);
-            Vertex v = graph.getVertexWithGreaterGain(C);
-            C.add(v);
-            step++;
-        }
-        return getStringSolution(newC);
-    }
-
-    public static void removeMinLossVertex(HashSet<Vertex> vertices){
-        Vertex minLossVertex = vertices.iterator().next();
-        for (Vertex vertex : vertices){
-            if (vertex.loss < minLossVertex.loss){
-                minLossVertex = vertex;
-            }
-        }
-        vertices.remove(minLossVertex);
-    }
-
-    public static LinkedList<String> getStringSolution(HashSet<Vertex> vertices){
-        LinkedList<String> solution = new LinkedList<>();
-        for (Vertex vertex : vertices){
-            solution.add(vertex.name);
-        }
-        return solution;
-    }
-
-    public static Vertex chooseRmVertex(HashSet<Vertex> vertices){
-        Vertex bestVertex = vertices.iterator().next();
-        for (int i = 0; i < 50; i++){
-            Vertex vertex = vertices.iterator().next();
-            if (bestVertex.loss < vertex.loss){
-                bestVertex = vertex;
-            }
-        }
-        return bestVertex;
-    }
-
-    public static HashSet<Vertex> constructVc(Graph graph){
-        HashSet<Vertex> solution = new HashSet<>();
-        for (Vertex vertex : graph.getVertices()){
-            for (Vertex neighbor : graph.getAdjVertices().get(vertex)){
-                if (!solution.contains(vertex) && !solution.contains(neighbor)){
-                    if (vertex.degree > neighbor.degree){
-                        solution.add(vertex);
-                    }
-                    else{
-                        solution.add(neighbor);
-                    }
-                }
-            }
-        }
-        for (Vertex vertex : graph.getVertices()) {
-            for (Vertex neighbor : graph.getAdjVertices().get(vertex)) {
-                if (solution.contains(vertex) && !solution.contains(neighbor)){
-                    vertex.loss++;
-                }
-                else if (!solution.contains(vertex) && solution.contains(neighbor)){
-                    neighbor.loss++;
-                }
-            }
-        }
-        for (Vertex vertex : solution){
-            if (vertex.loss == 0){
-                solution.remove(vertex);
-                for (Vertex neighbor : graph.getAdjVertices().get(vertex)){
-                    neighbor.loss--;
-                }
-            }
-        }
-        return solution;
-    }
-
     public static void main(String[] args) throws IOException {
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
@@ -304,7 +206,7 @@ public class Solver {
 
 
 //        LinkedList<String> result = vc(graph, lowerbound);
-        LinkedList<String> result = fastVc(graph);
+        LinkedList<String> result = FastVC.fastVertexCover(graph, 60);
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;

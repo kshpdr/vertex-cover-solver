@@ -298,7 +298,7 @@ public class Graph  {
     public boolean isVertexCover(HashSet<Vertex> solution){
         for (Vertex vertex : getVertices()){
             for (Vertex neighbor : getAdjVertices().get(vertex)){
-                if (!solution.contains(vertex) || !solution.contains(neighbor)){
+                if (!solution.contains(vertex) && !solution.contains(neighbor)){
                     return false;
                 }
             }
