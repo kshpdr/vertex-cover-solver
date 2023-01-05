@@ -5,4 +5,5 @@ out/
 task-2/vc-data-students/*.txt
 task-2/vc-data-students/*.csv
 vc-data-students
+task-4/vc-data-students/
 *pdf
