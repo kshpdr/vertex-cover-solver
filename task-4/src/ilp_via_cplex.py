@@ -2,10 +2,15 @@
 
 from sys import stdin
 from re import match
+from os.path import isfile
+from os import remove as removefile
 from signal import signal,SIGINT
 from cplex import Cplex
 
 def run():
+    outfile = "solution.tmp"
+    if isfile(outfile):
+        removefile(outfile)
     # Initilize Solver for: Cplex -> Vertex-Cover
     prob = Cplex()
     prob.set_problem_name("Minimum Vertex Cover")
@@ -24,9 +29,6 @@ def run():
         names.add(u)
         names.add(v)
         constraints.append([[u,v],[1,1]])
-    
-    # Print already reduced vertices
-    if len(reduced_vertices) > 0: print("\n".join(reduced_vertices))
 
     names = list(names)
 
@@ -60,14 +62,20 @@ def run():
         prob.solve()
 
         # Print solution
-        print("\n".join(vertex for vertex,in_solution in zip(names,prob.solution.get_values()) if in_solution))
+        with open(outfile,"w") as f:
+            f.write("\n".join(vertex for vertex,in_solution in zip(names,prob.solution.get_values()) if in_solution))
+            f.write("\n")
+    
+    if len(reduced_vertices) > 0:
+        with open(outfile,"a") as f:
+            f.write("\n".join(reduced_vertices))
 
     print("#recursive steps: 0")
 
 def debug_before_shutdown(sig,frame):
     print("#recursive steps: 0")
     print("#last-k: 0")
-    exit(0)
+    exit(1)
 
 if __name__ == "__main__":
     signal(SIGINT,debug_before_shutdown)
