@@ -40,7 +40,7 @@ do
 	else
 		pct="0"
 	fi
-	avg=$(echo $avg $pct $tests_total | awk '{print $1 + ($2 / $3)}')
+	avg=$(echo $avg $pct $tests_run | awk '{print $1 + $2 / $3}')
 	max=$(echo $max $pct | awk '{print ($1 >= $2 ? $1 : $2)}')
 	f=${files[$i]}
 	tm=${times[$i]}
