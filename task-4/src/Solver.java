@@ -73,13 +73,13 @@ public class Solver {
         while (adjMap.size() > 0){
             // Choose min-degree vertex tmp
             MyVertex tmp = minDegreeVertex;
-            // Find next max-degree vertex from neighbors from tmp
+            // Find next min-degree vertex from neighbors from tmp
             MyVertex v = null;
-            int deg = adjMap.size();
+            int maxDeg = 0;
             for (MyVertex n : adjMap.get(tmp)){
                 int d = adjMap.get(n).size();
-                if (deg > d){
-                    deg = d;
+                if (maxDeg < d){
+                    maxDeg = d;
                     v = n;
                 }
             }
