@@ -51,7 +51,7 @@ public class Solver {
         int minDegree = adjMap.keySet().size();
         // Loop all vertices in graph
         for (MyVertex v : adjMap.keySet()){
-            // Save max-degree-vertex (for future use ...)
+            // Save min-degree-vertex (for future use ...)
             int degree = adjMap.get(v).size();
             if (degree < minDegree){
                 minDegreeVertex = v;
@@ -71,14 +71,14 @@ public class Solver {
         StringBuilder sb = new StringBuilder();
         // Apply (min-to-min) greedy heuristic
         while (adjMap.size() > 0){
-            // Choose in-degree vertex tmp
+            // Choose min-degree vertex tmp
             MyVertex tmp = minDegreeVertex;
-            // Find next min-degree vertex from neighbors from tmp
+            // Find next max-degree vertex from neighbors from tmp
             MyVertex v = null;
-            int deg = 0;
+            int deg = adjMap.size();
             for (MyVertex n : adjMap.get(tmp)){
                 int d = adjMap.get(n).size();
-                if (deg < d){
+                if (deg > d){
                     deg = d;
                     v = n;
                 }
