@@ -14,25 +14,29 @@ def main():
 
     # Init datastructures (V,E)
     V,R = set(),list()
+    has_edges = False
     # Parse input graph (from stdin) line by line ...
     for line in stdin:
         line = line.strip()
         # Parse reduced vertices from Reduction Rules output (if exist)
-        if line.startswith("# reduced vertex: "):
-            R.append(line[18:])
+        if line.startswith("#reduced-vertex: "):
+            R.append(line[17:])
         # Skip comments and empty lines
         if line.startswith("#") or len(line) == 0: continue
         
         # Parse edge line
         e = match(r"([a-zA-Z0-9_]+) ([a-zA-Z0-9_]+)",line).groups()
         u,v = e
-
+        has_edges = True
         # Add clauses to Weighted SAT Solver
         wcnf.append([vpool.id(u),vpool.id(v)])
         for v in e:
             if v not in V:
                 wcnf.append([-vpool.id(v)],weight=1)
                 V.add(v)
+    if has_edges == False:
+        if len(R) > 0: print("\n".join(R))
+        return
 
     # Set solver algorithm for Weighted SAT Solver
     with RC2(wcnf) as rc2:
@@ -54,6 +58,7 @@ def main():
         if len(R) > 0: print("\n".join(R))
         t5 = time()
         print("### PRINT SOLUTION: {:.2f}".format(t5-t4))
+    
 
 if __name__ == '__main__':
     main()

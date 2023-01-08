@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
-    private BipartiteGraph bipartiteGraph;
+//    private BipartiteGraph bipartiteGraph;
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
@@ -46,7 +46,7 @@ public class Graph  {
             this.degreeOrder.increaseDegreeOfVertex(vertex1, 1);
             this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
-        bipartiteGraph = new BipartiteGraph(this);
+//        bipartiteGraph = new BipartiteGraph(this);
     }
 
     public Graph() {
@@ -109,7 +109,7 @@ public class Graph  {
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
         }
-        bipartiteGraph.removeVertex(vertexToRemove);
+//        bipartiteGraph.removeVertex(vertexToRemove);
         return adjacentVertices;
     }
 
@@ -131,7 +131,7 @@ public class Graph  {
             neighbor.degree++;
             this.degreeOrder.increaseDegreeOfVertex(neighbor, 1);
 
-            bipartiteGraph.addEdge(originalVertex, neighbor);
+//            bipartiteGraph.addEdge(originalVertex, neighbor);
         }
         this.degreeOrder.putBack(originalVertex, neighbors.size());
     }
@@ -204,7 +204,7 @@ public class Graph  {
 
 
     public int getLpBound() {
-        //BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
+        BipartiteGraph bipartiteGraph = new BipartiteGraph(this);
         return (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
     }
 
@@ -514,12 +514,12 @@ public class Graph  {
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
                 if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
+                    originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
                 }
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2)) + 1;
+                int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
                 if (tmpLpSolution <= originalLpSolution) {
                     verticesInVertexCover.put(v, removedVertices);
                     reduced = true;
@@ -535,7 +535,7 @@ public class Graph  {
 
 
 
-    public void printReducedGraph(LinkedList<Vertex> reducedVertices){
+    public void printReducedGraph(HashSet<Vertex> reducedMap){
         int numEdges = 0;
         StringBuilder sb = new StringBuilder();
         for (Vertex vertex1: this.vertices) {
@@ -546,13 +546,24 @@ public class Graph  {
                  numEdges++;
             }
         }
-        for (Vertex v : reducedVertices){
-            sb.append("# reduced vertex: ").append(v.name).append("\n");
+        if (reducedMap != null){
+            for (Vertex v : reducedMap){
+                sb.append("#reduced-vertex: ").append(v.name).append("\n");
+            }
         }
         System.out.println("# " + this.vertices.size() + " "+ numEdges);
         System.out.println(sb);
         System.out.println("#difference: "+ difference);
 
+    }
+
+    public void printInitialGraph(HashSet<String[]> edges){
+        StringBuilder sb = new StringBuilder();
+        for (String[] edge : edges){
+            sb.append(edge[0]).append(" ").append(edge[1]).append("\n");
+        }
+        sb.append("#difference: 0\n");
+        System.out.print(sb);
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
@@ -572,52 +583,47 @@ public class Graph  {
             }
         }
 
+        HashSet<Vertex> reducedMap = new HashSet<>();
         Graph graph = new Graph(edges);
-        Graph copyGraph = graph.getCopy();
-
-
-        LinkedList<Vertex> reducedVertices = new LinkedList<>();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if(graph.completeReduced){
-                graph.printReducedGraph(reducedVertices);
+                graph.printReducedGraph(reducedMap);
 
             } else {
-                copyGraph.printReducedGraph(null);
+                graph.printInitialGraph(edges);
             }
 
         }));
 
 //        ReductionRules reductionRules = new ReductionRules(true,true,true);
 //        reducedVertices = reductionRules.applyReductionRules();
+        
+        boolean oneDegreeRule = true;
+        boolean twoDegreeRule = true;
+        boolean cliqueBound = false;
+        boolean lpBound = false;
+        boolean highDegreeRule = false;
+        boolean dominationRule = false;
+        boolean unconfinedRule = false;
+        boolean lpReduction = false;
 
-        Set<Vertex> vertices = graph.applyOneDegreeRule().keySet();
-        reducedVertices.addAll(vertices);
-        graph.difference += vertices.size();
+        System.out.println("# one-degree-rule ...");
+        if (oneDegreeRule) reducedMap.addAll(graph.applyOneDegreeRule().keySet());
+        System.out.println("# two-degree-rule ...");
+        if (twoDegreeRule) reducedMap.addAll(graph.applyTwoDegreeRule().keySet());
+        System.out.println("# done with reduction");
+        
+        int lowerBound = graph.getMaxLowerBound(cliqueBound, lpBound);
+        if (highDegreeRule) reducedMap.addAll(graph.applyHighDegreeRule(lowerBound).keySet());
+        if (dominationRule) reducedMap.addAll(graph.applyDominationRule().keySet());
+        if (unconfinedRule) reducedMap.addAll(graph.applyUnconfinedRule().keySet());
 
-        vertices = graph.applyTwoDegreeRule().keySet();
-        reducedVertices.addAll(vertices);
-        graph.difference += vertices.size();
-
-        int lowerBound = graph.getMaxLowerBound(true, true);
-
-        vertices = graph.applyHighDegreeRule(lowerBound).keySet();
-        reducedVertices.addAll(vertices);
-        graph.difference += vertices.size();
-
-        vertices = graph.applyDominationRule().keySet();
-        reducedVertices.addAll(vertices);
-        graph.difference += vertices.size();
-
-        vertices = graph.applyUnconfinedRule().keySet();
-        reducedVertices.addAll(vertices);
-        graph.difference += vertices.size();
-
-        if (graph.getVertices().size() < 301) {
-            vertices = graph.applyLpReduction().keySet();
-            reducedVertices.addAll(vertices);
-            graph.difference += vertices.size();
+        if (lpReduction && graph.getVertices().size() < 301) {
+            reducedMap.addAll(graph.applyLpReduction().keySet());
         }
+
+        graph.difference += reducedMap.size();
 
     }
 }
