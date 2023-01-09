@@ -17,4 +17,4 @@ Execute SAT-Solver:
 
 Use the following commands to run the SAT-solver passing a file as stdin:
 - only SAT: `python3 sat.py < graph.dimacs`
-- Reduction and SAT: `bash reduction_and_sat.sh < graph.dimacs
+- Reduction and SAT: `bash reduction_and_sat.sh < graph.dimacs (solves more testcases)
