@@ -10,18 +10,7 @@ To compile the code use "find . -name "*.java" -print | xargs javac"
 
 In the folder src do "jar cfm Solver.jar manifest.txt *.class"
 
-
-----------------
-
-Execute Solver:  
-To run the jar file for the Solver run "java -jar Solver.jar" passing a file as stdin. Example: java -jar Solver.jar < ../example-input.txt
-
-
-----------------
-
-Execute Reduction Rules:  
-To run the program to reduce the graph run "java Graph" passing a file as stdin. Example: java Graph < ../example-input.txt
-
+Install python modules via "pip install -r requirements.txt"
 
 ----------------
 Execute SAT-Solver:  
