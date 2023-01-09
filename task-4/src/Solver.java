@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
+    public static boolean heuristic = true;
+
     public static boolean oneDegreeRulePre = false;
     public static boolean twoDegreeRulePre = false;
     public static boolean dominationRulePre = false;
@@ -148,8 +150,12 @@ public class Solver {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        if (heuristic){
+            FastVC.main(args);
+            return;
+        }
 
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
         // Storing edges to call the graph constructor afterwards
         HashSet<String[]> edges = new HashSet<>();
 
@@ -205,8 +211,7 @@ public class Solver {
 
 
 
-//        LinkedList<String> result = vc(graph, lowerbound);
-        LinkedList<String> result = FastVC.fastVertexCover(graph, 60);
+        LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;

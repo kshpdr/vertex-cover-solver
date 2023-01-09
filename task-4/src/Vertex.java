@@ -47,7 +47,7 @@ public class Vertex {
 
         // sb.append("Vertices: ").append("\n");
 
-        return "Vertex " + this.name + " degree " + this.degree + " color "+ this.color;
+        return "Vertex " + this.name + " degree " + this.degree + " color "+ this.color + " loss " + this.loss;
     }
 
 //    @Override

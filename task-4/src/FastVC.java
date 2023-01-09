@@ -1,14 +1,15 @@
 import javax.sound.midi.SysexMessage;
+import javax.swing.*;
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class FastVC {
 
-    public static void updateLossAndGain(Graph graph, HashSet<Vertex> solution) {
-        for (Vertex vertex : graph.getVertices()) {
+    public static void updateLossAndGain(LightGraph graph, HashSet<Vertex> solution) {
+        for (Vertex vertex : graph.getAdjVertices().keySet()) {
             if (solution.contains(vertex)){
                 vertex.loss = 0;
                 vertex.gain = null;
@@ -30,25 +31,24 @@ public class FastVC {
         }
     }
 
-    public static HashSet<Vertex> constructVertexCover(Graph graph){
+    public static HashSet<Vertex> constructVertexCover(LightGraph graph){
         HashSet<Vertex> solution = new HashSet<>();
-        for (Vertex vertex : graph.getVertices()){
+        for (Vertex vertex : graph.getAdjVertices().keySet()){
             for (Vertex neighbor : graph.getAdjVertices().get(vertex)){
                 if (!solution.contains(vertex) && !solution.contains(neighbor)){
-                    if (vertex.degree > neighbor.degree){
+                    if (graph.getAdjVertices().get(vertex).size() > graph.getAdjVertices().get(neighbor).size()){
                         solution.add(vertex);
+                        vertex.loss = 0;
+                        break;
                     }
                     else{
                         solution.add(neighbor);
+                        neighbor.loss = 0;
                     }
                 }
             }
         }
-        //calculate loss of vertices in solution
-        for (Vertex vertex : solution){
-            vertex.loss = 0;
-        }
-        for (Vertex vertex : graph.getVertices()) {
+        for (Vertex vertex : graph.getAdjVertices().keySet()) {
             for (Vertex neighbor : graph.getAdjVertices().get(vertex)) {
                 if (solution.contains(vertex) && !solution.contains(neighbor)){
                     vertex.loss++;
@@ -59,25 +59,31 @@ public class FastVC {
             }
         }
         //remove redundant vertices
-        for (Vertex vertex : solution){
+        Iterator<Vertex> it = solution.iterator();
+        while (it.hasNext()) {
+            Vertex vertex = it.next();
             if (vertex.loss == 0){
                 vertex.loss = null;
                 vertex.gain = 0;
-                solution.remove(vertex);
-                updateLossAndGain(graph, solution);
+                it.remove();
+
+                for (Vertex neighbor : graph.getAdjVertices().get(vertex)){
+                    neighbor.loss++;
+                }
+//                updateLossAndGain(graph, solution);
             }
         }
         return solution;
     }
 
-    public static void removeMinLossVertex(HashSet<Vertex> vertices){
+    public static Vertex getMinLossVertex(HashSet<Vertex> vertices){
         Vertex minLossVertex = vertices.iterator().next();
         for (Vertex vertex : vertices){
             if (vertex.loss < minLossVertex.loss){
                 minLossVertex = vertex;
             }
         }
-        vertices.remove(minLossVertex);
+        return minLossVertex;
     }
 
     public static Vertex chooseRandomVertex(HashSet<Vertex> vertices){
@@ -91,37 +97,55 @@ public class FastVC {
         return bestVertex;
     }
 
-    public static LinkedList<String> fastVertexCover(Graph graph, int cutoff){
-        long startTime = System.nanoTime();
+    public static LinkedList<String> fastVertexCover(LightGraph graph, int cutoff){
+        long startTime = System.currentTimeMillis();
         int step = 1;
-
         HashSet<Vertex> solution = new HashSet<>();
+
+        if (graph.getAdjVertices().keySet().size() == 0){
+            return new LinkedList<>();
+        }
+
         HashSet<Vertex> tempSolution = constructVertexCover(graph);
-        for (Vertex vertex : graph.getVertices()){
+        for (Vertex vertex : graph.getAdjVertices().keySet()){
             if (!tempSolution.contains(vertex)){
                 vertex.gain = 0;
             }
         }
-        while (true){
-            if (step % 10 == 0) {
-                long finishTime = System.nanoTime();
-                long elapsedTime = finishTime - startTime;
-                long cutoffTimeInNanos = (long) (cutoff * 1e9);
-                if (elapsedTime >= cutoffTimeInNanos) {
+        int minSize = tempSolution.size();
+        while (System.currentTimeMillis() - startTime < cutoff * 1e3){
+            if (graph.isVertexCover(tempSolution)){
+                System.out.println("#Found another VC");
+                solution = new HashSet<>(tempSolution);
+
+                System.out.println(tempSolution.size());
+                if (tempSolution.size() < minSize) {
+                    minSize = tempSolution.size();
+                    System.out.println("#Found better solution: " + minSize);
+                }
+                if (step % 5 == 0 && tempSolution.size() == minSize) {
                     break;
                 }
-            }
 
-            if (graph.isVertexCover(tempSolution)){
-                solution = new HashSet<>(tempSolution);
-                removeMinLossVertex(tempSolution);
-                updateLossAndGain(graph, tempSolution);
+                Vertex minLossVertex = getMinLossVertex(tempSolution);
+                tempSolution.remove(minLossVertex);
+                minLossVertex.gain = minLossVertex.loss;
+                minLossVertex.loss = null;
+                for (Vertex neighbor : graph.getAdjVertices().get(minLossVertex)){
+                    if (solution.contains(neighbor)){
+                        neighbor.loss++;
+                    }
+                    else {
+                        neighbor.gain++;
+                    }
+                }
+//                updateLossAndGain(graph, tempSolution);
                 continue;
             }
             Vertex u = chooseRandomVertex(tempSolution);
             tempSolution.remove(u);
             updateLossAndGain(graph, tempSolution);
-            Vertex v = graph.getVertexWithGreaterGain(tempSolution);
+            Vertex v = graph.getVertexWithGreaterGainFromRandomEdge(tempSolution, u);
             tempSolution.add(v);
             updateLossAndGain(graph, tempSolution);
             step++;
@@ -139,22 +163,34 @@ public class FastVC {
 
     public static void main(String[] args) throws IOException {
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+//        BufferedReader bi = new BufferedReader(new FileReader("/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-4/vc-data-students/2-social-networks/87-cnr-2000.graph.dimacs"));
+//        BufferedReader bi = new BufferedReader(new FileReader("/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-4/vc-data-students/2-social-networks/03-adjnoun.graph.dimacs"));
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
 
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
+        LightGraph lightGraph = new LightGraph();
+        HashMap<Integer, Vertex> vertices = new HashMap<>();
         while (((line = bi.readLine()) != null)) {
-            if (!line.contains("#") && !line.isEmpty()) {
+            if (line.contains("#")){
+                Integer numVertices = Integer.parseInt(line.substring(1).split("\\s+")[0]);
+            }
+            else if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
-                edges.add(nodes);
+//                edges.add(nodes);
+                Vertex vertex = new Vertex(nodes[0], Integer.parseInt(nodes[0]));
+                Vertex neighbor = new Vertex(nodes[1], Integer.parseInt(nodes[1]));
+                vertices.putIfAbsent(Integer.parseInt(nodes[0]), vertex);
+                vertices.putIfAbsent(Integer.parseInt(nodes[1]), neighbor);
+                lightGraph.addEdge(vertices.get(Integer.parseInt(nodes[0])), vertices.get(Integer.parseInt(nodes[1])));
             }
         }
 
+        System.out.println("#Graph is read");
         long start = System.currentTimeMillis();
-        Graph graph = new Graph(edges);
-        LinkedList<String> solution = fastVertexCover(graph, 2);
+        LinkedList<String> solution = fastVertexCover(lightGraph, 50);
 
         for (String v : solution){
             sb.append(v);
