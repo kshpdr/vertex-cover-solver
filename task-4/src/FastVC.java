@@ -107,49 +107,51 @@ public class FastVC {
         }
 
         HashSet<Vertex> tempSolution = constructVertexCover(graph);
-        for (Vertex vertex : graph.getAdjVertices().keySet()){
-            if (!tempSolution.contains(vertex)){
-                vertex.gain = 0;
-            }
-        }
-        int minSize = tempSolution.size();
-        while (System.currentTimeMillis() - startTime < cutoff * 1e3){
-            if (graph.isVertexCover(tempSolution)){
-                System.out.println("#Found another VC");
-                solution = new HashSet<>(tempSolution);
+        solution = tempSolution;
 
-                System.out.println(tempSolution.size());
-                if (tempSolution.size() < minSize) {
-                    minSize = tempSolution.size();
-                    System.out.println("#Found better solution: " + minSize);
-                }
-                if (step % 5 == 0 && tempSolution.size() == minSize) {
-                    break;
-                }
-
-                Vertex minLossVertex = getMinLossVertex(tempSolution);
-                tempSolution.remove(minLossVertex);
-                minLossVertex.gain = minLossVertex.loss;
-                minLossVertex.loss = null;
-                for (Vertex neighbor : graph.getAdjVertices().get(minLossVertex)){
-                    if (solution.contains(neighbor)){
-                        neighbor.loss++;
-                    }
-                    else {
-                        neighbor.gain++;
-                    }
-                }
-//                updateLossAndGain(graph, tempSolution);
-                continue;
-            }
-            Vertex u = chooseRandomVertex(tempSolution);
-            tempSolution.remove(u);
-            updateLossAndGain(graph, tempSolution);
-            Vertex v = graph.getVertexWithGreaterGainFromRandomEdge(tempSolution, u);
-            tempSolution.add(v);
-            updateLossAndGain(graph, tempSolution);
-            step++;
-        }
+//        for (Vertex vertex : graph.getAdjVertices().keySet()){
+//            if (!tempSolution.contains(vertex)){
+//                vertex.gain = 0;
+//            }
+//        }
+//        int minSize = tempSolution.size();
+//        while (System.currentTimeMillis() - startTime < cutoff * 1e3){
+//            if (graph.isVertexCover(tempSolution)){
+//                System.out.println("#Found another VC");
+//                solution = new HashSet<>(tempSolution);
+//
+//                System.out.println(tempSolution.size());
+//                if (tempSolution.size() < minSize) {
+//                    minSize = tempSolution.size();
+//                    System.out.println("#Found better solution: " + minSize);
+//                }
+//                if (step % 5 == 0 && tempSolution.size() == minSize) {
+//                    break;
+//                }
+//
+//                Vertex minLossVertex = getMinLossVertex(tempSolution);
+//                tempSolution.remove(minLossVertex);
+//                minLossVertex.gain = minLossVertex.loss;
+//                minLossVertex.loss = null;
+//                for (Vertex neighbor : graph.getAdjVertices().get(minLossVertex)){
+//                    if (solution.contains(neighbor)){
+//                        neighbor.loss++;
+//                    }
+//                    else {
+//                        neighbor.gain++;
+//                    }
+//                }
+////                updateLossAndGain(graph, tempSolution);
+//                continue;
+//            }
+//            Vertex u = chooseRandomVertex(tempSolution);
+//            tempSolution.remove(u);
+//            updateLossAndGain(graph, tempSolution);
+//            Vertex v = graph.getVertexWithGreaterGainFromRandomEdge(tempSolution, u);
+//            tempSolution.add(v);
+//            updateLossAndGain(graph, tempSolution);
+//            step++;
+//        }
         return getStringSolution(solution);
     }
 
