@@ -79,6 +79,57 @@ public class Graph  {
         return true;
     }
 
+    public List<Graph> getComponents(){
+        HashSet<Vertex> visited = new HashSet<>();
+
+        List<Graph> components = new ArrayList<>();
+        for (Vertex vertex : vertices){
+            if (!visited.contains(vertex)){
+                HashMap<Vertex, HashSet<Vertex>> visitedVertices = getVerticesFromDFS(vertex, visited);
+                Graph component = new Graph(convertMapToStrings(visitedVertices));
+                components.add(component);
+            }
+        }
+        return components;
+    }
+
+    public HashMap<Vertex, HashSet<Vertex>> getVerticesFromDFS(Vertex vertex, HashSet<Vertex> visited){
+        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<Vertex, HashSet<Vertex>>();
+        visited.add(vertex);
+        visitedVertices.put(vertex, getAdjVertices().get(vertex));
+        for (Vertex neighbor : getAdjVertices().get(vertex)){
+            if (!visited.contains(neighbor)) {
+                visitedVertices.putIfAbsent(neighbor, getAdjVertices().get(neighbor));
+                visitedVertices.putAll(getVerticesFromDFS(neighbor, visited));
+            }
+        }
+        return visitedVertices;
+    }
+
+    public HashSet<String[]> convertMapToStrings(HashMap<Vertex, HashSet<Vertex>> vertices){
+        HashSet<String[]> edges = new HashSet<>();
+        for (Vertex vertex : vertices.keySet()){
+            for (Vertex neighbor : vertices.get(vertex)){
+                if (!containsEdge(edges, vertex, neighbor)){
+                    String[] edge = new String[2];
+                    edge[0] = vertex.name;
+                    edge[1] = neighbor.name;
+                    edges.add(edge);
+                }
+            }
+        }
+        return edges;
+    }
+
+    public boolean containsEdge(HashSet<String[]> edges, Vertex vertex, Vertex neighbor){
+        for (String[] edge : edges){
+            if ((edge[0].equals(vertex.name) && edge[1].equals(neighbor.name)) || (edge[1].equals(vertex.name) && edge[0].equals(neighbor.name))){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
         return adjVertices;
     }
