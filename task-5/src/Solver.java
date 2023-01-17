@@ -176,7 +176,7 @@ public class Solver {
         // Instantiate graph
         Graph graph = new Graph(edges);
 
-
+ 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
         if(unconfinedRuleBeginning) {
