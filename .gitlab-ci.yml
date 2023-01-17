@@ -22,7 +22,7 @@ stages:
   - verify
 
 variables:
-  TASK_NR: "4"
+  TASK_NR: "5"
   BENCHMARK_TIMEOUT: "60"
 
 build-job:
