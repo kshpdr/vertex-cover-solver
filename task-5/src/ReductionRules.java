@@ -7,6 +7,7 @@ public class ReductionRules {
     private final boolean anyRule;
     private final HashMap<String,ArrayList<String>> mergeMap;
     private final LinkedList<String> mergeOrder;
+    public int remainingVertices;
 
     public ReductionRules(boolean oneDegreeRule, boolean twoDegreeRule, boolean dominationRule){
         this.oneDegreeRule = oneDegreeRule;
@@ -33,6 +34,7 @@ public class ReductionRules {
                 neighbors.add(u);
             }
         }
+        remainingVertices = adjMap.size();
 
         // Instatiate solver result (for partial solution obtained from applying
         // reduction rules multiple times)
@@ -114,6 +116,7 @@ public class ReductionRules {
         // used anymore)
         edges.removeIf(edge -> !adjMap.containsKey(edge[0]) || !adjMap.get(edge[0]).contains(edge[1]));
 
+        remainingVertices = adjMap.size();
         // Return partial result obtained from reduction rules
         return result;
     }
