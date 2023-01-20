@@ -7,6 +7,7 @@ public class Solver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
+    public static boolean independentRulePre = true;
     public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
@@ -171,7 +172,7 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre,independentRulePre);
 
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
 
@@ -221,7 +222,7 @@ public class Solver {
         int solutionSize = 0;
 
         // Save all results in one list
-        LinkedList<String> allResults = new LinkedList<>();
+        HashSet<String> allResults = new HashSet<>();
 
         //Add results from reduction rules
         if (!reductionResult.isEmpty()) {
@@ -238,7 +239,7 @@ public class Solver {
             allResults.addAll(result);
         }
 
-        if (twoDegreeRulePre){
+        if (twoDegreeRulePre || independentRulePre){
             preReduction.undoMerge(allResults);
         }
 
