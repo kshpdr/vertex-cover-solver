@@ -42,25 +42,27 @@ public class Solver {
             reducedNeighborsMap.putAll(graph.applyTwoDegreeRule());
         }
 
-        if(highDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
-            if (graph.applyBussRule(k - reducedNeighborsMap.size())){
-                graph.putManyVerticesBack(reducedNeighborsMap);
-                recursionDepth--;
-                return null;
-            }
-        }
-
-        if(dominationRuleIteration) {
-            reducedNeighborsMap.putAll(graph.applyDominationRule());
-        }
+        
 
         if (recursionDepth % depthThreshold == 0){
+            if(highDegreeRuleIteration){
+                reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
+                if (graph.applyBussRule(k - reducedNeighborsMap.size())){
+                    graph.putManyVerticesBack(reducedNeighborsMap);
+                    recursionDepth--;
+                    return null;
+                }
+            }
+    
+            if(dominationRuleIteration) {
+                reducedNeighborsMap.putAll(graph.applyDominationRule());
+            }
+
             if(unconfinedRuleIteration) {
                 reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
             }
 
-            if(lpReductionIteration) {
+            if(lpReductionIteration && graph.getVertices().size() < 500) {
                 reducedNeighborsMap.putAll(graph.applyLpReduction());
             }
         }
@@ -151,6 +153,8 @@ public class Solver {
     }
 
     public static void main(String[] args) throws IOException {
+        long start = System.currentTimeMillis();
+
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
         // Storing edges to call the graph constructor afterwards
@@ -168,13 +172,16 @@ public class Solver {
             }
         }
 
-        long start = System.currentTimeMillis();
-
+        long t1 = System.currentTimeMillis();
+        System.out.println("#time (parse-input): "+((t1-start)/1000F));
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
         ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre,independentRulePre);
 
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
+
+        long t2 = System.currentTimeMillis();
+        System.out.println("#time (pre-reduction): "+((t2-t1)/1000F));
 
         // Find initial upper-bound for (possibly reduced) graph instance (represented by edges)
         int upperBound = preReduction.remainingVertices;
@@ -184,18 +191,27 @@ public class Solver {
         }
         else System.out.println("#upper-bound (default): "+upperBound);
 
+        long t3 = System.currentTimeMillis();
+        System.out.println("#time (upper-bound): "+((t3-t2)/1000F));
+
         // Instantiate graph
         Graph graph = new Graph(edges);
 
+        long t4 = System.currentTimeMillis();
+        System.out.println("#time (init-graph): "+((t4-t3)/1000F));
 
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
         if(unconfinedRuleBeginning) {
+            long t0 = System.currentTimeMillis();
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
+            System.out.println("#time (unconfined): "+((System.currentTimeMillis()-t0)/1000F));
         }
 
-        if(lpReductionBeginning){
+        if(lpReductionBeginning && preReduction.remainingVertices < 1000){
+            long t0 = System.currentTimeMillis();
             edgesAfterRules.putAll(graph.applyLpReduction());
+            System.out.println("#time (lp-reduction): "+((System.currentTimeMillis()-t0)/1000F));
         }
 
 
@@ -204,19 +220,27 @@ public class Solver {
         int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
 
         if (highDegreeRuleBeginning){
+            long t0 = System.currentTimeMillis();
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
             while (graph.applyBussRule(lowerbound)){
                 lowerbound++;
             }
+            System.out.println("#time (high-degree): "+((System.currentTimeMillis()-t0)/1000F));
         }
 //        for(Vertex vertex: graph.getVertices()){
 //            System.out.println(vertex.name);
 //        };
 
 
-
+        long t5 = System.currentTimeMillis();
+        System.out.println("#time (beginning-reduction): "+((t5-t4)/1000F));
+        System.out.println("#remaining-vertices: "+graph.getVertices().size());
 
         LinkedList<String> result = vc(graph, lowerbound, upperBound);
+
+        long t6 = System.currentTimeMillis();
+        System.out.println("#time (solver-algorithm): "+((t6-t5)/1000F));
+
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
@@ -242,6 +266,9 @@ public class Solver {
         if (twoDegreeRulePre || independentRulePre){
             preReduction.undoMerge(allResults);
         }
+
+        long t7 = System.currentTimeMillis();
+        System.out.println("#time (undo-merge): "+((t7-t6)/1000F));
 
         for (String v : allResults){
             sb.append(v);

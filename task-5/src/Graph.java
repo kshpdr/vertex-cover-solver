@@ -283,7 +283,7 @@ public class Graph  {
         int newK = k;
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
-        while (true) {
+        //while (true) {
             HashMap<Vertex,HashSet<Vertex>> edgesToAdd = new HashMap<>();
             HashSet<Vertex> verticesToDelete = new HashSet<>();
             boolean reducable = false;
@@ -304,8 +304,8 @@ public class Graph  {
                     reducable = false;
                 }
             }
-            if (!reducable) break;
-        }
+            //if (!reducable) break;
+        //}
         this.completeReduced = true;
         return edges;
 //        this.completeReduced = false;
@@ -340,7 +340,7 @@ public class Graph  {
     public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
-        while(true){
+        //while(true){
             boolean reduced = false;
             for (Vertex currentVertex : new HashSet<>(this.vertices)) {
                     boolean delete = false;
@@ -363,8 +363,8 @@ public class Graph  {
                         }
                     }
             }
-            if(!reduced) break;
-            }
+            //if(!reduced) break;
+            //}
         this.completeReduced=true;
         return verticesInVertexCover;
         }
@@ -427,7 +427,7 @@ public class Graph  {
     public HashMap<Vertex,HashSet<Vertex>> applyUnconfinedRule(){
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
-        while(true){
+        //while(true){
             boolean reduced = false;
             for (Vertex currentVertex : new ArrayList<>(this.vertices)) {
                 if (this.vertices.contains(currentVertex)){
@@ -437,8 +437,8 @@ public class Graph  {
                     }
                 }
             }
-            if(!reduced) break;
-        }
+            //if(!reduced) break;
+        //}
         this.completeReduced = true;
         return verticesInVertexCover;
     }
@@ -509,7 +509,7 @@ public class Graph  {
         ArrayList<Vertex> tmpVertices;
         boolean reduced;
         boolean changedGraph = false;
-        do {
+        //do {
             reduced = false;
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
@@ -528,7 +528,7 @@ public class Graph  {
                     this.putVertexBack(v, removedVertices);
                 }
             }
-        } while (reduced);
+        //} while (reduced);
         this.completeReduced = true;
         return verticesInVertexCover;
     }
