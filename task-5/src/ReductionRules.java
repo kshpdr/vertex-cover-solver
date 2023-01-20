@@ -15,7 +15,7 @@ public class ReductionRules {
         this.twoDegreeRule = twoDegreeRule;
         this.dominationRule = dominationRule;
         this.independentRule = independentRule;
-        this.anyRule = oneDegreeRule || twoDegreeRule || dominationRule;
+        this.anyRule = oneDegreeRule || twoDegreeRule || dominationRule || independentRule;
         this.mergeMap = new HashMap<>();
         this.mergeOrder = new LinkedList<>();
     }
@@ -50,7 +50,10 @@ public class ReductionRules {
                 // Try to find a vertex v with degree = 1
                 HashSet<String> neighbors = adjMap.get(v);
                 if (neighbors == null) continue;
-                if (oneDegreeRule && neighbors.size() == 1) {
+                else if (neighbors.size() == 0) {
+                    removeVertex(adjMap, v);
+                }
+                else if (oneDegreeRule && neighbors.size() == 1) {
                     for (String singleNeighbor : neighbors) {
                         removeVertex(adjMap, singleNeighbor);
                         reduced = true;
