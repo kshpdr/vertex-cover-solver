@@ -8,37 +8,54 @@ import java.util.List;
 
 public class ConstrainedSolver {
 
-    public static int solve(Graph graph, Constraints constraints, int solsize, int upperbound){
-//        LinkedList<String> solution;
+    public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, int upperbound){
 
-        if (solsize + graph.getMaxLowerBound(false, true) >= upperbound){
-            return upperbound;
+        if (solution.size() + graph.getMaxLowerBound(false, true) >= upperbound){
+            return null;
         }
 
-        if (graph.isEmpty()) return solsize;
+        if (graph.isEmpty()) return new HashSet<>();
 
         List<Graph> components = graph.getComponents();
-        if (components.size() > 1){
-            for (Graph component : components){
-                solsize += solve(component, constraints, 0, upperbound - solsize);
-            }
-            return Math.min(solsize, upperbound);
-        }
-
-        Vertex vertex = graph.getNextNode();
-        HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
-        upperbound = solve(graph, constraints, solsize + 1, upperbound);
-        graph.putVertexBack(vertex, eliminatedNeighbors);
-
-//        if (solution != null) {
-//            solution.add(vertex.name);
+//        if (components.size() > 1){
+//            for (Graph component : components){
+//                HashSet<Vertex> componentSolution = solve(component, constraints, new HashSet<>(), upperbound - solution.size());
+//                if (componentSolution != null) solution.addAll(componentSolution);
+//            }
+//            if (solution.size() > upperbound){
+//                return null;
+//            }
+//            }
 //            return solution;
 //        }
 
+        Vertex vertex = graph.getNextNode();
+        HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
+
+        HashSet<Vertex> firstTempSolution = new HashSet<>(solution);
+        HashSet<Vertex> secondTempSolution = new HashSet<>(solution);
+        firstTempSolution.add(vertex);
+        secondTempSolution.addAll(eliminatedNeighbors);
+
+        firstTempSolution = solve(graph, constraints, firstTempSolution, upperbound);
+        graph.putVertexBack(vertex, eliminatedNeighbors);
+
+        if (firstTempSolution != null) {
+//            solution.add(vertex);
+            solution = firstTempSolution;
+            return solution;
+        }
+
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
-        upperbound = solve(graph, constraints, solsize + eliminatedNeighbors.size(), upperbound);
+        secondTempSolution = solve(graph, constraints, secondTempSolution, upperbound);
         graph.putManyVerticesBack(eliminatedNeighborsMap);
-        return upperbound;
+
+        if (secondTempSolution != null && secondTempSolution.size() < solution.size()) {
+            solution = secondTempSolution;
+            return solution;
+        }
+
+        return null;
     }
 
     public static void main(String[] args) throws IOException {
@@ -63,8 +80,17 @@ public class ConstrainedSolver {
         }
         Graph graph = new Graph(edges);
         List<Graph> components = graph.getComponents();
-        LinkedList<String> solution = FastVC.fastVertexCover(lightGraph, 50);
-        int upperbound = solve(graph, null,0, solution.size());
-        System.out.println(upperbound);
+        LinkedList<String> heuristicSolution = FastVC.fastVertexCover(lightGraph, 50);
+        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(), heuristicSolution.size());
+
+        StringBuilder sb = new StringBuilder();
+        assert solution != null;
+        for (Vertex vertex : solution){
+            sb.append(vertex.name);
+            sb.append("\n");
+        }
+        sb.append("#sol size: ").append(solution.size()).append("\n");
+        String resultStr = sb.toString();
+        System.out.print(resultStr);
     }
 }
