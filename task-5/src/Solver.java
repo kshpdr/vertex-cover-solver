@@ -148,6 +148,11 @@ public class Solver {
     }
 
     public static void main(String[] args) throws IOException {
+        if (true){
+            ConstrainedSolver.main(args);
+            return;
+        }
+
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
         // Storing edges to call the graph constructor afterwards

@@ -67,6 +67,20 @@ public class FastVC {
         return getStringSolution(solution);
     }
 
+    public static HashSet<Vertex> fastVertexCoverHashset(LightGraph graph, int cutoff){
+        long startTime = System.currentTimeMillis();
+        int step = 1;
+        HashSet<Vertex> solution = new HashSet<>();
+
+        if (graph.getAdjVertices().keySet().size() == 0){
+            return new HashSet<>();
+        }
+
+        HashSet<Vertex> tempSolution = constructVertexCover(graph);
+        solution = tempSolution;
+        return solution;
+    }
+
     public static LinkedList<String> getStringSolution(HashSet<Vertex> vertices){
         LinkedList<String> solution = new LinkedList<>();
         for (Vertex vertex : vertices){
