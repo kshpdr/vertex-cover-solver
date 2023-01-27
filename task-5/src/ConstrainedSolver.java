@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ConstrainedSolver {
+    public static boolean findComponents = false;
 
     public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
 
@@ -17,15 +18,18 @@ public class ConstrainedSolver {
         if (graph.isEmpty()) return solution;
 
         // It doesn't work yet
-//        List<Graph> components = graph.getComponents();
-//        if (components.size() > 1){
-//            for (Graph component : components){
-//                HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
-//                componentSolution.removeAll(solution);
-//                solution.addAll(solve(component, constraints, new HashSet<>(), componentSolution));
-//            }
-//            return bestFoundSolution.size() >= solution.size() ? solution : bestFoundSolution;
-//        }
+        if (findComponents){
+            List<Graph> components = graph.getComponents();
+            if (components.size() > 1){
+                for (Graph component : components) {
+                    HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
+                    componentSolution.removeAll(solution);
+                    componentSolution = solve(component, constraints, new HashSet<>(), componentSolution);
+                    solution.addAll(componentSolution);
+                }
+                return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
+            }
+        }
 
         Vertex vertex = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
@@ -67,7 +71,6 @@ public class ConstrainedSolver {
             }
         }
         Graph graph = new Graph(edges);
-        List<Graph> components = graph.getComponents();
         HashSet<Vertex> heuristicSolution = FastVC.fastVertexCoverHashset(lightGraph, 50);
         HashSet<Vertex> solution = solve(graph, null, new HashSet<>(), new HashSet<>(heuristicSolution));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
