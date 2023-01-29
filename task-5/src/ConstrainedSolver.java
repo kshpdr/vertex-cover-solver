@@ -8,10 +8,11 @@ import java.util.List;
 
 public class ConstrainedSolver {
     public static boolean findComponents = false;
+    public static int recursiveSteps = 0;
 
     public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
 
-        if (solution.size() + graph.getMaxLowerBound(false, true) >= bestFoundSolution.size()){
+        if (solution.size() + graph.getMaxLowerBound(graph.getVertices().size()<90, true) >= bestFoundSolution.size()){
             return bestFoundSolution;
         }
 
@@ -30,6 +31,7 @@ public class ConstrainedSolver {
                 return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
             }
         }
+        recursiveSteps++;
 
         Vertex vertex = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
@@ -57,21 +59,43 @@ public class ConstrainedSolver {
         HashSet<String[]> edges = new HashSet<>();
 
         String line;
-        LightGraph lightGraph = new LightGraph();
-        HashMap<Integer, Vertex> vertices = new HashMap<>();
+//        LightGraph lightGraph = new LightGraph();
+
+        //min to min Graph
+        HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
+        HashMap<String,Vertex> idMap = new HashMap<>();
+        int idCounter = 0;
         while (((line = bi.readLine()) != null)) {
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
+                Vertex u = idMap.get(nodes[0]);
+                if (u == null){
+                    u = new Vertex(nodes[0],idCounter++);
+                    idMap.put(nodes[0],u);
+                }
+                Vertex v = idMap.get(nodes[1]);
+                if (v == null){
+                    v = new Vertex(nodes[1],idCounter++);
+                    idMap.put(nodes[1],v);
+                }
+
+                // Add (u -> v) to graph
+                HashSet<Vertex> neighbors = adjMap.computeIfAbsent(u, k -> new HashSet<>());
+                neighbors.add(v);
+                // Add (v -> u) to graph
+                neighbors = adjMap.computeIfAbsent(v, k -> new HashSet<>());
+                neighbors.add(u);
                 edges.add(nodes);
-                Vertex vertex = new Vertex(nodes[0], Integer.parseInt(nodes[0]));
-                Vertex neighbor = new Vertex(nodes[1], Integer.parseInt(nodes[1]));
-                vertices.putIfAbsent(Integer.parseInt(nodes[0]), vertex);
-                vertices.putIfAbsent(Integer.parseInt(nodes[1]), neighbor);
-                lightGraph.addEdge(vertices.get(Integer.parseInt(nodes[0])), vertices.get(Integer.parseInt(nodes[1])));
+//                Vertex vertex = new Vertex(nodes[0], Integer.parseInt(nodes[0]));
+//                Vertex neighbor = new Vertex(nodes[1], Integer.parseInt(nodes[1]));
+//                vertices.putIfAbsent(Integer.parseInt(nodes[0]), vertex);
+//                vertices.putIfAbsent(Integer.parseInt(nodes[1]), neighbor);
+//                lightGraph.addEdge(vertices.get(Integer.parseInt(nodes[0])), vertices.get(Integer.parseInt(nodes[1])));
             }
         }
+        HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         Graph graph = new Graph(edges);
-        HashSet<Vertex> heuristicSolution = FastVC.fastVertexCoverHashset(lightGraph, 50);
+
         HashSet<Vertex> solution = solve(graph, null, new HashSet<>(), new HashSet<>(heuristicSolution));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
@@ -81,6 +105,7 @@ public class ConstrainedSolver {
             sb.append("\n");
         }
         sb.append("#sol size: ").append(solution.size()).append("\n");
+        sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
         String resultStr = sb.toString();
         System.out.print(resultStr);
     }

@@ -182,11 +182,11 @@ public class Solver {
 
         // Find initial upper-bound for (possibly reduced) graph instance (represented by edges)
         int upperBound = preReduction.remainingVertices;
-        if (min2maxHeuristicPre){
-            upperBound = MinToMaxHeuristic.getUpperBound(edges);
-            System.out.println("#upper-bound (min2max): "+upperBound);
-        }
-        else System.out.println("#upper-bound (default): "+upperBound);
+//        if (min2maxHeuristicPre){
+//            upperBound = MinToMaxHeuristic.getUpperBound(edges);
+//            System.out.println("#upper-bound (min2max): "+upperBound);
+//        }
+//        else System.out.println("#upper-bound (default): "+upperBound);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
