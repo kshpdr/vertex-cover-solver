@@ -7,6 +7,7 @@ public class Solver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
+    public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
@@ -88,7 +89,6 @@ public class Solver {
             return null;
         }
 
-
         //System.out.println("k: " + k + " Clique Lower Bound: " + graph.getCliqueLowerBound());
 
         LinkedList<String> solution;
@@ -137,7 +137,9 @@ public class Solver {
     }
 
     // main function which increases the cover vertex size k every iteration
-    public static LinkedList<String> vc(Graph graph, int lowerBound) {
+    public static LinkedList<String> vc(Graph graph, int lowerBound, int upperBound) {
+        // TODO: make use of upperBound => actually not used here ... but in "other branching strategy"
+
         while (true) {
             LinkedList<String> solution = vc_branch(graph, lowerBound);
             if (solution != null){
@@ -178,6 +180,14 @@ public class Solver {
 
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
 
+        // Find initial upper-bound for (possibly reduced) graph instance (represented by edges)
+        int upperBound = preReduction.remainingVertices;
+        if (min2maxHeuristicPre){
+            upperBound = MinToMaxHeuristic.getUpperBound(edges);
+            System.out.println("#upper-bound (min2max): "+upperBound);
+        }
+        else System.out.println("#upper-bound (default): "+upperBound);
+
         // Instantiate graph
         Graph graph = new Graph(edges);
 
@@ -210,7 +220,7 @@ public class Solver {
 
 
 
-        LinkedList<String> result = vc(graph, lowerbound);
+        LinkedList<String> result = vc(graph, lowerbound, upperBound);
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
