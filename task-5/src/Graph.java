@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
+    private HashMap<Vertex,HashSet<Vertex>> complementGraph;
     private BipartiteGraph bipartiteGraph;
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
@@ -12,6 +13,7 @@ public class Graph  {
 
     public int difference = 0;
     public boolean completeReduced = true;
+
 
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
@@ -47,6 +49,7 @@ public class Graph  {
             this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
         bipartiteGraph = new BipartiteGraph(this);
+        this.complementGraph = this.getComplementGraph();
     }
 
     public Graph() {
@@ -94,7 +97,7 @@ public class Graph  {
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getVerticesFromDFS(Vertex vertex, HashSet<Vertex> visited){
-        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<Vertex, HashSet<Vertex>>();
+        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<>();
         visited.add(vertex);
         visitedVertices.put(vertex, getAdjVertices().get(vertex));
         for (Vertex neighbor : getAdjVertices().get(vertex)){
@@ -146,6 +149,11 @@ public class Graph  {
                 tmpVertex.degree--;
                 this.degreeOrder.decreaseDegreeOfVertex(tmpVertex, 1);
                 adjacentVertices.add(tmpVertex);
+                if(!this.complementGraph.containsKey(tmpVertex)) this.complementGraph.put(tmpVertex, new HashSet<>());
+                if(!this.complementGraph.containsKey(vertexToRemove)) this.complementGraph.put(vertexToRemove, new HashSet<>());
+                this.complementGraph.get(tmpVertex).add(vertexToRemove);
+                this.complementGraph.get(vertexToRemove).add(tmpVertex);
+
             }
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
@@ -172,6 +180,9 @@ public class Graph  {
         for (Vertex neighbor : neighbors) {
             edgesNumber++;
             adjVertices.get(originalVertex).add(neighbor);
+            this.complementGraph.get(neighbor).remove(originalVertex);
+            //if(this.complementGraph.get(neighbor).isEmpty()) this.complementGraph.remove(neighbor);
+            this.complementGraph.get(originalVertex).remove(neighbor);
             originalVertex.degree++;
 
             if (!adjVertices.containsKey(neighbor)) {
@@ -517,9 +528,16 @@ public class Graph  {
 
 
     public void getGraphColoring(HashMap<Vertex,HashSet<Vertex>> graph,ArrayList<Vertex> order){
+            this.setInitialColors();
             for(Vertex vertex: order){
                 vertex.color = this.getNextColorForColouring(graph.get(vertex));
             }
+    }
+
+    private void setInitialColors() {
+        for(Vertex vertex: this.vertices){
+            vertex.color =-1;
+        }
     }
 
     public int getNextColorForColouring(Set<Vertex> neighbors){
@@ -541,10 +559,9 @@ public class Graph  {
     }
 
     public int getHeuristicCliqueCover(){
-        HashMap<Vertex,HashSet<Vertex>> complementGraph = this.getComplementGraph();
         //ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
         ArrayList<Vertex> orderedVertices = this.degreeOrder.getOrderedVerticesDegree();
-        this.getGraphColoring(complementGraph,orderedVertices);
+        this.getGraphColoring(this.complementGraph,orderedVertices);
         Set<Integer> setColors= new HashSet<>();
         for(Vertex vertex: orderedVertices){
             setColors.add(vertex.color);

@@ -12,7 +12,7 @@ public class ConstrainedSolver {
 
     public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
 
-        if (solution.size() + graph.getMaxLowerBound(graph.getVertices().size()<90, true) >= bestFoundSolution.size()){
+        if (solution.size() + graph.getMaxLowerBound(true, true) >= bestFoundSolution.size()){
             return bestFoundSolution;
         }
 
@@ -96,7 +96,7 @@ public class ConstrainedSolver {
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         Graph graph = new Graph(edges);
 
-        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(), new HashSet<>(heuristicSolution));
+        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(), heuristicSolution);
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
         StringBuilder sb = new StringBuilder();
