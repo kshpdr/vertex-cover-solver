@@ -181,8 +181,9 @@ public class Graph  {
             edgesNumber++;
             adjVertices.get(originalVertex).add(neighbor);
             this.complementGraph.get(neighbor).remove(originalVertex);
-            //if(this.complementGraph.get(neighbor).isEmpty()) this.complementGraph.remove(neighbor);
+            if(this.complementGraph.get(neighbor).isEmpty()) this.complementGraph.remove(neighbor);
             this.complementGraph.get(originalVertex).remove(neighbor);
+
             originalVertex.degree++;
 
             if (!adjVertices.containsKey(neighbor)) {
@@ -195,6 +196,7 @@ public class Graph  {
 
             bipartiteGraph.addEdge(originalVertex, neighbor);
         }
+        if(this.complementGraph.get(originalVertex).isEmpty()) this.complementGraph.remove(originalVertex);
         this.degreeOrder.putBack(originalVertex, neighbors.size());
     }
 
@@ -561,7 +563,7 @@ public class Graph  {
     public int getHeuristicCliqueCover(){
         //ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
         ArrayList<Vertex> orderedVertices = this.degreeOrder.getOrderedVerticesDegree();
-        this.getGraphColoring(this.complementGraph,orderedVertices);
+        this.getGraphColoring(complementGraph,orderedVertices);
         Set<Integer> setColors= new HashSet<>();
         for(Vertex vertex: orderedVertices){
             setColors.add(vertex.color);
