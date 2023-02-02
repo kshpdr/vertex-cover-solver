@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,9 +8,26 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ConstrainedSolver {
-    public static boolean findComponents = false;
+    public static boolean findComponents = true;
 
-    public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+    public static boolean constraintsSatisfied(HashSet<Vertex> solution, HashSet<Constraint> constraints){
+        for (Constraint constraint : constraints){
+            if (!constraint.isSatisfied(solution)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static HashSet<Constraint> createConstraints(HashMap<Vertex, HashSet<Vertex>> initialAdjList){
+        HashSet<Constraint> constraints = new HashSet<>();
+        constraints.add(new NeighborsConstraint(initialAdjList));
+        return constraints;
+    }
+
+    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+
+        if (!constraintsSatisfied(solution, constraints)) return bestFoundSolution;
 
         if (solution.size() + graph.getMaxLowerBound(false, true) >= bestFoundSolution.size()){
             return bestFoundSolution;
@@ -17,20 +35,20 @@ public class ConstrainedSolver {
 
         if (graph.isEmpty()) return solution;
 
-        // It doesn't work yet
         if (findComponents){
             List<Graph> components = graph.getComponents();
             if (components.size() > 1){
                 for (Graph component : components) {
                     HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
                     componentSolution.removeAll(solution);
-                    componentSolution = solve(component, constraints, new HashSet<>(), componentSolution);
+                    componentSolution = solve(component, createConstraints(component.getAdjVertices()), new HashSet<>(), componentSolution);
                     solution.addAll(componentSolution);
                 }
                 return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
             }
         }
 
+        // Branch vertex (v)
         Vertex vertex = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
 
@@ -40,6 +58,7 @@ public class ConstrainedSolver {
         graph.putVertexBack(vertex, eliminatedNeighbors);
         solution.remove(vertex);
 
+        // Branch vertices N(v)
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
         solution.addAll(eliminatedNeighbors);
         tempSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
@@ -72,7 +91,11 @@ public class ConstrainedSolver {
         }
         Graph graph = new Graph(edges);
         HashSet<Vertex> heuristicSolution = FastVC.fastVertexCoverHashset(lightGraph, 50);
-        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(), new HashSet<>(heuristicSolution));
+
+        HashSet<Constraint> constraints = new HashSet<>();
+        constraints.add(new NeighborsConstraint(graph.getAdjVertices()));
+
+        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
         StringBuilder sb = new StringBuilder();
