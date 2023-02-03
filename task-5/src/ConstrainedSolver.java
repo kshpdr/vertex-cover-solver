@@ -8,8 +8,8 @@ import java.util.List;
 
 public class ConstrainedSolver {
 
-    public static boolean oneDegreeRuleIteration = false; //does not work yet
-    public static boolean findComponents = false;
+    public static boolean oneDegreeRuleIteration = true; //does not work yet
+    public static boolean findComponents = true;
     public static int recursiveSteps = 0;
 
     public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
@@ -17,16 +17,22 @@ public class ConstrainedSolver {
 
         if (oneDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
-        }
 
-        if (solution.size() + reducedNeighborsMap.size()+graph.getMaxLowerBound(true, true) >= bestFoundSolution.size()){
+        }
+        solution.addAll(reducedNeighborsMap.keySet());
+
+        if (solution.size() +graph.getMaxLowerBound(true, true) >= bestFoundSolution.size()){
             graph.putManyVerticesBack(reducedNeighborsMap);
             return bestFoundSolution;
         }
 
         if (graph.isEmpty()){
-            solution.addAll(reducedNeighborsMap.keySet());
-            return solution;
+            graph.putManyVerticesBack(reducedNeighborsMap);
+            if(solution.size()<bestFoundSolution.size()) {
+                return solution;
+            }else{
+                return bestFoundSolution;
+            }
         }
 
         // It doesn't work yet
@@ -36,10 +42,9 @@ public class ConstrainedSolver {
                 for (Graph component : components) {
                     HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
                     componentSolution.removeAll(solution);
-                    componentSolution = solve(component, constraints, new HashSet<>(), componentSolution);
-                    solution.addAll(componentSolution);
-                    solution.addAll(reducedNeighborsMap.keySet());
+                    solution.addAll(solve(component, constraints, new HashSet<>(), componentSolution));
                 }
+                graph.putManyVerticesBack(reducedNeighborsMap);
                 return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
             }
         }
@@ -49,25 +54,17 @@ public class ConstrainedSolver {
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
 
         solution.add(vertex);
-        solution.addAll(reducedNeighborsMap.keySet());
-        HashSet<Vertex> tempSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
-        bestFoundSolution = tempSolution.size() <= bestFoundSolution.size() ? tempSolution : bestFoundSolution;
+        bestFoundSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
         graph.putVertexBack(vertex, eliminatedNeighbors);
         solution.remove(vertex);
-        for (Vertex neighbor : reducedNeighborsMap.keySet()){
-            solution.remove(neighbor);
-        }
 
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
         solution.addAll(eliminatedNeighbors);
         solution.addAll(reducedNeighborsMap.keySet());
-        tempSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
-        bestFoundSolution = tempSolution.size() <= bestFoundSolution.size() ? tempSolution : bestFoundSolution;
+        bestFoundSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
         graph.putManyVerticesBack(eliminatedNeighborsMap);
         solution.removeAll(eliminatedNeighbors);
-        for (Vertex neighbor : reducedNeighborsMap.keySet()){
-            solution.remove(neighbor);
-        }
+        graph.putManyVerticesBack(reducedNeighborsMap);
 
         return bestFoundSolution;
     }
@@ -116,8 +113,8 @@ public class ConstrainedSolver {
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         Graph graph = new Graph(edges);
 
-//        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(),heuristicSolution);
-        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(),new HashSet<>(heuristicSolution));
+        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(),heuristicSolution);
+//        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(),new HashSet<>(graph.getVertices()));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
         StringBuilder sb = new StringBuilder();
