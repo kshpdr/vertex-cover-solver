@@ -11,6 +11,7 @@ public class ConstrainedSolver {
     public static boolean oneDegreeRuleIteration = true;
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
+    public static boolean lpReductionIteration = false; //does not work
 
     public static boolean findComponents = true;
     public static int recursiveSteps = 0;
@@ -27,6 +28,10 @@ public class ConstrainedSolver {
 
         if(unconfinedRuleIteration) {
             reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
+        }
+
+        if(lpReductionIteration) {
+            reducedNeighborsMap.putAll(graph.applyLpReduction());
         }
 
 

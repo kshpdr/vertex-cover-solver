@@ -507,25 +507,31 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
-    public HashMap<Vertex,HashSet<Vertex>> getComplementGraph(){
-        HashMap<Vertex,HashSet<Vertex>> complementGraph = new HashMap<>();
-            for(Vertex vertex1: this.vertices){
-                for(Vertex vertex2:this.vertices){
-                    if(!vertex1.equals(vertex2)) {
-                        if (!complementGraph.containsKey(vertex1)) {
-                            complementGraph.put(vertex1, new HashSet<>());
+    public HashMap<Vertex, HashSet<Vertex>> getComplementGraph() {
+        HashMap<Vertex, HashSet<Vertex>> complement = new HashMap<>();
 
-                        }
-                        if (!this.adjVertices.get(vertex1).contains(vertex2)) {
-                            //Reinitializing colors in case they come from another iteration
-                            vertex1.color=-1;
-                            vertex2.color=-1;
-                            complementGraph.get(vertex1).add(vertex2);
-                        }
-                    }
+        // get all vertices in the graph
+        Set<Vertex> vertices = this.adjVertices.keySet();
+
+        // loop through all vertices
+        for (Vertex u : vertices) {
+            // initialize an empty set for the complement edge
+            HashSet<Vertex> complementNeighbors = new HashSet<>();
+
+            // loop through all vertices again
+            for (Vertex v : vertices) {
+                // add the vertex to the complement edge if it is not adjacent to the current vertex
+                // and it is not equal to the current vertex
+                if (!this.adjVertices.get(u).contains(v) && !u.equals(v)) {
+                    complementNeighbors.add(v);
                 }
             }
-            return complementGraph;
+
+            // add the complement edge to the complement graph
+            complement.put(u, complementNeighbors);
+        }
+
+        return complement;
     }
 
 
@@ -584,12 +590,12 @@ public class Graph  {
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
                 if(changedGraph){
-                    originalLpSolution = this.getLpBound();
+                    originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
                 }
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);
-                int tmpLpSolution = this.getLpBound() + 1;
+                int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
                 if (tmpLpSolution <= originalLpSolution) {
                     verticesInVertexCover.put(v, removedVertices);
                     reduced = true;
