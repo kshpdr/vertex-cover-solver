@@ -584,12 +584,12 @@ public class Graph  {
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
                 if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
+                    originalLpSolution = this.getLpBound();
                 }
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2)) + 1;
+                int tmpLpSolution = this.getLpBound() + 1;
                 if (tmpLpSolution <= originalLpSolution) {
                     verticesInVertexCover.put(v, removedVertices);
                     reduced = true;
@@ -602,6 +602,9 @@ public class Graph  {
         this.completeReduced = true;
         return verticesInVertexCover;
     }
+
+
+
 
 
 

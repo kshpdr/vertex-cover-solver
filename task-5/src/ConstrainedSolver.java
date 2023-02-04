@@ -8,17 +8,35 @@ import java.util.List;
 
 public class ConstrainedSolver {
 
-    public static boolean oneDegreeRuleIteration = true; //does not work yet
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean dominationRuleIteration = true;
+    public static boolean unconfinedRuleIteration = true;
+
     public static boolean findComponents = true;
     public static int recursiveSteps = 0;
 
-    public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+    public static HashMap<Vertex, HashSet<Vertex>> reduceGraph(Graph graph){
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
-
         if (oneDegreeRuleIteration){
             reducedNeighborsMap.putAll(graph.applyOneDegreeRule());
 
         }
+        if(dominationRuleIteration) {
+            reducedNeighborsMap.putAll(graph.applyDominationRule());
+        }
+
+        if(unconfinedRuleIteration) {
+            reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
+        }
+
+
+        return reducedNeighborsMap;
+    }
+
+    public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+
+        HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = reduceGraph(graph);
+
         solution.addAll(reducedNeighborsMap.keySet());
 
         if (solution.size() +graph.getMaxLowerBound(true, true) >= bestFoundSolution.size()){
