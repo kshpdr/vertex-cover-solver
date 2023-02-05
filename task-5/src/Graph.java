@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
-    private HashMap<Vertex,HashSet<Vertex>> complementGraph;
+    private HashMap<Vertex,HashSet<Vertex>> complementGraph = new HashMap<>();
     private BipartiteGraph bipartiteGraph;
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
@@ -24,6 +24,7 @@ public class Graph  {
             if (vertex1 == null) {
                 vertex1 = new Vertex(edge[0], indexCounter++);
                 this.adjVertices.put(vertex1, new HashSet<>());
+
                 this.vertices.add(vertex1);
                 this.degreeOrder.addVertex(vertex1);
                 idxMap.put(edge[0],vertex1);
@@ -49,7 +50,7 @@ public class Graph  {
             this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
         bipartiteGraph = new BipartiteGraph(this);
-        this.complementGraph = this.getComplementGraph();
+        this.getComplementGraph();
     }
 
     public Graph() {
@@ -515,31 +516,37 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
-    public HashMap<Vertex, HashSet<Vertex>> getComplementGraph() {
-        HashMap<Vertex, HashSet<Vertex>> complement = new HashMap<>();
-
-        // get all vertices in the graph
-        Set<Vertex> vertices = this.adjVertices.keySet();
-
-        // loop through all vertices
-        for (Vertex u : vertices) {
-            // initialize an empty set for the complement edge
-            HashSet<Vertex> complementNeighbors = new HashSet<>();
-
-            // loop through all vertices again
-            for (Vertex v : vertices) {
-                // add the vertex to the complement edge if it is not adjacent to the current vertex
-                // and it is not equal to the current vertex
-                if (!this.adjVertices.get(u).contains(v) && !u.equals(v)) {
-                    complementNeighbors.add(v);
-                }
-            }
-
-            // add the complement edge to the complement graph
-            complement.put(u, complementNeighbors);
+    public void getComplementGraph() {
+        for (Vertex v: vertices){
+            HashSet<Vertex> verticesToKeep = new HashSet<>(vertices);
+            verticesToKeep.removeAll(this.adjVertices.get(v));
+            this.complementGraph.put(v, verticesToKeep);
         }
 
-        return complement;
+
+//        HashMap<Vertex, HashSet<Vertex>> complement = new HashMap<>();
+//
+//        // get all vertices in the graph
+//        Set<Vertex> vertices = this.adjVertices.keySet();
+//
+//        // loop through all vertices
+//        for (Vertex u : vertices) {
+//            // initialize an empty set for the complement edge
+//            HashSet<Vertex> complementNeighbors = new HashSet<>();
+//
+//            // loop through all vertices again
+//            for (Vertex v : vertices) {
+//                // add the vertex to the complement edge if it is not adjacent to the current vertex
+//                // and it is not equal to the current vertex
+//                if (!this.adjVertices.get(u).contains(v) && !u.equals(v)) {
+//                    complementNeighbors.add(v);
+//                }
+//            }
+//
+//            // add the complement edge to the complement graph
+//            complement.put(u, complementNeighbors);
+//        }
+//
     }
 
 
