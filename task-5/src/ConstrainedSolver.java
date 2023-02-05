@@ -38,11 +38,27 @@ public class ConstrainedSolver {
         return reducedNeighborsMap;
     }
 
-    public static HashSet<Vertex> solve(Graph graph, Constraints constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+    public static boolean constraintsSatisfied(HashSet<Vertex> solution, HashSet<Constraint> constraints){
+        for (Constraint constraint : constraints){
+            if (!constraint.isSatisfied(solution)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+
+
 
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = reduceGraph(graph);
 
         solution.addAll(reducedNeighborsMap.keySet());
+
+        if (!constraintsSatisfied(solution, constraints)){
+            graph.putManyVerticesBack(reducedNeighborsMap);
+            return bestFoundSolution;
+        }
 
         if (solution.size() +graph.getMaxLowerBound(true, true) >= bestFoundSolution.size()){
             graph.putManyVerticesBack(reducedNeighborsMap);
@@ -58,7 +74,6 @@ public class ConstrainedSolver {
             }
         }
 
-        // It doesn't work yet
         if (findComponents){
             List<Graph> components = graph.getComponents();
             if (components.size() > 1){
@@ -66,6 +81,7 @@ public class ConstrainedSolver {
                     HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
                     componentSolution.removeAll(solution);
                     solution.addAll(solve(component, constraints, new HashSet<>(), componentSolution));
+
                 }
                 graph.putManyVerticesBack(reducedNeighborsMap);
                 return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
@@ -73,6 +89,7 @@ public class ConstrainedSolver {
         }
         recursiveSteps++;
 
+        // Branch vertex (v)
         Vertex vertex = graph.getNextNode();
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
 
@@ -81,6 +98,7 @@ public class ConstrainedSolver {
         graph.putVertexBack(vertex, eliminatedNeighbors);
         solution.remove(vertex);
 
+        // Branch vertices N(v)
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
         solution.addAll(eliminatedNeighbors);
         solution.addAll(reducedNeighborsMap.keySet());
@@ -136,8 +154,14 @@ public class ConstrainedSolver {
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         Graph graph = new Graph(edges);
 
-        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(),heuristicSolution);
-//        HashSet<Vertex> solution = solve(graph, null, new HashSet<>(),new HashSet<>(graph.getVertices()));
+
+
+
+        HashSet<Constraint> constraints = new HashSet<>();
+        constraints.add(new NeighborsConstraint(graph.getAdjVertices()));
+
+        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
+//        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(),new HashSet<>(graph.getVertices()));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
         StringBuilder sb = new StringBuilder();

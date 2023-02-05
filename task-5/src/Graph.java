@@ -56,6 +56,22 @@ public class Graph  {
 
     }
 
+    public Graph(HashMap<Vertex, HashSet<Vertex>> reducedGraph,HashMap<Vertex,HashSet<Vertex>> reducedComplementGraph) {
+
+        this.complementGraph = reducedComplementGraph;
+        for(Vertex vertex: reducedGraph.keySet()){
+            this.adjVertices.put(vertex,new HashSet<>(reducedGraph.get(vertex)));
+            degreeOrder.addVertex(vertex);
+            this.edgesNumber += this.adjVertices.get(vertex).size();
+        }
+        this.edgesNumber /=2;
+        this.vertices.addAll(reducedGraph.keySet());
+        this.bipartiteGraph = new BipartiteGraph(this);
+
+
+    }
+
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -89,11 +105,27 @@ public class Graph  {
         for (Vertex vertex : vertices){
             if (!visited.contains(vertex)){
                 HashMap<Vertex, HashSet<Vertex>> visitedVertices = getVerticesFromDFS(vertex, visited);
-                Graph component = new Graph(convertMapToStrings(visitedVertices));
+                Graph component = new Graph(visitedVertices,getReducedComplementGraph(visitedVertices.keySet()));
+
                 components.add(component);
             }
         }
         return components;
+    }
+
+
+    private HashMap<Vertex, HashSet<Vertex>> getReducedComplementGraph( Set<Vertex> verticesToKeep) {
+        HashMap<Vertex,HashSet<Vertex>> reducedComplementGraph = new HashMap<>();
+
+        for(Vertex v: verticesToKeep){
+            reducedComplementGraph.put(v,new HashSet<>(this.complementGraph.get(v)));
+            reducedComplementGraph.get(v).retainAll(verticesToKeep);
+        }
+
+        return reducedComplementGraph;
+
+
+
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getVerticesFromDFS(Vertex vertex, HashSet<Vertex> visited){
@@ -107,30 +139,6 @@ public class Graph  {
             }
         }
         return visitedVertices;
-    }
-
-    public HashSet<String[]> convertMapToStrings(HashMap<Vertex, HashSet<Vertex>> vertices){
-        HashSet<String[]> edges = new HashSet<>();
-        for (Vertex vertex : vertices.keySet()){
-            for (Vertex neighbor : vertices.get(vertex)){
-                if (!containsEdge(edges, vertex, neighbor)){
-                    String[] edge = new String[2];
-                    edge[0] = vertex.name;
-                    edge[1] = neighbor.name;
-                    edges.add(edge);
-                }
-            }
-        }
-        return edges;
-    }
-
-    public boolean containsEdge(HashSet<String[]> edges, Vertex vertex, Vertex neighbor){
-        for (String[] edge : edges){
-            if ((edge[0].equals(vertex.name) && edge[1].equals(neighbor.name)) || (edge[1].equals(vertex.name) && edge[0].equals(neighbor.name))){
-                return true;
-            }
-        }
-        return false;
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
