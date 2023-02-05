@@ -1,0 +1,8 @@
+pcs-file = params.pcs
+runObj = RUNTIME
+cutoffTime = 20
+wallclock-limit = 120
+deterministic = 1
+instance_file = instances/instances-train.txt
+test_instance_file = instances/instances-test.txt
+algo = java -jar ../../src/Solver.jar

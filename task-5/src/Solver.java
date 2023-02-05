@@ -1,9 +1,13 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
+    public static boolean useSmac = true;
+
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
@@ -149,8 +153,44 @@ public class Solver {
         }
     }
 
+    public static void parseArguments(String[] args){
+        for (int i=0;i<args.length-1;i++){
+            String key = args[i];
+            String val = args[i+1];
+            if (key.equals("oneDegreeRulePre")) oneDegreeRulePre = Boolean.parseBoolean(val);
+            else if (key.equals("twoDegreeRulePre")) twoDegreeRulePre = Boolean.parseBoolean(val);
+            else if (key.equals("dominationRulePre")) dominationRulePre = Boolean.parseBoolean(val);
+            else if (key.equals("lpBoundBeginning")) lpBoundBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("cliqueBoundBeginning")) cliqueBoundBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("unconfinedRuleBeginning")) unconfinedRuleBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("highDegreeRuleBeginning")) highDegreeRuleBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("lpReductionBeginning")) lpReductionBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("cliqueBoundIteration")) cliqueBoundIteration = Boolean.parseBoolean(val);
+            else if (key.equals("lpBoundIteration")) lpBoundIteration = Boolean.parseBoolean(val);
+            else if (key.equals("dominationRuleIteration")) dominationRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("unconfinedRuleIteration")) unconfinedRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("highDegreeRuleIteration")) highDegreeRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("oneDegreeRuleIteration")) oneDegreeRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("twoDegreeRuleIteration")) twoDegreeRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("lpReductionIteration")) lpReductionIteration = Boolean.parseBoolean(val);
+            else if (key.equals("depthThreshold")) depthThreshold = Integer.parseInt(val);
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        long start = System.currentTimeMillis();
+
+        BufferedReader bi;
+
+        if (useSmac && args.length >= 1){
+            // Parse command-line arguments from SMAC-Tool
+            parseArguments(args);
+            // Parse tescase from file
+            String testcase = args[0];
+            bi = new BufferedReader(new FileReader(testcase));
+        }
+        // Parse testcase from stdin
+        else bi = new BufferedReader(new InputStreamReader(System.in));
 
         // Storing edges to call the graph constructor afterwards
         HashSet<String[]> edges = new HashSet<>();
@@ -166,8 +206,6 @@ public class Solver {
 
             }
         }
-
-        long start = System.currentTimeMillis();
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
@@ -257,5 +295,10 @@ public class Solver {
         long end = System.currentTimeMillis();
         float sec = (end - start) / 1000F;
         System.out.println("#time: " + sec);
+        
+        if (useSmac){
+            // Print output for SMAC-Tool
+            System.out.println("Result of this algorithm run: SUCCESS, "+sec+", 0, "+sec+", 0");
+        }
     }
 }

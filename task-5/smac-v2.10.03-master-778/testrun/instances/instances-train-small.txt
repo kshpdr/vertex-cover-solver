@@ -1,0 +1,1 @@
+../../vc-data-students/2-social-networks/00-karate.graph.dimacs
