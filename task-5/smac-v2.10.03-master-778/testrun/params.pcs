@@ -1,6 +1,3 @@
-oneDegreeRulePre categorical {true, false} [true]
-twoDegreeRulePre categorical {true, false} [true]
-dominationRulePre categorical {true, false} [true]
 lpBoundBeginning categorical {true, false} [true]
 cliqueBoundBeginning categorical {true, false} [true]
 unconfinedRuleBeginning categorical {true, false} [true]
