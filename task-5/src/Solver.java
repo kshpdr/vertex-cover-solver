@@ -174,7 +174,8 @@ public class Solver {
             else if (key.equals("oneDegreeRuleIteration")) oneDegreeRuleIteration = Boolean.parseBoolean(val);
             else if (key.equals("twoDegreeRuleIteration")) twoDegreeRuleIteration = Boolean.parseBoolean(val);
             else if (key.equals("lpReductionIteration")) lpReductionIteration = Boolean.parseBoolean(val);
-            else if (key.equals("depthThreshold")) depthThresholdReduction = Integer.parseInt(val);
+            else if (key.equals("depthThresholdReduction")) depthThresholdReduction = Integer.parseInt(val);
+            else if (key.equals("depthThresholdBounds")) depthThresholdBounds = Integer.parseInt(val);
         }
     }
 
