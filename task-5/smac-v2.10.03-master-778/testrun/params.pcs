@@ -1,3 +1,4 @@
+# define all parameters
 lpBoundBeginning categorical {true, false} [true]
 cliqueBoundBeginning categorical {true, false} [true]
 unconfinedRuleBeginning categorical {true, false} [true]
@@ -13,3 +14,7 @@ twoDegreeRuleIteration categorical {true, false} [true]
 lpReductionIteration categorical {true, false} [true]
 depthThresholdReduction integer [1, 20] [5]
 depthThresholdBounds integer [1, 20] [1]
+
+# define conditions
+depthThresholdReduction | lpReductionIteration == true || dominationRuleIteration == true || unconfinedRuleIteration == true
+depthThresholdBounds | cliqueBoundIteration == true || lpBoundIteration == true
