@@ -30,7 +30,8 @@ public class Solver {
 
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
-    public static int depthThreshold = 5;
+    public static int depthThresholdReduction = 5;
+    public static int depthThresholdBounds = 5;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
@@ -54,11 +55,11 @@ public class Solver {
             }
         }
 
-        if(dominationRuleIteration) {
-            reducedNeighborsMap.putAll(graph.applyDominationRule());
-        }
+        if (recursionDepth % depthThresholdReduction == 0){
+            if(dominationRuleIteration) {
+                reducedNeighborsMap.putAll(graph.applyDominationRule());
+            }
 
-        if (recursionDepth % depthThreshold == 0){
             if(unconfinedRuleIteration) {
                 reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
             }
@@ -86,7 +87,7 @@ public class Solver {
             return result;
         }
 
-        if(k < graph.getMaxLowerBound(cliqueBoundIteration  && graph.getVertices().size()<90, lpBoundIteration)) {
+        if (recursionDepth % depthThresholdBounds == 0 && k < graph.getMaxLowerBound(cliqueBoundIteration  && graph.getVertices().size()<90, lpBoundIteration)) {
             // Putting back the reduced vertices
             graph.putManyVerticesBack(reducedNeighborsMap);
             recursionDepth--;
@@ -173,7 +174,7 @@ public class Solver {
             else if (key.equals("oneDegreeRuleIteration")) oneDegreeRuleIteration = Boolean.parseBoolean(val);
             else if (key.equals("twoDegreeRuleIteration")) twoDegreeRuleIteration = Boolean.parseBoolean(val);
             else if (key.equals("lpReductionIteration")) lpReductionIteration = Boolean.parseBoolean(val);
-            else if (key.equals("depthThreshold")) depthThreshold = Integer.parseInt(val);
+            else if (key.equals("depthThreshold")) depthThresholdReduction = Integer.parseInt(val);
         }
     }
 
