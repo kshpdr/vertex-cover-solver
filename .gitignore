@@ -10,3 +10,6 @@ vc-data-students
 # Ignore useless stuff from STUC
 example_scenarios
 smac-output
+prog_out.txt
+time.txt
+compile.sh
