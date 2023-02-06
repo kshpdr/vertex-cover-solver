@@ -420,20 +420,28 @@ public class Graph  {
 
                     if (this.vertices.contains(currentVertex)){
                         for (Vertex n : this.adjVertices.get(currentVertex)) {
-                            HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
-                            tmpNeighbors.add(currentVertex);
-                            if (tmpNeighbors.containsAll(this.adjVertices.get(n))) {
+//                            HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
+//                            tmpNeighbors.add(currentVertex);
+                            this.adjVertices.get(n).remove(currentVertex);
+                            if (this.adjVertices.get(currentVertex).containsAll(this.adjVertices.get(n))) {
                                 delete = true;
                                 reduced = true;
+
+                                this.adjVertices.get(n).add(currentVertex);
+
+                                break;
+
                             }
+                            this.adjVertices.get(n).add(currentVertex);
+
                         }
                         if (delete) {
                             verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
-//                            for(HashSet<Vertex> collateralRemovedVertices: this.removeSetofVertices(removedVertices).values()){
-//                                verticesInVertexCover.get(currentVertex).addAll(collateralRemovedVertices);
 //                            }
 
                         }
+
+
                     }
             }
             if(!reduced) break;
