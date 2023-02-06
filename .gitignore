@@ -6,3 +6,7 @@ task-2/vc-data-students/*.txt
 task-2/vc-data-students/*.csv
 vc-data-students
 *pdf
+
+# Ignore useless stuff from STUC
+example_scenarios
+smac-output
