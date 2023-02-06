@@ -300,7 +300,7 @@ public class Solver {
         
         if (useSmac){
             // Print output for SMAC-Tool
-            System.out.println("Result of this algorithm run: SUCCESS, "+sec+", 0, "+sec+", 0");
+            //System.out.println("Result of this algorithm run: SUCCESS, "+sec+", 0, "+sec+", 0");
         }
     }
 }
