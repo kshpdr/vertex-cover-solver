@@ -10,8 +10,8 @@ import java.util.zip.CheckedInputStream;
 
 public class ConstrainedSolver {
     public static boolean findComponents = false;
-    public static boolean neighborsConstraint = false;
-    public static boolean satelliteConstraint = false;
+    public static boolean neighborsConstraint = true;
+    public static boolean satelliteConstraint = true;
 
     public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints){
         for (Constraint constraint : constraints){
