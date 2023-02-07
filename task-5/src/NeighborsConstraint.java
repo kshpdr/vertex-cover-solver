@@ -2,15 +2,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class NeighborsConstraint implements Constraint {
-    public HashMap<Vertex, HashSet<Vertex>> initialAdjList = new HashMap<>();
+    public HashMap<Vertex, HashSet<Vertex>> initialAdjList;
 
     public NeighborsConstraint(HashMap<Vertex, HashSet<Vertex>> initialAdjList){
         this.initialAdjList = new HashMap<>(initialAdjList);
     }
 
-    public boolean isSatisfied(HashSet<Vertex> solution){
+    public boolean isSatisfied(Graph graph, HashSet<Vertex> solution){
         for (Vertex vertex : solution) {
-            if (solution.containsAll(initialAdjList.get(vertex)) && initialAdjList.get(vertex).size() != 0) {
+            if (solution.containsAll(initialAdjList.get(vertex)) && !initialAdjList.get(vertex).isEmpty()) {
                 return false;
             }
         }

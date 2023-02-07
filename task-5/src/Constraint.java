@@ -1,5 +1,5 @@
 import java.util.HashSet;
 
 public interface Constraint {
-    boolean isSatisfied(HashSet<Vertex> solution);
+    boolean isSatisfied(Graph graph, HashSet<Vertex> solution);
 }

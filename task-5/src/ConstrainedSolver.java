@@ -6,28 +6,42 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.CheckedInputStream;
 
 public class ConstrainedSolver {
-    public static boolean findComponents = true;
+    public static boolean findComponents = false;
+    public static boolean neighborsConstraint = false;
+    public static boolean satelliteConstraint = true;
 
-    public static boolean constraintsSatisfied(HashSet<Vertex> solution, HashSet<Constraint> constraints){
+    public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints){
         for (Constraint constraint : constraints){
-            if (!constraint.isSatisfied(solution)){
+            if (!constraint.isSatisfied(graph, solution)){
                 return false;
             }
         }
         return true;
     }
 
+    // Think about turnin SatelliteConstraint only on dense graphs (social-networks)
     public static HashSet<Constraint> createConstraints(HashMap<Vertex, HashSet<Vertex>> initialAdjList){
         HashSet<Constraint> constraints = new HashSet<>();
-        constraints.add(new NeighborsConstraint(initialAdjList));
+        if (neighborsConstraint) constraints.add(new NeighborsConstraint(initialAdjList));
+        if (satelliteConstraint) constraints.add(new SatelliteConstraint(initialAdjList));
         return constraints;
+    }
+
+    public static void updateSatelliteConstraint(Graph graph, HashSet<Constraint> constraints){
+        for (Constraint constraint : constraints){
+            if (constraint instanceof SatelliteConstraint){
+                constraints.remove(constraint);
+                constraints.add(new SatelliteConstraint(graph.getAdjVertices()));
+            }
+        }
     }
 
     public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
 
-        if (!constraintsSatisfied(solution, constraints)) return bestFoundSolution;
+        if (!constraintsSatisfied(graph, solution, constraints)) return bestFoundSolution;
 
         if (solution.size() + graph.getMaxLowerBound(false, true) >= bestFoundSolution.size()){
             return bestFoundSolution;
@@ -47,6 +61,9 @@ public class ConstrainedSolver {
                 return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
             }
         }
+
+        // update graph for satellite constraint
+        updateSatelliteConstraint(graph, constraints);
 
         // Branch vertex (v)
         Vertex vertex = graph.getNextNode();
@@ -92,8 +109,7 @@ public class ConstrainedSolver {
         Graph graph = new Graph(edges);
         HashSet<Vertex> heuristicSolution = FastVC.fastVertexCoverHashset(lightGraph, 50);
 
-        HashSet<Constraint> constraints = new HashSet<>();
-        constraints.add(new NeighborsConstraint(graph.getAdjVertices()));
+        HashSet<Constraint> constraints = createConstraints(graph.getAdjVertices());
 
         HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
