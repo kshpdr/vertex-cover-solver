@@ -117,10 +117,13 @@ public class Graph  {
 
     private HashMap<Vertex, HashSet<Vertex>> getReducedComplementGraph( Set<Vertex> verticesToKeep) {
         HashMap<Vertex,HashSet<Vertex>> reducedComplementGraph = new HashMap<>();
+        HashSet<Vertex> verticesToRemove = new HashSet<>(this.vertices);
+        verticesToRemove.removeAll(verticesToKeep);
+
 
         for(Vertex v: verticesToKeep){
-            reducedComplementGraph.put(v,new HashSet<>(this.complementGraph.get(v)));
-            reducedComplementGraph.get(v).retainAll(verticesToKeep);
+            reducedComplementGraph.put(v, new HashSet<>(this.complementGraph.get(v)));
+            reducedComplementGraph.get(v).removeAll(verticesToRemove);
         }
 
         return reducedComplementGraph;
