@@ -9,11 +9,11 @@ import java.util.List;
 public class ConstrainedSolver {
 
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
-    public static boolean lpReductionIteration = false; //does not work
+    public static boolean dominationRuleIteration = false;
+    public static boolean unconfinedRuleIteration = false;
+    public static boolean lpReductionIteration = true;
 
-    public static boolean findComponents = true;
+    public static boolean findComponents = false;
     public static int recursiveSteps = 0;
 
     public static HashMap<Vertex, HashSet<Vertex>> reduceGraph(Graph graph){
@@ -151,17 +151,15 @@ public class ConstrainedSolver {
 //                lightGraph.addEdge(vertices.get(Integer.parseInt(nodes[0])), vertices.get(Integer.parseInt(nodes[1])));
             }
         }
+        long start = System.currentTimeMillis();
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         Graph graph = new Graph(edges);
-
-
-
 
         HashSet<Constraint> constraints = new HashSet<>();
         constraints.add(new NeighborsConstraint(graph.getAdjVertices()));
 
-        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
-//        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(),new HashSet<>(graph.getVertices()));
+//        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
+        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(),new HashSet<>(graph.getVertices()));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
         StringBuilder sb = new StringBuilder();
@@ -173,5 +171,9 @@ public class ConstrainedSolver {
         sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
         String resultStr = sb.toString();
         System.out.print(resultStr);
+
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        System.out.println("#time: " + sec);
     }
 }

@@ -151,8 +151,9 @@ public class Graph  {
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
         vertices.remove(vertexToRemove);
-        HashSet<Vertex> adjacentVertices = new HashSet<>();
+        HashSet<Vertex> adjacentVertices = getAdjVertices().get(vertexToRemove);
         this.degreeOrder.removeVertex(vertexToRemove);
+
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
         while (iterator.hasNext()) {
             Vertex tmpVertex = iterator.next();
@@ -160,13 +161,12 @@ public class Graph  {
                 edgesNumber--;
                 tmpVertex.degree--;
                 this.degreeOrder.decreaseDegreeOfVertex(tmpVertex, 1);
-                adjacentVertices.add(tmpVertex);
                 if(!this.complementGraph.containsKey(tmpVertex)) this.complementGraph.put(tmpVertex, new HashSet<>());
                 if(!this.complementGraph.containsKey(vertexToRemove)) this.complementGraph.put(vertexToRemove, new HashSet<>());
                 this.complementGraph.get(tmpVertex).add(vertexToRemove);
                 this.complementGraph.get(vertexToRemove).add(tmpVertex);
-
             }
+
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
                 vertices.remove(tmpVertex);
@@ -175,7 +175,6 @@ public class Graph  {
         }
 
         if (adjVertices.containsKey(vertexToRemove)) {
-            adjacentVertices.addAll(adjVertices.get(vertexToRemove));
             vertexToRemove.degree = 0;
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
@@ -605,40 +604,21 @@ public class Graph  {
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(){
-        this.completeReduced = false;
-        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
-        int originalLpSolution = this.getLpBound();
-        ArrayList<Vertex> tmpVertices;
-        boolean reduced;
-        boolean changedGraph = false;
-        do {
-            reduced = false;
-            tmpVertices = new ArrayList<>(this.vertices);
-            for (Vertex v : tmpVertices) {
-                if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2);
-                }
-                changedGraph = false;
-                HashSet<Vertex> removedVertices;
-                removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) new BipartiteGraph(this).findMaximumMatchingSize() / 2)) + 1;
-                if (tmpLpSolution <= originalLpSolution) {
-                    verticesInVertexCover.put(v, removedVertices);
-                    reduced = true;
-                    changedGraph = true;
-                } else {
-                    this.putVertexBack(v, removedVertices);
-                }
+        HashMap<Vertex,HashSet<Vertex>> reducedAdjList = new HashMap<>();
+
+        int lpBound = this.getLpBound();
+        for (Vertex vertex : new HashSet<>(this.getVertices())){
+            if (this.getVertices().isEmpty()) break;
+            if (!this.getAdjVertices().containsKey(vertex)) continue; // after removeVertex() we still have it in the copy in for-loop
+            lpBound = this.getLpBound();
+            HashSet<Vertex> neighbors = this.removeVertex(vertex);
+            if (this.getLpBound() + 1 < lpBound){
+                reducedAdjList.put(vertex, neighbors);
             }
-        } while (reduced);
-        this.completeReduced = true;
-        return verticesInVertexCover;
+            else this.putVertexBack(vertex, neighbors);
+        }
+        return reducedAdjList;
     }
-
-
-
-
-
 
     public void printReducedGraph(){
         int numEdges = 0;
