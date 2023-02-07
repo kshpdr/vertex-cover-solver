@@ -11,7 +11,7 @@ import java.util.zip.CheckedInputStream;
 public class ConstrainedSolver {
     public static boolean findComponents = false;
     public static boolean neighborsConstraint = false;
-    public static boolean satelliteConstraint = true;
+    public static boolean satelliteConstraint = false;
 
     public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints){
         for (Constraint constraint : constraints){
@@ -35,6 +35,7 @@ public class ConstrainedSolver {
             if (constraint instanceof SatelliteConstraint){
                 constraints.remove(constraint);
                 constraints.add(new SatelliteConstraint(graph.getAdjVertices()));
+                break;
             }
         }
     }
@@ -106,6 +107,7 @@ public class ConstrainedSolver {
                 lightGraph.addEdge(vertices.get(Integer.parseInt(nodes[0])), vertices.get(Integer.parseInt(nodes[1])));
             }
         }
+        long start = System.currentTimeMillis();
         Graph graph = new Graph(edges);
         HashSet<Vertex> heuristicSolution = FastVC.fastVertexCoverHashset(lightGraph, 50);
 
@@ -122,5 +124,9 @@ public class ConstrainedSolver {
         sb.append("#sol size: ").append(solution.size()).append("\n");
         String resultStr = sb.toString();
         System.out.print(resultStr);
+
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        System.out.println("#time: " + sec);
     }
 }
