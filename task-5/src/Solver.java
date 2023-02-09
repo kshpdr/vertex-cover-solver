@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Solver {
-    public static boolean useSmac = true;
+    public static boolean useSmac = false;
 
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
