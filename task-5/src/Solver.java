@@ -14,24 +14,24 @@ public class Solver {
     public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
-    public static boolean cliqueBoundBeginning = true;
-    public static boolean unconfinedRuleBeginning = true;
+    public static boolean cliqueBoundBeginning = false;
+    public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = true;
+    public static boolean lpReductionBeginning = false;
 
-    public static boolean cliqueBoundIteration= true;
+    public static boolean cliqueBoundIteration= false;
     public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = true;
+    public static boolean unconfinedRuleIteration = false;
+    public static boolean highDegreeRuleIteration = false;
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = false;
     public static boolean lpReductionIteration = true;
 
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
-    public static int depthThresholdReduction = 5;
-    public static int depthThresholdBounds = 5;
+    public static int depthThresholdReduction = 4;
+    public static int depthThresholdBounds = 7;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
