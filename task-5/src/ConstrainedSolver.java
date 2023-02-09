@@ -8,10 +8,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ConstrainedSolver {
+    // Pre-processing 1
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
 
+    // Pre-processing 2
+    public static boolean unconfinedRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = true;
+    public static boolean lpReductionBeginning = true;
+
+    // Solver params
     public static boolean findComponents = false;
     public static boolean neighborsConstraint = true;
     public static boolean satelliteConstraint = true;
@@ -96,10 +103,23 @@ public class ConstrainedSolver {
         HashSet<String[]> edges = inputParser.getEdges();
         HashMap<Vertex,HashSet<Vertex>> adjMap = inputParser.getAdjMap();
 
-        // complete preprocessing
+        // complete preprocessing phase 1
         ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
         Graph graph = new Graph(edges);
+
+        // complete preprocessing phase 2
+        HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
+        if(unconfinedRuleBeginning) {
+            reducedEdges.putAll(graph.applyUnconfinedRule());
+        }
+        if(lpReductionBeginning){
+            reducedEdges.putAll(graph.applyLpReduction());
+        }
+        if (highDegreeRuleBeginning){
+            int lowerbound = graph.getMaxLowerBound(false, true);
+            reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
+        }
 
         // get params for the algorithm
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
@@ -112,7 +132,10 @@ public class ConstrainedSolver {
         if (!reductionResult.isEmpty()) {
             stringSolution.addAll(reductionResult);
         }
-        if (twoDegreeRulePre){
+        for (Vertex v : reducedEdges.keySet()){
+            stringSolution.add(v.name);
+        }
+        if (twoDegreeRulePre){ // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
         }
 
