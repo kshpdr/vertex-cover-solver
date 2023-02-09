@@ -6,9 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.CheckedInputStream;
 
 public class ConstrainedSolver {
+    public static boolean oneDegreeRulePre = true;
+    public static boolean twoDegreeRulePre = true;
+    public static boolean dominationRulePre = true;
+
     public static boolean findComponents = false;
     public static boolean neighborsConstraint = true;
     public static boolean satelliteConstraint = true;
@@ -22,7 +25,7 @@ public class ConstrainedSolver {
         return true;
     }
 
-    // Think about turnin SatelliteConstraint only on dense graphs (social-networks)
+    // Think about using SatelliteConstraint only on dense graphs (social-networks)
     public static HashSet<Constraint> createConstraints(HashMap<Vertex, HashSet<Vertex>> initialAdjList){
         HashSet<Constraint> constraints = new HashSet<>();
         if (neighborsConstraint) constraints.add(new NeighborsConstraint(initialAdjList));
@@ -88,45 +91,31 @@ public class ConstrainedSolver {
     }
 
     public static void main(String[] args) throws IOException {
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        // get input for the graph
+        InputParser inputParser = new InputParser();
+        HashSet<String[]> edges = inputParser.getEdges();
+        HashMap<Vertex,HashSet<Vertex>> adjMap = inputParser.getAdjMap();
 
-        // Storing edges to call the graph constructor afterwards
-        HashSet<String[]> edges = new HashSet<>();
-
-        String line;
-        LightGraph lightGraph = new LightGraph();
-        HashMap<Integer, Vertex> vertices = new HashMap<>();
-        while (((line = bi.readLine()) != null)) {
-            if (!line.contains("#") && !line.isEmpty()) {
-                String[] nodes = line.split("\\s+");
-                edges.add(nodes);
-                Vertex vertex = new Vertex(nodes[0], Integer.parseInt(nodes[0]));
-                Vertex neighbor = new Vertex(nodes[1], Integer.parseInt(nodes[1]));
-                vertices.putIfAbsent(Integer.parseInt(nodes[0]), vertex);
-                vertices.putIfAbsent(Integer.parseInt(nodes[1]), neighbor);
-                lightGraph.addEdge(vertices.get(Integer.parseInt(nodes[0])), vertices.get(Integer.parseInt(nodes[1])));
-            }
-        }
-        long start = System.currentTimeMillis();
+        // complete preprocessing
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
+        LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
         Graph graph = new Graph(edges);
-        HashSet<Vertex> heuristicSolution = FastVC.fastVertexCoverHashset(lightGraph, 50);
 
+        // get params for the algorithm
+        HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         HashSet<Constraint> constraints = createConstraints(graph.getAdjVertices());
 
         HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
         LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
 
-        StringBuilder sb = new StringBuilder();
-        for (String v : stringSolution){
-            sb.append(v);
-            sb.append("\n");
+        // merge all results
+        if (!reductionResult.isEmpty()) {
+            stringSolution.addAll(reductionResult);
         }
-        sb.append("#sol size: ").append(solution.size()).append("\n");
-        String resultStr = sb.toString();
-        System.out.print(resultStr);
+        if (twoDegreeRulePre){
+            preReduction.undoMerge(stringSolution);
+        }
 
-        long end = System.currentTimeMillis();
-        float sec = (end - start) / 1000F;
-        System.out.println("#time: " + sec);
+        inputParser.printResult(stringSolution);
     }
 }

@@ -603,6 +603,44 @@ public class Graph  {
 
     }
 
+    public static ArrayList<Object> getInput() throws IOException {
+        HashSet<String[]> edges = new HashSet<>();
+        HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
+
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        //min to min Graph
+        HashMap<String,Vertex> idMap = new HashMap<>();
+        int idCounter = 0;
+        while (((line = bi.readLine()) != null)) {
+            if (!line.contains("#") && !line.isEmpty()) {
+                String[] nodes = line.split("\\s+");
+                Vertex u = idMap.get(nodes[0]);
+                if (u == null){
+                    u = new Vertex(nodes[0],idCounter++);
+                    idMap.put(nodes[0],u);
+                }
+                Vertex v = idMap.get(nodes[1]);
+                if (v == null){
+                    v = new Vertex(nodes[1],idCounter++);
+                    idMap.put(nodes[1],v);
+                }
+
+                // Add (u -> v) to graph
+                HashSet<Vertex> neighbors = adjMap.computeIfAbsent(u, k -> new HashSet<>());
+                neighbors.add(v);
+                // Add (v -> u) to graph
+                neighbors = adjMap.computeIfAbsent(v, k -> new HashSet<>());
+                neighbors.add(u);
+                edges.add(nodes);
+            }
+        }
+        ArrayList<Object> input = new ArrayList<>();
+        input.add(edges);
+        input.add(adjMap);
+        return input;
+    }
+
     public static void main(String[] args) throws InterruptedException, IOException {
 
 
