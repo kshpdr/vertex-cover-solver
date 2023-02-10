@@ -1,0 +1,38 @@
+# Beginning-Flags
+lpBoundBeginning categorical {true, false} [true]
+cliqueBoundBeginning categorical {true, false} [true]
+unconfinedRuleBeginning categorical {true, false} [true]
+highDegreeRuleBeginning categorical {true, false} [true]
+lpReductionBeginning categorical {true, false} [true]
+# Iteration-Flags
+cliqueBoundIteration categorical {true, false} [true]
+lpBoundIteration categorical {true, false} [true]
+dominationRuleIteration categorical {true, false} [true]
+unconfinedRuleIteration categorical {true, false} [true]
+highDegreeRuleIteration categorical {true, false} [true]
+oneDegreeRuleIteration categorical {true, false} [true]
+twoDegreeRuleIteration categorical {true, false} [true]
+lpReductionIteration categorical {true, false} [true]
+# Exhaustively-Flags (Beginning + Iteration)
+dominationRuleIterationExhaustively categorical {true, false} [true]
+unconfinedRuleIterationExhaustively categorical {true, false} [true]
+highDegreeRuleIterationExhaustively categorical {true, false} [true]
+lpReductionIterationExhaustively categorical {true, false} [true]
+dominationRuleBeginningExhaustively categorical {true, false} [true]
+unconfinedRuleBeginningExhaustively categorical {true, false} [true]
+highDegreeRuleBeginningExhaustively categorical {true, false} [true]
+lpReductionBeginningExhaustively categorical {true, false} [true]
+# Nth-Iteration-Flags
+depthThresholdReduction integer [1, 30] [5]
+depthThresholdBounds integer [1, 30] [1]
+
+# define conditions (when to use some parameters)
+depthThresholdReduction | lpReductionIteration == true || dominationRuleIteration == true || unconfinedRuleIteration == true
+depthThresholdBounds | cliqueBoundIteration == true || lpBoundIteration == true
+dominationRuleIterationExhaustively | dominationRuleIteration == true 
+unconfinedRuleIterationExhaustively | unconfinedRuleIteration == true 
+highDegreeRuleIterationExhaustively | highDegreeRuleIteration == true 
+lpReductionIterationExhaustively | lpReductionIteration == true 
+unconfinedRuleBeginningExhaustively | unconfinedRuleBeginning == true 
+highDegreeRuleBeginningExhaustively | highDegreeRuleBeginning == true 
+lpReductionBeginningExhaustively | lpReductionBeginning == true 
