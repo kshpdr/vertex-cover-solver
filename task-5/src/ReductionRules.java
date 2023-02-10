@@ -110,7 +110,6 @@ public class ReductionRules {
                             
                             // If twins found: u,v where N(u) = N(v) and |N(u)| = 3
                             if (isTwin){
-                                System.out.println("#is-twin: "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
                                 reduced = true;
                                 // Check if G[N(u)] has edges
                                 boolean hasEdges = false;
@@ -125,11 +124,13 @@ public class ReductionRules {
                                 }
                                 // Case 1: G[N(u)] has edges
                                 if (hasEdges){
+                                    System.out.println("#is-twin (has edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
                                     // Add N(u) to solution
                                     result.addAll(Nu);
                                 }
                                 // Case 2: G[N(u)] does not have edges
                                 else {
+                                    System.out.println("#is-twin (no edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
                                     // Create new vertex w
                                     String w = "twin-"+twinCount++;
                                     // Find 2-neighborhood of vertex u
@@ -150,6 +151,7 @@ public class ReductionRules {
                                     ArrayList<String> arr = new ArrayList<>();
                                     arr.add(u);
                                     arr.add(v);
+                                    arr.addAll(Nu);
                                     mergeOrder.add(w);
                                     mergeMap.put(w,arr);
                                 }
@@ -215,11 +217,13 @@ public class ReductionRules {
             }
             // Case: Twin Rule
             else {
+                System.out.println("#undo: "+x+" => "+vertices);
                 if (index != -1){
                     solution.remove(index);
+                    solution.addAll(vertices.subList(2,vertices.size()));
                 }
                 else {
-                    solution.addAll(vertices);
+                    solution.addAll(vertices.subList(0,2));
                 }
             }
         }

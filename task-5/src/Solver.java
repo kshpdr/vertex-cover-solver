@@ -6,25 +6,25 @@ import java.util.*;
 public class Solver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
-    public static boolean dominationRulePre = false;
+    public static boolean dominationRulePre = true;
     public static boolean twinRulePre = true;
 
     public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
-    public static boolean cliqueBoundBeginning = false;
-    public static boolean unconfinedRuleBeginning = false;
-    public static boolean highDegreeRuleBeginning = false;
-    public static boolean lpReductionBeginning = false;
+    public static boolean cliqueBoundBeginning = true;
+    public static boolean unconfinedRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning = true;
+    public static boolean lpReductionBeginning = true;
 
-    public static boolean cliqueBoundIteration = false;
+    public static boolean cliqueBoundIteration = true;
     public static boolean lpBoundIteration = true;
-    public static boolean dominationRuleIteration = false;
-    public static boolean unconfinedRuleIteration = false;
-    public static boolean highDegreeRuleIteration = false;
-    public static boolean oneDegreeRuleIteration = false;
-    public static boolean twoDegreeRuleIteration = false;
-    public static boolean lpReductionIteration = false;
+    public static boolean dominationRuleIteration = true;
+    public static boolean unconfinedRuleIteration = true;
+    public static boolean highDegreeRuleIteration = true;
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = true;
+    public static boolean lpReductionIteration = true;
 
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
@@ -240,7 +240,7 @@ public class Solver {
             allResults.addAll(result);
         }
 
-        if (twoDegreeRulePre){
+        if (twoDegreeRulePre || twinRulePre){
             preReduction.undoMerge(allResults);
         }
 
