@@ -26,13 +26,28 @@ $(kill -0 $PID 2>/dev/null || kill -9 -$PID 2>/dev/null;)
 cat prog_out.txt
 
 # get time
-time=$(cat time.txt);
+time=$(tail -n 1 time.txt);
+# print output for SMAC-tool
 if [[ $time == "Command terminated by signal 9"* ]] || [[ $time == "Command exited with non-zero status"* ]]; then
     # when no time available ... TIMEOUT
-    echo "Result of this algorithm run: TIMEOUT, $time, 0, $time, $seed"
+    echo "Result of this algorithm run: TIMEOUT, $cutoff_time, 0, $cutoff_time, $seed"
 else
+    # otherwise ... check solution size
+    testcase_solution_file="${testcase%%.dimacs}.solution"
+    is_valid=1
+    if [ -f $testcase_solution_file ] ; then
+        solver_solsize=$(grep -v '#' prog_out.txt | wc -l)
+        expected_solsize=$(head -n 1 $testcase_solution_file)
+        if [ $solver_solsize -gt $expected_solsize ] ; then
+            # CRASHED, if solution size is too large
+            echo "CRASHED, $time, 0, $cutoff_time, $seed"
+            is_valid=0
+        fi
+    fi
     # otherwise ... SUCCESS
-    echo "Result of this algorithm run: SUCCESS, $time, 0, $time, $seed"
+    if [ $is_valid -eq 1 ] ; then
+        echo "Result of this algorithm run: SUCCESS, $time, 0, $time, $seed"
+    fi
 fi
 
 # remove tmp files
