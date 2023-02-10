@@ -165,7 +165,7 @@ public class ReductionRules {
                         }
                     }
                 }
-                if (dominationRule){
+                else if (dominationRule){
                     boolean delete = false;
                     for (String n : neighbors){
                         HashSet<String> neighbors2 = adjMap.get(n);
