@@ -16,7 +16,7 @@ public class ConstrainedSolver {
     // Pre-processing 2
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = true;
+    public static boolean lpReductionBeginning = false; // still not working
 
     // Solver params
     public static boolean findComponents = false;
@@ -40,23 +40,10 @@ public class ConstrainedSolver {
         return constraints;
     }
 
-    public static void updateSatelliteConstraint(Graph graph, HashSet<Constraint> constraints){
-        for (Constraint constraint : constraints){
-            if (constraint instanceof SatelliteConstraint){
-                constraints.remove(constraint);
-                constraints.add(new SatelliteConstraint(graph.getAdjVertices()));
-                break;
-            }
-        }
-    }
-
     public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
-
         if (!constraintsSatisfied(graph, solution, constraints)) return bestFoundSolution;
 
-        if (solution.size() + graph.getMaxLowerBound(false, true) >= bestFoundSolution.size()){
-            return bestFoundSolution;
-        }
+        if (solution.size() + graph.getMaxLowerBound(false, true) >= bestFoundSolution.size()) return bestFoundSolution;
 
         if (graph.isEmpty()) return solution;
 
@@ -73,8 +60,8 @@ public class ConstrainedSolver {
             }
         }
 
-        // update graph for satellite constraint
-        updateSatelliteConstraint(graph, constraints);
+        // update vertices in the constraints
+        constraints = createConstraints(graph.getAdjVertices());
 
         // Branch vertex (v)
         Vertex vertex = graph.getNextNode();

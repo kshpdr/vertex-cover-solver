@@ -234,6 +234,10 @@ public class Graph  {
         return copy;
     }
 
+    public BipartiteGraph getBipartiteGraph(){
+        return this.bipartiteGraph;
+    }
+
     public Vertex findVertex(HashSet<Vertex> vertices, Vertex vertex){
         for (Vertex v : vertices){
             if (v.equals(vertex)){
@@ -421,59 +425,59 @@ public class Graph  {
         }
 
 
-        public Vertex findUForUnconfinedRule(Set<Vertex> possibleUnconfinedSet) {
-                HashSet<Vertex> neighborhoodOfSet = new HashSet<>();
-                HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
-                for (Vertex vertex: possibleUnconfinedSet){
-                    neighborhoodOfSet.addAll(this.adjVertices.get(vertex));
-                    neighborhoodWithOwnVertices.addAll(this.adjVertices.get(vertex));
-                    neighborhoodWithOwnVertices.add(vertex);
-                }
+    public Vertex findUForUnconfinedRule(Set<Vertex> possibleUnconfinedSet) {
+            HashSet<Vertex> neighborhoodOfSet = new HashSet<>();
+            HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
+            for (Vertex vertex: possibleUnconfinedSet){
+                neighborhoodOfSet.addAll(this.adjVertices.get(vertex));
+                neighborhoodWithOwnVertices.addAll(this.adjVertices.get(vertex));
+                neighborhoodWithOwnVertices.add(vertex);
+            }
 
-                if (neighborhoodOfSet.isEmpty()) return null;
-                Vertex minVertex = null;
-                int minSubtractionSeen = Integer.MAX_VALUE;
+            if (neighborhoodOfSet.isEmpty()) return null;
+            Vertex minVertex = null;
+            int minSubtractionSeen = Integer.MAX_VALUE;
 
-                for (Vertex u: neighborhoodOfSet){
-                    Set<Vertex> intersection = new HashSet<>(this.adjVertices.get(u));
-                    intersection.retainAll(possibleUnconfinedSet);
-                    if(intersection.size()==1){
-                        HashSet<Vertex> setSubtraction = new HashSet<>(this.adjVertices.get(u));
-                        setSubtraction.removeAll(neighborhoodWithOwnVertices);
-                        if(setSubtraction.size()<minSubtractionSeen){
-                            minVertex = u;
-                            minSubtractionSeen=setSubtraction.size();
-                        }
+            for (Vertex u: neighborhoodOfSet){
+                Set<Vertex> intersection = new HashSet<>(this.adjVertices.get(u));
+                intersection.retainAll(possibleUnconfinedSet);
+                if(intersection.size()==1){
+                    HashSet<Vertex> setSubtraction = new HashSet<>(this.adjVertices.get(u));
+                    setSubtraction.removeAll(neighborhoodWithOwnVertices);
+                    if(setSubtraction.size()<minSubtractionSeen){
+                        minVertex = u;
+                        minSubtractionSeen=setSubtraction.size();
                     }
                 }
-                return minVertex;
-        }
-
-        public boolean isUnconfined(Vertex v){
-            HashSet<Vertex> unconfinedSet = new HashSet<>();
-            unconfinedSet.add(v);
-            while(true){
-                Vertex u = this.findUForUnconfinedRule(unconfinedSet);
-                if (u==null) return false;
-                HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
-                for (Vertex vertex: unconfinedSet){
-                    neighborhoodWithOwnVertices.addAll(this.adjVertices.get(vertex));
-                    neighborhoodWithOwnVertices.add(vertex);
-                }
-
-                HashSet<Vertex> setSubtraction = new HashSet<>(this.adjVertices.get(u));
-                setSubtraction.removeAll(neighborhoodWithOwnVertices);
-                if(setSubtraction.isEmpty()) return true;
-                if(setSubtraction.size()==1){
-                    unconfinedSet.add(setSubtraction.iterator().next());
-                }else{
-                    break;
-                }
-
-
             }
-            return false;
+            return minVertex;
+    }
+
+    public boolean isUnconfined(Vertex v){
+        HashSet<Vertex> unconfinedSet = new HashSet<>();
+        unconfinedSet.add(v);
+        while(true){
+            Vertex u = this.findUForUnconfinedRule(unconfinedSet);
+            if (u==null) return false;
+            HashSet<Vertex> neighborhoodWithOwnVertices = new HashSet<>();
+            for (Vertex vertex: unconfinedSet){
+                neighborhoodWithOwnVertices.addAll(this.adjVertices.get(vertex));
+                neighborhoodWithOwnVertices.add(vertex);
+            }
+
+            HashSet<Vertex> setSubtraction = new HashSet<>(this.adjVertices.get(u));
+            setSubtraction.removeAll(neighborhoodWithOwnVertices);
+            if(setSubtraction.isEmpty()) return true;
+            if(setSubtraction.size()==1){
+                unconfinedSet.add(setSubtraction.iterator().next());
+            }else{
+                break;
+            }
+
+
         }
+        return false;
+    }
 
     public HashMap<Vertex,HashSet<Vertex>> applyUnconfinedRule(){
         this.completeReduced = false;
@@ -584,8 +588,6 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
-
-
     public void printReducedGraph(){
         int numEdges = 0;
         StringBuilder sb = new StringBuilder();
@@ -639,6 +641,14 @@ public class Graph  {
         input.add(edges);
         input.add(adjMap);
         return input;
+    }
+
+    public static void applyImprovedLpReduction(){
+        HashMap<Vertex,HashSet<Vertex>> reducedEdges = new HashMap<>();
+
+//        ResidualGraph redisualGraph = new ResidualGraph();
+//        redisualGraph.getOprimalFlow();
+
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {

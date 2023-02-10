@@ -149,6 +149,37 @@ public class BipartiteGraph {
     }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
+    public Map<Vertex, Vertex> findMaximumMatching() {
+        Map<Vertex, Vertex> matching = new HashMap<>();
+
+        pairLeft = new HashMap<>(left.size() + 1);
+        pairRight = new HashMap<>(right.size() + 1);
+        dist = new HashMap<>(left.size() + 1);
+
+        for (Vertex vertex : left) {
+            pairLeft.put(vertex, nilVertex);
+            dist.put(vertex, 0);
+        }
+
+        for (Vertex vertex : right) {
+            pairRight.put(vertex, nilVertex);
+        }
+
+        // Keep updating the result while
+        // there is an augmenting path.
+        while (bfs()) {
+            // Find a free vertex
+            for (Vertex vertex : pairLeft.keySet())
+                // If current vertex is free and there is
+                // an augmenting path from current vertex
+                if (pairLeft.get(vertex) == nilVertex && dfs(vertex))
+                    matching.put(vertex, pairLeft.get(vertex));
+        }
+
+        return matching;
+    }
+
+    // horcropft-carp algorithm for maximum matching in bipartite graphs
     public int findMaximumMatchingSize() {
         int result = 0;
 
@@ -229,21 +260,12 @@ public class BipartiteGraph {
     }
 
     public static void main(String[] args) throws IOException {
-//        InputParser inputParser = new InputParser();
+        InputParser inputParser = new InputParser();
+        HashSet<String[]> edges = inputParser.getEdges();
 
-//        List<String> stringEdges = inputParser.parseEdges();
-
-//        HashSet<String[]> edges = new HashSet<>();
-//        for (String stringEdge : stringEdges) {
-//
-//            String[] nodes = stringEdge.split("\\s+");
-//            edges.add(nodes);
-//
-//        }
-
-//        Graph graph = new Graph(edges);
-//        BipartiteGraph bipartiteGraph = new BipartiteGraph(graph);
-//        System.out.println(bipartiteGraph.findMaximumMatchingSize());
+        Graph graph = new Graph(edges);
+        Map<Vertex, Vertex> maximumMatching = graph.getBipartiteGraph().findMaximumMatching();
+        System.out.println(graph.getBipartiteGraph().findMaximumMatchingSize());
     }
 }
 
