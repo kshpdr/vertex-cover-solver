@@ -148,7 +148,7 @@ public class Solver {
     }
 
     public static void main(String[] args) throws IOException {
-        if (false){
+        if (true){
             ConstrainedSolver.main(args);
             return;
         }
