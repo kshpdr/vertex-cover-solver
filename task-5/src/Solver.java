@@ -11,27 +11,36 @@ public class Solver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
+
     public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
-    public static boolean cliqueBoundBeginning = false;
-    public static boolean unconfinedRuleBeginning = false;
+    public static boolean cliqueBoundBeginning = true;
+    public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = false;
+    public static boolean lpReductionBeginning = true;
 
-    public static boolean cliqueBoundIteration= false;
+    public static boolean cliqueBoundIteration= true;
     public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = false;
-    public static boolean highDegreeRuleIteration = false;
+    public static boolean unconfinedRuleIteration = true;
+    public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = false;
+    public static boolean twoDegreeRuleIteration = true;
     public static boolean lpReductionIteration = true;
+
+    public static boolean unconfinedRuleBeginningExhaustively = true;
+    public static boolean highDegreeRuleBeginningExhaustively = true;
+    public static boolean lpReductionBeginningExhaustively = true;
+    public static boolean dominationRuleIterationExhaustively = true;
+    public static boolean unconfinedRuleIterationExhaustively = true;
+    public static boolean highDegreeRuleIterationExhaustively = true;
+    public static boolean lpReductionIterationExhaustively = true;
 
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
-    public static int depthThresholdReduction = 4;
-    public static int depthThresholdBounds = 7;
+    public static int depthThresholdReduction = 5;
+    public static int depthThresholdBounds = 1;
 
     static LinkedList<String> vc_branch(Graph graph, int k) {
         HashMap<Vertex, HashSet<Vertex>> reducedNeighborsMap = new HashMap<>();
@@ -47,7 +56,7 @@ public class Solver {
         }
 
         if(highDegreeRuleIteration){
-            reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k));
+            reducedNeighborsMap.putAll(graph.applyHighDegreeRule(k,highDegreeRuleIterationExhaustively));
             if (graph.applyBussRule(k - reducedNeighborsMap.size())){
                 graph.putManyVerticesBack(reducedNeighborsMap);
                 recursionDepth--;
@@ -57,15 +66,15 @@ public class Solver {
 
         if (recursionDepth % depthThresholdReduction == 0){
             if(dominationRuleIteration) {
-                reducedNeighborsMap.putAll(graph.applyDominationRule());
+                reducedNeighborsMap.putAll(graph.applyDominationRule(dominationRuleIterationExhaustively));
             }
 
             if(unconfinedRuleIteration) {
-                reducedNeighborsMap.putAll(graph.applyUnconfinedRule());
+                reducedNeighborsMap.putAll(graph.applyUnconfinedRule(dominationRuleIterationExhaustively));
             }
 
             if(lpReductionIteration) {
-                reducedNeighborsMap.putAll(graph.applyLpReduction());
+                reducedNeighborsMap.putAll(graph.applyLpReduction(lpReductionIterationExhaustively));
             }
         }
 
@@ -158,24 +167,31 @@ public class Solver {
         for (int i=0;i<args.length-1;i++){
             String key = args[i];
             String val = args[i+1];
-            if (key.equals("oneDegreeRulePre")) oneDegreeRulePre = Boolean.parseBoolean(val);
-            else if (key.equals("twoDegreeRulePre")) twoDegreeRulePre = Boolean.parseBoolean(val);
-            else if (key.equals("dominationRulePre")) dominationRulePre = Boolean.parseBoolean(val);
-            else if (key.equals("lpBoundBeginning")) lpBoundBeginning = Boolean.parseBoolean(val);
-            else if (key.equals("cliqueBoundBeginning")) cliqueBoundBeginning = Boolean.parseBoolean(val);
-            else if (key.equals("unconfinedRuleBeginning")) unconfinedRuleBeginning = Boolean.parseBoolean(val);
-            else if (key.equals("highDegreeRuleBeginning")) highDegreeRuleBeginning = Boolean.parseBoolean(val);
-            else if (key.equals("lpReductionBeginning")) lpReductionBeginning = Boolean.parseBoolean(val);
-            else if (key.equals("cliqueBoundIteration")) cliqueBoundIteration = Boolean.parseBoolean(val);
-            else if (key.equals("lpBoundIteration")) lpBoundIteration = Boolean.parseBoolean(val);
-            else if (key.equals("dominationRuleIteration")) dominationRuleIteration = Boolean.parseBoolean(val);
-            else if (key.equals("unconfinedRuleIteration")) unconfinedRuleIteration = Boolean.parseBoolean(val);
-            else if (key.equals("highDegreeRuleIteration")) highDegreeRuleIteration = Boolean.parseBoolean(val);
-            else if (key.equals("oneDegreeRuleIteration")) oneDegreeRuleIteration = Boolean.parseBoolean(val);
-            else if (key.equals("twoDegreeRuleIteration")) twoDegreeRuleIteration = Boolean.parseBoolean(val);
-            else if (key.equals("lpReductionIteration")) lpReductionIteration = Boolean.parseBoolean(val);
-            else if (key.equals("depthThresholdReduction")) depthThresholdReduction = Integer.parseInt(val);
-            else if (key.equals("depthThresholdBounds")) depthThresholdBounds = Integer.parseInt(val);
+            if (key.equals("-oneDegreeRulePre")) oneDegreeRulePre = Boolean.parseBoolean(val);
+            else if (key.equals("-twoDegreeRulePre")) twoDegreeRulePre = Boolean.parseBoolean(val);
+            else if (key.equals("-dominationRulePre")) dominationRulePre = Boolean.parseBoolean(val);
+            else if (key.equals("-lpBoundBeginning")) lpBoundBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("-cliqueBoundBeginning")) cliqueBoundBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("-unconfinedRuleBeginning")) unconfinedRuleBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("-highDegreeRuleBeginning")) highDegreeRuleBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("-lpReductionBeginning")) lpReductionBeginning = Boolean.parseBoolean(val);
+            else if (key.equals("-cliqueBoundIteration")) cliqueBoundIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-lpBoundIteration")) lpBoundIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-dominationRuleIteration")) dominationRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-unconfinedRuleIteration")) unconfinedRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-highDegreeRuleIteration")) highDegreeRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-oneDegreeRuleIteration")) oneDegreeRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-twoDegreeRuleIteration")) twoDegreeRuleIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-lpReductionIteration")) lpReductionIteration = Boolean.parseBoolean(val);
+            else if (key.equals("-depthThresholdReduction")) depthThresholdReduction = Integer.parseInt(val);
+            else if (key.equals("-depthThresholdBounds")) depthThresholdBounds = Integer.parseInt(val);
+            else if (key.equals("-unconfinedRuleBeginningExhaustively")) unconfinedRuleBeginningExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-highDegreeRuleBeginningExhaustively")) highDegreeRuleBeginningExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-lpReductionBeginningExhaustively")) lpReductionBeginningExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-dominationRuleIterationExhaustively")) dominationRuleIterationExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-unconfinedRuleIterationExhaustively")) unconfinedRuleIterationExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-highDegreeRuleIterationExhaustively")) highDegreeRuleIterationExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-lpReductionIterationExhaustively")) lpReductionIterationExhaustively = Boolean.parseBoolean(val);
         }
     }
 
@@ -230,11 +246,11 @@ public class Solver {
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
         if(unconfinedRuleBeginning) {
-            edgesAfterRules.putAll(graph.applyUnconfinedRule());
+            edgesAfterRules.putAll(graph.applyUnconfinedRule(unconfinedRuleBeginningExhaustively));
         }
 
         if(lpReductionBeginning){
-            edgesAfterRules.putAll(graph.applyLpReduction());
+            edgesAfterRules.putAll(graph.applyLpReduction(lpReductionBeginningExhaustively));
         }
 
 
@@ -243,7 +259,7 @@ public class Solver {
         int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
 
         if (highDegreeRuleBeginning){
-            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
+            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound,highDegreeRuleBeginningExhaustively));
             while (graph.applyBussRule(lowerbound)){
                 lowerbound++;
             }

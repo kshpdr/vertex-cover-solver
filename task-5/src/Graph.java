@@ -279,7 +279,7 @@ public class Graph  {
     //     // TODO
     // }
 
-    public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
+    public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k, boolean exhaustively){
         int newK = k;
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> edges = new HashMap<>();
@@ -304,7 +304,7 @@ public class Graph  {
                     reducable = false;
                 }
             }
-            if (!reducable) break;
+            if (!reducable || !exhaustively) break;
         }
         this.completeReduced = true;
         return edges;
@@ -337,7 +337,7 @@ public class Graph  {
         return vertices.size() > (k * k + k) || edgesNumber > k * k;
     }
 
-    public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(){
+    public HashMap<Vertex,HashSet<Vertex>> applyDominationRule(boolean exhaustively){
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
         while(true){
@@ -363,7 +363,7 @@ public class Graph  {
                         }
                     }
             }
-            if(!reduced) break;
+            if(!reduced || !exhaustively) break;
             }
         this.completeReduced=true;
         return verticesInVertexCover;
@@ -424,7 +424,7 @@ public class Graph  {
             return false;
         }
 
-    public HashMap<Vertex,HashSet<Vertex>> applyUnconfinedRule(){
+    public HashMap<Vertex,HashSet<Vertex>> applyUnconfinedRule(boolean exhaustively){
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
         while(true){
@@ -437,7 +437,7 @@ public class Graph  {
                     }
                 }
             }
-            if(!reduced) break;
+            if(!reduced || !exhaustively) break;
         }
         this.completeReduced = true;
         return verticesInVertexCover;
@@ -502,7 +502,7 @@ public class Graph  {
 
     }
 
-    public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(){
+    public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(boolean exhaustively){
         this.completeReduced = false;
         HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
         int originalLpSolution = this.getLpBound();
@@ -528,7 +528,7 @@ public class Graph  {
                     this.putVertexBack(v, removedVertices);
                 }
             }
-        } while (reduced);
+        } while (reduced && exhaustively);
         this.completeReduced = true;
         return verticesInVertexCover;
     }
@@ -588,11 +588,11 @@ public class Graph  {
         graph.difference += graph.applyOneDegreeRule().size();
         graph.difference += graph.applyTwoDegreeRule().size();
         int lowerBound = graph.getMaxLowerBound(true, true);
-        graph.difference += graph.applyHighDegreeRule(lowerBound).size();
-        graph.difference += graph.applyDominationRule().size();
-        graph.difference += graph.applyUnconfinedRule().size();
+        graph.difference += graph.applyHighDegreeRule(lowerBound,true).size();
+        graph.difference += graph.applyDominationRule(true).size();
+        graph.difference += graph.applyUnconfinedRule(true).size();
         if (graph.getVertices().size() < 301) {
-            graph.difference += graph.applyLpReduction().size();
+            graph.difference += graph.applyLpReduction(true).size();
         }
 
     }
