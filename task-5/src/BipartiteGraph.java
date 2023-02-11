@@ -150,7 +150,7 @@ public class BipartiteGraph {
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
     public Map<Vertex, Vertex> findMaximumMatching() {
-        Map<Vertex, Vertex> matching = new HashMap<>();
+        int result = 0;
 
         pairLeft = new HashMap<>(left.size() + 1);
         pairRight = new HashMap<>(right.size() + 1);
@@ -173,10 +173,10 @@ public class BipartiteGraph {
                 // If current vertex is free and there is
                 // an augmenting path from current vertex
                 if (pairLeft.get(vertex) == nilVertex && dfs(vertex))
-                    matching.put(vertex, pairLeft.get(vertex));
+                    result++;
         }
 
-        return matching;
+        return pairLeft;
     }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
@@ -259,13 +259,15 @@ public class BipartiteGraph {
         return true;
     }
 
+
+
     public static void main(String[] args) throws IOException {
         InputParser inputParser = new InputParser();
         HashSet<String[]> edges = inputParser.getEdges();
 
         Graph graph = new Graph(edges);
         Map<Vertex, Vertex> maximumMatching = graph.getBipartiteGraph().findMaximumMatching();
-        System.out.println(graph.getBipartiteGraph().findMaximumMatchingSize());
+        System.out.println(maximumMatching);
     }
 }
 

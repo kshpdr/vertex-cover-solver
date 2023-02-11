@@ -558,35 +558,23 @@ public class Graph  {
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(){
-        this.completeReduced = false;
-        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
-        int originalLpSolution = this.getLpBound();
-        ArrayList<Vertex> tmpVertices;
-        boolean reduced;
-        boolean changedGraph = false;
-        do {
-            reduced = false;
-            tmpVertices = new ArrayList<>(this.vertices);
-            for (Vertex v : tmpVertices) {
-                if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
-                }
-                changedGraph = false;
-                HashSet<Vertex> removedVertices;
-                removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2)) + 1;
-                if (tmpLpSolution <= originalLpSolution) {
-                    verticesInVertexCover.put(v, removedVertices);
-                    reduced = true;
-                    changedGraph = true;
-                } else {
-                    this.putVertexBack(v, removedVertices);
-                }
+        HashMap<Vertex,HashSet<Vertex>> reducedAdjList = new HashMap<>();
+
+        int lpBound = Integer.MIN_VALUE;
+        for (Vertex vertex : new HashSet<>(this.getVertices())){
+            if (this.getVertices().isEmpty()) break;
+            if (!this.getAdjVertices().containsKey(vertex)) continue; // after removeVertex() we still have it in the copy in for-loop
+            lpBound = this.getLpBound();
+            HashSet<Vertex> neighbors = this.removeVertex(vertex);
+            if (this.getLpBound() + 1 < lpBound){
+                reducedAdjList.put(vertex, neighbors);
             }
-        } while (reduced);
-        this.completeReduced = true;
-        return verticesInVertexCover;
+            else this.putVertexBack(vertex, neighbors);
+        }
+        if (!reducedAdjList.isEmpty()) System.out.println("Nein");
+        return reducedAdjList;
     }
+
 
     public void printReducedGraph(){
         int numEdges = 0;

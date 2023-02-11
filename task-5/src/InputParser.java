@@ -51,7 +51,7 @@ public class InputParser {
         return adjMap;
     }
 
-    public void printResult(LinkedList<String> stringSolution){
+    public void printResult(LinkedList<String> stringSolution, int recursiveSteps){
         StringBuilder sb = new StringBuilder();
 
         int solutionSize = 0;
@@ -61,6 +61,7 @@ public class InputParser {
             sb.append("\n");
         }
         sb.append("#sol size: ").append(solutionSize).append("\n");
+        sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
         String resultStr = sb.toString();
         System.out.print(resultStr);
 

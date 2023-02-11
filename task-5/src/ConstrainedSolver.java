@@ -16,12 +16,26 @@ public class ConstrainedSolver {
     // Pre-processing 2
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = false; // still not working
+    public static boolean lpReductionBeginning = true; // still not working
+
+    // Reduction rules
+    public static boolean dominationRuleIteration = true;
+    public static boolean unconfinedRuleIteration = true;
+    public static boolean highDegreeRuleIteration = true;
+    public static boolean oneDegreeRuleIteration = true;
+    public static boolean twoDegreeRuleIteration = true;
+    public static boolean lpReductionIteration = true; // still not working
 
     // Solver params
-    public static boolean findComponents = false;
+    public static boolean findComponents = false; // currently slow
     public static boolean neighborsConstraint = true;
     public static boolean satelliteConstraint = true;
+
+    public static boolean cliqueBoundIteration = true;
+    public static boolean lpBoundIteration= true;
+
+    // Tracking params
+    public static int recursiveSteps = 0;
 
     public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints){
         for (Constraint constraint : constraints){
@@ -40,12 +54,35 @@ public class ConstrainedSolver {
         return constraints;
     }
 
+    public static HashMap<Vertex, HashSet<Vertex>> reduceGraph(Graph graph, int lowerbound){
+        HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
+        if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
+        if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
+        if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
+        if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
+        if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
+        if(highDegreeRuleIteration) reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
+        return reducedEdges;
+    }
+
     public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
-        if (!constraintsSatisfied(graph, solution, constraints)) return bestFoundSolution;
 
-        if (solution.size() + graph.getMaxLowerBound(false, true) >= bestFoundSolution.size()) return bestFoundSolution;
+        if (!constraintsSatisfied(graph, solution, constraints)){
+            return bestFoundSolution;
+        }
 
-        if (graph.isEmpty()) return solution;
+        int lowerbound = graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration);
+        if (solution.size() + lowerbound >= bestFoundSolution.size()) {
+            return bestFoundSolution;
+        }
+
+        HashMap<Vertex, HashSet<Vertex>> reducedEdges = reduceGraph(graph, lowerbound);
+        solution.addAll(reducedEdges.keySet());
+
+        if (graph.isEmpty()) {
+            graph.putManyVerticesBack(reducedEdges);
+            return solution;
+        }
 
         if (findComponents){
             List<Graph> components = graph.getComponents();
@@ -59,6 +96,7 @@ public class ConstrainedSolver {
                 return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
             }
         }
+        recursiveSteps++;
 
         // update vertices in the constraints
         constraints = createConstraints(graph.getAdjVertices());
@@ -80,6 +118,8 @@ public class ConstrainedSolver {
         bestFoundSolution = tempSolution.size() <= bestFoundSolution.size() ? tempSolution : bestFoundSolution;
         graph.putManyVerticesBack(eliminatedNeighborsMap);
         solution.removeAll(eliminatedNeighbors);
+
+        graph.putManyVerticesBack(reducedEdges);
 
         return bestFoundSolution;
     }
@@ -126,6 +166,6 @@ public class ConstrainedSolver {
             preReduction.undoMerge(stringSolution);
         }
 
-        inputParser.printResult(stringSolution);
+        inputParser.printResult(stringSolution, recursiveSteps);
     }
 }
