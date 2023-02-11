@@ -14,7 +14,6 @@ public class Graph  {
     public int difference = 0;
     public boolean completeReduced = true;
 
-
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
         int indexCounter = 0;
@@ -24,7 +23,6 @@ public class Graph  {
             if (vertex1 == null) {
                 vertex1 = new Vertex(edge[0], indexCounter++);
                 this.adjVertices.put(vertex1, new HashSet<>());
-
                 this.vertices.add(vertex1);
                 this.degreeOrder.addVertex(vertex1);
                 idxMap.put(edge[0],vertex1);
@@ -133,7 +131,7 @@ public class Graph  {
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getVerticesFromDFS(Vertex vertex, HashSet<Vertex> visited){
-        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<>();
+        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<Vertex, HashSet<Vertex>>();
         visited.add(vertex);
         visitedVertices.put(vertex, getAdjVertices().get(vertex));
         for (Vertex neighbor : getAdjVertices().get(vertex)){
@@ -145,15 +143,38 @@ public class Graph  {
         return visitedVertices;
     }
 
+    public HashSet<String[]> convertMapToStrings(HashMap<Vertex, HashSet<Vertex>> vertices){
+        HashSet<String[]> edges = new HashSet<>();
+        for (Vertex vertex : vertices.keySet()){
+            for (Vertex neighbor : vertices.get(vertex)){
+                if (!containsEdge(edges, vertex, neighbor)){
+                    String[] edge = new String[2];
+                    edge[0] = vertex.name;
+                    edge[1] = neighbor.name;
+                    edges.add(edge);
+                }
+            }
+        }
+        return edges;
+    }
+
+    public boolean containsEdge(HashSet<String[]> edges, Vertex vertex, Vertex neighbor){
+        for (String[] edge : edges){
+            if ((edge[0].equals(vertex.name) && edge[1].equals(neighbor.name)) || (edge[1].equals(vertex.name) && edge[0].equals(neighbor.name))){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
         return adjVertices;
     }
 
     HashSet<Vertex> removeVertex(Vertex vertexToRemove) {
         vertices.remove(vertexToRemove);
-        HashSet<Vertex> adjacentVertices = getAdjVertices().get(vertexToRemove);
+        HashSet<Vertex> adjacentVertices = new HashSet<>();
         this.degreeOrder.removeVertex(vertexToRemove);
-
         Iterator<Vertex> iterator = this.adjVertices.keySet().iterator();
         while (iterator.hasNext()) {
             Vertex tmpVertex = iterator.next();
@@ -166,7 +187,6 @@ public class Graph  {
                 this.complementGraph.get(tmpVertex).add(vertexToRemove);
                 this.complementGraph.get(vertexToRemove).add(tmpVertex);
             }
-
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
                 vertices.remove(tmpVertex);
@@ -175,6 +195,7 @@ public class Graph  {
         }
 
         if (adjVertices.containsKey(vertexToRemove)) {
+            adjacentVertices.addAll(adjVertices.get(vertexToRemove));
             vertexToRemove.degree = 0;
             adjVertices.remove(vertexToRemove);
             vertices.remove(vertexToRemove);
@@ -439,6 +460,8 @@ public class Graph  {
                         }
                         if (delete) {
                             verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
+//                            for(HashSet<Vertex> collateralRemovedVertices: this.removeSetofVertices(removedVertices).values()){
+//                                verticesInVertexCover.get(currentVertex).addAll(collateralRemovedVertices);
 //                            }
 
                         }
@@ -619,6 +642,8 @@ public class Graph  {
         }
         return reducedAdjList;
     }
+
+
 
     public void printReducedGraph(){
         int numEdges = 0;

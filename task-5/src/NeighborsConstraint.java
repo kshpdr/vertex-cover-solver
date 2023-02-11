@@ -8,9 +8,10 @@ public class NeighborsConstraint implements Constraint {
         this.initialAdjList = new HashMap<>(initialAdjList);
     }
 
-    public boolean isSatisfied(HashSet<Vertex> solution){
+    public boolean isSatisfied(Graph graph, HashSet<Vertex> solution){
         for (Vertex vertex : solution) {
-            if (initialAdjList.get(vertex).size() != 0 && solution.containsAll(initialAdjList.get(vertex)) ) {
+            if (!initialAdjList.containsKey(vertex)) continue;
+            if (solution.containsAll(initialAdjList.get(vertex)) && !initialAdjList.get(vertex).isEmpty()) {
                 return false;
             }
         }

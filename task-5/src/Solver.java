@@ -154,6 +154,7 @@ public class Solver {
             ConstrainedSolver.main(args);
             return;
         }
+        System.out.println("FALSE SOLVER");
 
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
