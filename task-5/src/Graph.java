@@ -131,7 +131,7 @@ public class Graph  {
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getVerticesFromDFS(Vertex vertex, HashSet<Vertex> visited){
-        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<Vertex, HashSet<Vertex>>();
+        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<>();
         visited.add(vertex);
         visitedVertices.put(vertex, getAdjVertices().get(vertex));
         for (Vertex neighbor : getAdjVertices().get(vertex)){
@@ -141,30 +141,6 @@ public class Graph  {
             }
         }
         return visitedVertices;
-    }
-
-    public HashSet<String[]> convertMapToStrings(HashMap<Vertex, HashSet<Vertex>> vertices){
-        HashSet<String[]> edges = new HashSet<>();
-        for (Vertex vertex : vertices.keySet()){
-            for (Vertex neighbor : vertices.get(vertex)){
-                if (!containsEdge(edges, vertex, neighbor)){
-                    String[] edge = new String[2];
-                    edge[0] = vertex.name;
-                    edge[1] = neighbor.name;
-                    edges.add(edge);
-                }
-            }
-        }
-        return edges;
-    }
-
-    public boolean containsEdge(HashSet<String[]> edges, Vertex vertex, Vertex neighbor){
-        for (String[] edge : edges){
-            if ((edge[0].equals(vertex.name) && edge[1].equals(neighbor.name)) || (edge[1].equals(vertex.name) && edge[0].equals(neighbor.name))){
-                return true;
-            }
-        }
-        return false;
     }
 
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
@@ -629,7 +605,7 @@ public class Graph  {
     public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(){
         HashMap<Vertex,HashSet<Vertex>> reducedAdjList = new HashMap<>();
 
-        int lpBound = this.getLpBound();
+        int lpBound;
         for (Vertex vertex : new HashSet<>(this.getVertices())){
             if (this.getVertices().isEmpty()) break;
             if (!this.getAdjVertices().containsKey(vertex)) continue; // after removeVertex() we still have it in the copy in for-loop

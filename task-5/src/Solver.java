@@ -1,13 +1,12 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Solver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
-    public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
@@ -137,7 +136,7 @@ public class Solver {
     }
 
     // main function which increases the cover vertex size k every iteration
-    public static LinkedList<String> vc(Graph graph, int lowerBound, int upperBound) {
+    public static LinkedList<String> vc(Graph graph, int lowerBound) {
         // TODO: make use of upperBound => actually not used here ... but in "other branching strategy"
 
         while (true) {
@@ -150,118 +149,6 @@ public class Solver {
     }
 
     public static void main(String[] args) throws IOException {
-        if (true){
-            ConstrainedSolver.main(args);
-            return;
-        }
-        System.out.println("FALSE SOLVER");
-
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
-
-        // Storing edges to call the graph constructor afterwards
-        HashSet<String[]> edges = new HashSet<>();
-
-        String line;
-        while (((line = bi.readLine()) != null)) {
-            if (!line.contains("#") && !line.isEmpty()) {
-                String[] nodes = line.split("\\s+");
-//                if(nodes.length==1){
-//                    System.exit(0);
-//                }
-                edges.add(nodes);
-
-            }
-        }
-
-        long start = System.currentTimeMillis();
-
-        // Apply reduction rules before instatiating graph (+ internally used
-        // datastructure(s))
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
-
-        LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
-
-        // Find initial upper-bound for (possibly reduced) graph instance (represented by edges)
-        int upperBound = preReduction.remainingVertices;
-//        if (min2maxHeuristicPre){
-//            upperBound = MinToMaxHeuristic.getUpperBound(edges);
-//            System.out.println("#upper-bound (min2max): "+upperBound);
-//        }
-//        else System.out.println("#upper-bound (default): "+upperBound);
-
-        // Instantiate graph
-        Graph graph = new Graph(edges);
-
- 
-        HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
-
-        if(unconfinedRuleBeginning) {
-            edgesAfterRules.putAll(graph.applyUnconfinedRule());
-        }
-
-        if(lpReductionBeginning){
-            edgesAfterRules.putAll(graph.applyLpReduction());
-        }
-
-
-
-        // Call method with the clique lower bound
-        int lowerbound = graph.getMaxLowerBound(cliqueBoundBeginning && graph.getVertices().size()<12000, lpBoundBeginning);
-
-        if (highDegreeRuleBeginning){
-            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
-            while (graph.applyBussRule(lowerbound)){
-                lowerbound++;
-            }
-        }
-//        for(Vertex vertex: graph.getVertices()){
-//            System.out.println(vertex.name);
-//        };
-
-
-
-
-        LinkedList<String> result = vc(graph, lowerbound, upperBound);
-        // Putting it all together in one String to only use one I/O operation
-        StringBuilder sb = new StringBuilder();
-        int solutionSize = 0;
-
-        // Save all results in one list
-        LinkedList<String> allResults = new LinkedList<>();
-
-        //Add results from reduction rules
-        if (!reductionResult.isEmpty()) {
-            allResults.addAll(reductionResult);
-        }
-
-        //Add results from Domination rule
-        for (Vertex v : edgesAfterRules.keySet()){
-            allResults.add(v.name);
-        }
-
-        // Add results from actual branching algorithm
-        if (!result.isEmpty()) {
-            allResults.addAll(result);
-        }
-
-        if (twoDegreeRulePre){
-            preReduction.undoMerge(allResults);
-        }
-
-        for (String v : allResults){
-            sb.append(v);
-            sb.append("\n");
-            solutionSize++;
-        }
-
-        sb.append("#recursive steps: ").append(recursiveSteps).append("\n");
-        sb.append("#sol size: ").append(solutionSize).append("\n");
-
-        String resultStr = sb.toString();
-        System.out.print(resultStr);
-
-        long end = System.currentTimeMillis();
-        float sec = (end - start) / 1000F;
-        System.out.println("#time: " + sec);
+        ConstrainedSolver.main(args);
     }
 }

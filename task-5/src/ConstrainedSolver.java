@@ -1,7 +1,4 @@
-import java.awt.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -24,7 +21,7 @@ public class ConstrainedSolver {
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true;
-    public static boolean lpReductionIteration = false; // still not working
+    public static boolean lpReductionIteration = true; // still not working
 
     // Solver params
     public static boolean findComponents = false; // currently slow
