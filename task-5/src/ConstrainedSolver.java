@@ -24,7 +24,7 @@ public class ConstrainedSolver {
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true;
-    public static boolean lpReductionIteration = true; // still not working
+    public static boolean lpReductionIteration = false; // still not working
 
     // Solver params
     public static boolean findComponents = false; // currently slow
