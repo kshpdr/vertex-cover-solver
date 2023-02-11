@@ -1,3 +1,5 @@
+import java.util.*;
+
 public class Vertex {
     String name;
     int id;
@@ -5,6 +7,11 @@ public class Vertex {
     int degree;
     int complementDegree;
     int dist = 0;
+    
+    // Global variables required for TWIN-rule
+    boolean merged = false;
+    Vertex u,v;
+    HashSet<Vertex> Nu;
 
     //need color for Clique Bound
     int color =-1;
@@ -15,6 +22,13 @@ public class Vertex {
     Vertex(String name, Integer id) {
         this.name = name;
         this.id = id;
+    }
+
+    public void addMergeInformation(Vertex v, Vertex u, HashSet<Vertex> Nu){
+        this.merged = true;
+        this.v = v;
+        this.u = u;
+        this.Nu = Nu;
     }
 
     // equals and hashCode
