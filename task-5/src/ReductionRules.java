@@ -95,7 +95,7 @@ public class ReductionRules {
                 else if (twinRule && neighbors.size() == 3){
                     HashSet<String> Nv = neighbors;
                     for (String u : adjMap.keySet()){
-                        if (v.equals(u)) continue;
+                        if (v.compareTo(u) <= 0) continue;
                         HashSet<String> Nu = adjMap.get(u);
                         if (Nu.size() == 3){
                             boolean isTwin = false;
@@ -106,13 +106,14 @@ public class ReductionRules {
                             // Case 1: (u,v) not in E
                             if (intersect.size() == 3) isTwin = true;
                             // Case 2: (u,v) in E
-                            else if (intersect.size() == 2 && Nv.contains(u)) isTwin = true;
+                            //else if (intersect.size() == 2 && Nv.contains(u)) isTwin = true;
                             
                             // If twins found: u,v where N(u) = N(v) and |N(u)| = 3
                             if (isTwin){
                                 reduced = true;
                                 // Check if G[N(u)] has edges
                                 boolean hasEdges = false;
+                                // OPTIMIZATION: Nu - {u,v} == {}
                                 for (String n : Nu){
                                     for (String n2 : Nu){
                                         if (n.compareTo(n2) <= 0) continue;
@@ -121,16 +122,17 @@ public class ReductionRules {
                                             break;
                                         }
                                     }
+                                    if (hasEdges) break;
                                 }
                                 // Case 1: G[N(u)] has edges
                                 if (hasEdges){
-                                    System.out.println("#is-twin (has edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
+                                    //System.out.println("#is-twin (has edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
                                     // Add N(u) to solution
                                     result.addAll(Nu);
                                 }
                                 // Case 2: G[N(u)] does not have edges
                                 else {
-                                    System.out.println("#is-twin (no edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
+                                    //System.out.println("#is-twin (no edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
                                     // Create new vertex w
                                     String w = "twin-"+twinCount++;
                                     // Find 2-neighborhood of vertex u
@@ -217,7 +219,7 @@ public class ReductionRules {
             }
             // Case: Twin Rule
             else {
-                System.out.println("#undo: "+x+" => "+vertices);
+                //System.out.println("#undo: "+x+" => "+vertices);
                 if (index != -1){
                     solution.remove(index);
                     solution.addAll(vertices.subList(2,vertices.size()));
