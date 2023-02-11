@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,10 +11,12 @@ public class InputParser {
     public HashSet<String[]> edges = new HashSet<>();
     public HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
 
-    public InputParser () throws IOException {
+    public InputParser (String inputFile) throws IOException {
         start = System.currentTimeMillis();
         String line;
-        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader bi;
+        if (inputFile != null) bi = new BufferedReader(new FileReader(inputFile));
+        else bi = new BufferedReader(new InputStreamReader(System.in));
         //min to min Graph
         HashMap<String,Vertex> idMap = new HashMap<>();
         int idCounter = 0;
