@@ -166,6 +166,10 @@ public class ConstrainedSolver {
             //else if (key.equals("-unconfinedRuleIterationExhaustively")) unconfinedRuleIterationExhaustively = Boolean.parseBoolean(val);
             //else if (key.equals("-highDegreeRuleIterationExhaustively")) highDegreeRuleIterationExhaustively = Boolean.parseBoolean(val);
             //else if (key.equals("-lpReductionIterationExhaustively")) lpReductionIterationExhaustively = Boolean.parseBoolean(val);
+            else if (key.equals("-findComponents")) findComponents = Boolean.parseBoolean(val);
+            else if (key.equals("-neighborsConstraint")) neighborsConstraint = Boolean.parseBoolean(val);
+            else if (key.equals("-satelliteConstraint")) satelliteConstraint = Boolean.parseBoolean(val);
+            else if (key.equals("-useSMAC")) useSMAC = Boolean.parseBoolean(val);
         }
     }
 
