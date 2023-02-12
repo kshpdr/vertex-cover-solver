@@ -1,0 +1,3 @@
+../../vc-data-students/3-medium-sized/vc001.dimacs
+../../vc-data-students/3-medium-sized/vc003.dimacs
+../../vc-data-students/3-medium-sized/vc007.dimacs

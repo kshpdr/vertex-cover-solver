@@ -1,0 +1,4 @@
+# define all parameters
+oneDegreeRulePre categorical {true, false} [false]
+twoDegreeRulePre categorical {true, false} [false]
+dominationRulePre categorical {true, false} [false]

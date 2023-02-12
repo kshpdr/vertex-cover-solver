@@ -1,0 +1,20 @@
+# Beginning-Flags
+unconfinedRuleBeginning categorical {true, false} [true]
+highDegreeRuleBeginning categorical {true, false} [true]
+
+# Iteration-Flags
+cliqueBoundIteration categorical {true, false} [true]
+lpBoundIteration categorical {true, false} [true]
+dominationRuleIteration categorical {true, false} [true]
+unconfinedRuleIteration categorical {true, false} [true]
+highDegreeRuleIteration categorical {true, false} [true]
+oneDegreeRuleIteration categorical {true, false} [true]
+twoDegreeRuleIteration categorical {true, false} [true]
+
+# Nth-Iteration-Flags
+applyReductionDepth integer [1, 20] [1]
+applyBoundsDepth integer [1, 20] [1]
+
+# define conditions (when to use some parameters)
+applyReductionDepth | dominationRuleIteration == true || unconfinedRuleIteration == true
+applyBoundsDepth | cliqueBoundIteration == true || lpBoundIteration == true

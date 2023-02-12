@@ -1,0 +1,8 @@
+pcs-file = params.pcs
+runObj = RUNTIME
+cutoffTime = 20
+wallclock-limit = 1200
+deterministic = 1
+instance_file = instances/instances-train-small.txt
+test_instance_file = instances/instances-test-small.txt
+algo = ./call_solver_from_smac.sh
