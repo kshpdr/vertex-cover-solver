@@ -12,7 +12,7 @@ public class ConstrainedSolver {
 
     // Pre-processing 2
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = true;
+    public static boolean highDegreeRuleBeginning =true;
     public static boolean lpReductionBeginning = true; // still not working
 
     // Reduction rules
@@ -20,8 +20,8 @@ public class ConstrainedSolver {
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true;
-    public static boolean lpReductionIteration = true; // still not working
+    public static boolean twoDegreeRuleIteration = true; //does not work
+    public static boolean lpReductionIteration = false; // still not working
 
     // Solver params
     public static boolean findComponents = false; // currently slow

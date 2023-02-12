@@ -603,21 +603,38 @@ public class Graph  {
     }
 
     public HashMap<Vertex,HashSet<Vertex>> applyLpReduction(){
-        HashMap<Vertex,HashSet<Vertex>> reducedAdjList = new HashMap<>();
-
-        int lpBound;
-        for (Vertex vertex : new HashSet<>(this.getVertices())){
-            if (this.getVertices().isEmpty()) break;
-            if (!this.getAdjVertices().containsKey(vertex)) continue; // after removeVertex() we still have it in the copy in for-loop
-            lpBound = this.getLpBound();
-            HashSet<Vertex> neighbors = this.removeVertex(vertex);
-            if (this.getLpBound() + 1 < lpBound){
-                reducedAdjList.put(vertex, neighbors);
+        this.completeReduced = false;
+        HashMap<Vertex,HashSet<Vertex>> verticesInVertexCover = new HashMap<>();
+        int originalLpSolution = this.getLpBound();
+        ArrayList<Vertex> tmpVertices;
+        boolean reduced;
+        boolean changedGraph = false;
+        do {
+            reduced = false;
+            tmpVertices = new ArrayList<>(this.vertices);
+            for (Vertex v : tmpVertices) {
+                if(changedGraph){
+                    originalLpSolution = this.getLpBound();
+                }
+                changedGraph = false;
+                HashSet<Vertex> removedVertices;
+                removedVertices = this.removeVertex(v);
+                int tmpLpSolution = this.getLpBound() + 1;
+                if (tmpLpSolution <= originalLpSolution) {
+                    verticesInVertexCover.put(v, removedVertices);
+                    reduced = true;
+                    changedGraph = true;
+                } else {
+                    this.putVertexBack(v, removedVertices);
+                }
             }
-            else this.putVertexBack(vertex, neighbors);
-        }
-        return reducedAdjList;
+        } while (reduced);
+        this.completeReduced = true;
+        return verticesInVertexCover;
     }
+
+
+
 
 
 
