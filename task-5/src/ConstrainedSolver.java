@@ -10,8 +10,8 @@ public class ConstrainedSolver {
     public static boolean oneDegreeRulePre = false;
     public static boolean twoDegreeRulePre = false;
     public static boolean dominationRulePre = false;
-    public static boolean independentRulePre = false;
-    public static boolean twinRulePre = true;
+    public static boolean independentRulePre = true;
+    public static boolean twinRulePre = false;
     // Pre-processing 2
 
     
