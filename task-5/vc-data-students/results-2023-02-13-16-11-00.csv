@@ -1,2 +1,8 @@
 1-random/000400_000000002400.dimacs;;2400;18594; 0;;0;;;;
 1-random/000500_000000000600.dimacs;1.29;600;1271; 100;0;1;OK;OK;0;
+1-random/000500_000000003000.dimacs;;3000;30730; 0;;0;;;;
+2-social-networks/00-karate.graph.dimacs;0.30;34;78; 14;3;1;OK;OK;0;
+2-social-networks/01-dolphins.graph.dimacs;0.59;62;159; 34;2516;1;OK;OK;0;
+2-social-networks/02-chesapeake.graph.dimacs;0.52;39;170; 22;428;1;OK;OK;0;
+2-social-networks/03-adjnoun.graph.dimacs;3.89;112;425; 59;78947;1;OK;OK;0;
+2-social-networks/04-polbooks.graph.dimacs;5.78;105;441; 62;132173;1;OK;OK;0;
