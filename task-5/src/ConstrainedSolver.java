@@ -28,7 +28,7 @@ public class ConstrainedSolver {
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = false; //does not work
     public static boolean lpReductionIteration = false; // still not working
-    public static boolean flowLpReductionIteration = false; // not tested yet
+    public static boolean flowLpReductionIteration = true; // not tested yet
 
     // Solver params
     public static boolean findComponents = false; // currently slow
@@ -70,6 +70,11 @@ public class ConstrainedSolver {
         if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
         if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
         if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
+        if (flowLpReductionIteration){
+            HashMap<Vertex, HashSet<Vertex>> edges = graph.applyFlowLpReduction();
+            System.out.println("#reduced " + edges.size());
+            reducedEdges.putAll(edges);
+        }
         if (recursionDepth%applyReductionDepth == 0){
             if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
             if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
@@ -206,7 +211,11 @@ public class ConstrainedSolver {
             int lowerbound = graph.getMaxLowerBound(true, true);
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
         }
-        if (flowLpReductionBeginning) edgesAfterRules.putAll(graph.applyFlowLpReduction());
+        if (flowLpReductionBeginning) {
+            HashMap<Vertex, HashSet<Vertex>> reduced = graph.applyFlowLpReduction();
+            System.out.println("#reduced " + reduced.size());
+            edgesAfterRules.putAll(reduced);
+        }
 
         // get params for the algorithm
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
