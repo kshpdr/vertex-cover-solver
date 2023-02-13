@@ -18,8 +18,8 @@ public class ResidualGraph {
 
     // for strongly connected components
     private int index = 0;
-    private Stack<Vertex> stack = new Stack<>();
-    private HashSet<Vertex> visited = new HashSet<>();
+    private final Stack<Vertex> stack = new Stack<>();
+    private final HashSet<Vertex> visited = new HashSet<>();
 
     public ResidualGraph(BipartiteGraph bipartiteGraph, Map<Vertex, Vertex> matching){
         this.bipartiteGraph = bipartiteGraph;
@@ -36,6 +36,7 @@ public class ResidualGraph {
             Edge startEdge = new Edge(s, vertex, 1, matching.containsKey(vertex) && !matching.get(vertex).name.equals("nil") ? 1 : 0);
             addEdge(startEdge);
 
+            if (bipartiteGraph.adjacentMap.get(vertex) == null) continue;
             for (Vertex neighbor : bipartiteGraph.adjacentMap.get(vertex)){
                 adjMap.putIfAbsent(neighbor, new HashSet<>());
                 // from left to right
@@ -72,22 +73,20 @@ public class ResidualGraph {
 
     public void computeLp(){
         for (Vertex left : bipartiteGraph.left){
-            for (Vertex right : bipartiteGraph.right){
-                if (!left.name.equals(right.name)) continue;
-                if (residualEdges.contains(new Edge(s, left, 0, 0))){
-                    if (!isReachableFromS(right)){
-                        lpZero.add(left);
+            Vertex right = bipartiteGraph.leftToRight.get(left);
+            if (residualEdges.contains(new Edge(s, left, 0, 0))){
+                if (!isReachableFromS(right)){
+                    lpZero.add(left);
 //                        removeEdgeWith(left, right);
-                    }
                 }
-                else if (!residualEdges.contains(new Edge(s, left, 0, 0))){
-                    if (isReachableFromS(right)){
-                        lpOne.add(left);
-//                        removeEdgeWith(left, right);
-                    }
-                }
-                break;
             }
+            else if (!residualEdges.contains(new Edge(s, left, 0, 0))){
+                if (isReachableFromS(right)){
+                    lpOne.add(left);
+//                        removeEdgeWith(left, right);
+                }
+            }
+            break;
         }
     }
 
@@ -173,6 +172,8 @@ public class ResidualGraph {
             for (Edge edge : neighbors) {
                 Vertex neighbor = edge.to;
                 if (neighbor.equals(t) || neighbor.equals(s) || stack.contains(findMirror(neighbor))) continue;
+//                if (bipartiteGraph.left.contains(vertex) && bipartiteGraph.left.contains(neighbor)) continue;
+//                if (bipartiteGraph.right.contains(vertex) && bipartiteGraph.right.contains(neighbor)) continue;
                 if (!visited.contains(neighbor)) {
                     tarjan(neighbor, component);
                     vertex.lowLink = Math.min(vertex.lowLink, neighbor.lowLink);
@@ -217,43 +218,43 @@ public class ResidualGraph {
     public void applyLpReduction(){
         while (true){
             HashSet<Vertex> component = new HashSet<>();
+            HashSet<Vertex> leftComponent = new HashSet<>();
+            HashSet<Vertex> rightComponent = new HashSet<>();
             for (Vertex vertex : residualAdjMap.keySet()){
                 if (vertex.equals(s) || vertex.equals(t)) continue;
                 component = computeStronglyConnectedComponent(vertex);
-                HashSet<Vertex> leftComponent = new HashSet<>();
-                HashSet<Vertex> rightComponent = new HashSet<>();
+                leftComponent = new HashSet<>();
+                rightComponent = new HashSet<>();
+
                 for (Vertex node : component){
                     if (bipartiteGraph.left.contains(node)) leftComponent.add(node);
                     else rightComponent.add(node);
                 }
-                if (leftComponent.size() != rightComponent.size()) continue;
-                if (!component.isEmpty() && component.size() % 2 == 0 && isValidComponent(component)) {
+                if (!component.isEmpty() && component.size() % 2 == 0 && isValidComponent(component) && leftComponent.size() == rightComponent.size()) {
                     break;
                 }
             }
+            if (leftComponent.size() != rightComponent.size()) break;
 
             if (component.size() <= 1) break;
 
             for (Vertex vertex : component){
-                if (bipartiteGraph.left.contains(vertex)) lpZero.add(vertex);
-                if (bipartiteGraph.right.contains(vertex)) lpOne.add(vertex);
+//                if (bipartiteGraph.left.contains(vertex)) lpZero.add(vertex);
+//                if (bipartiteGraph.right.contains(vertex)) lpOne.add(vertex);
                 removeEdgeWith(vertex, findMirror(vertex));
             }
+
+            boolean check = leftComponent.size() != (rightComponent.size());
+            lpZero.addAll(leftComponent);
+            lpOne.addAll(rightComponent);
         }
     }
 
     public Vertex findMirror(Vertex vertex){
         if (bipartiteGraph.left.contains(vertex)) {
-            for (Vertex mirror : bipartiteGraph.right){
-                if (vertex.name.equals(mirror.name)) return mirror;
-            }
+            return bipartiteGraph.leftToRight.get(vertex);
         }
-        else {
-            for (Vertex mirror : bipartiteGraph.left){
-                if (vertex.name.equals(mirror.name)) return mirror;
-            }
-        }
-        return null;
+        return bipartiteGraph.rightToLeft.get(vertex);
     }
 
 

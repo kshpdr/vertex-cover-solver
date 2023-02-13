@@ -15,17 +15,18 @@ public class ConstrainedSolver {
     public static boolean independentRulePre = true;
 
     // Pre-processing 2
-    public static boolean twinRuleBeginning = true; // false
+    public static boolean twinRuleBeginning = false; // false
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = true; // still not working
+    public static boolean lpReductionBeginning = false; // still not working
+    public static boolean flowLpReductionBeginning= true; // testing
 
     // Reduction rules
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true; //does not work
+    public static boolean twoDegreeRuleIteration = false; //does not work
     public static boolean lpReductionIteration = false; // still not working
     public static boolean flowLpReductionIteration = false; // not tested yet
 
@@ -68,8 +69,8 @@ public class ConstrainedSolver {
         HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
         if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
         if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
+        if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
         if (recursionDepth%applyReductionDepth == 0){
-            if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
             if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
             if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
         }
@@ -78,7 +79,7 @@ public class ConstrainedSolver {
     }
 
     public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) throws Exception {
-        if ((System.currentTimeMillis() - start) / 1000F > 50) {
+        if ((System.currentTimeMillis() - start) / 1000F > 20) {
             momc = true;
             throw new Exception("Exception message");
         }
@@ -100,18 +101,18 @@ public class ConstrainedSolver {
             return solution;
         }
 
-        if (findComponents) {
-            List<Graph> components = graph.getComponents();
-            if (components.size() > 1) {
-                for (Graph component : components) {
-                    HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
-                    componentSolution.removeAll(solution);
-                    componentSolution = solve(component, createConstraints(component.getAdjVertices()), new HashSet<>(), componentSolution);
-                    solution.addAll(componentSolution);
-                }
-                return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
-            }
-        }
+//        if (findComponents) {
+//            List<Graph> components = graph.getComponents();
+//            if (components.size() > 1) {
+//                for (Graph component : components) {
+//                    HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
+//                    componentSolution.removeAll(solution);
+//                    componentSolution = solve(component, createConstraints(component.getAdjVertices()), new HashSet<>(), componentSolution);
+//                    solution.addAll(componentSolution);
+//                }
+//                return bestFoundSolution.size() > solution.size() ? solution : bestFoundSolution;
+//            }
+//        }
         recursiveSteps++;
 
         // update vertices in the constraints
@@ -205,7 +206,7 @@ public class ConstrainedSolver {
             int lowerbound = graph.getMaxLowerBound(true, true);
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
         }
-//        if (flowLpReductionBeginning) reducedEdges.putAll(graph.applyFlowLpReduction());
+        if (flowLpReductionBeginning) edgesAfterRules.putAll(graph.applyFlowLpReduction());
 
         // get params for the algorithm
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);

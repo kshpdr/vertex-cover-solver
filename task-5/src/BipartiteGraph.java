@@ -10,6 +10,9 @@ public class BipartiteGraph {
     public HashMap<Integer,Integer[]> idMap = new HashMap<>();
     public int indexCounter = 0;
 
+    public Map<Vertex, Vertex> leftToRight = new HashMap<>();
+    public Map<Vertex, Vertex> rightToLeft = new HashMap<>();
+
     HashMap<Vertex, Vertex> pairLeft, pairRight;
     HashMap<Vertex, Integer> dist;
 
@@ -26,6 +29,9 @@ public class BipartiteGraph {
 
             Integer[] indices = {indexCounter-2,indexCounter-1};
             idMap.put(vertex.id,indices);
+
+            leftToRight.put(v, u);
+            rightToLeft.put(u, v);
         }
 
         HashMap<Vertex,HashSet<Vertex>> map = graph.getAdjVertices();
@@ -97,6 +103,9 @@ public class BipartiteGraph {
                 right.remove(rightVertex);
             }
         }
+
+        leftToRight.remove(v);
+        rightToLeft.remove(v);
     }
 
     public void addEdge(Vertex vertex, Vertex neighbor){
@@ -141,6 +150,13 @@ public class BipartiteGraph {
         if (!left.contains(leftSecond)) left.add(leftSecond);
         if (!right.contains(rightFirst)) right.add(rightFirst);
         if (!right.contains(rightSecond)) right.add(rightSecond);
+
+        leftToRight.put(leftFirst, rightFirst);
+        rightToLeft.put(rightFirst, leftFirst);
+
+        leftToRight.put(leftSecond, rightSecond);
+        rightToLeft.put(rightSecond, leftSecond);
+
         // REMOVE: vertex from adjMap
         // leftFirst -> rightSecond
         HashSet<Vertex> neighborSet = adjacentMap.computeIfAbsent(leftFirst, k -> new HashSet<>());
@@ -171,6 +187,37 @@ public class BipartiteGraph {
                 }
             }
         }
+    }
+
+    // horcropft-carp algorithm for maximum matching in bipartite graphs
+    public Map<Vertex, Vertex> findMaximumMatching() {
+        int result = 0;
+
+        pairLeft = new HashMap<>(left.size() + 1);
+        pairRight = new HashMap<>(right.size() + 1);
+        dist = new HashMap<>(left.size() + 1);
+
+        for (Vertex vertex : left) {
+            pairLeft.put(vertex, nilVertex);
+            dist.put(vertex, 0);
+        }
+
+        for (Vertex vertex : right) {
+            pairRight.put(vertex, nilVertex);
+        }
+
+        // Keep updating the result while
+        // there is an augmenting path.
+        while (bfs()) {
+            // Find a free vertex
+            for (Vertex vertex : pairLeft.keySet())
+                // If current vertex is free and there is
+                // an augmenting path from current vertex
+                if (pairLeft.get(vertex) == nilVertex && dfs(vertex))
+                    result++;
+        }
+
+        return pairLeft;
     }
 
     // horcropft-carp algorithm for maximum matching in bipartite graphs
