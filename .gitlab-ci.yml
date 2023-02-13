@@ -23,7 +23,7 @@ stages:
 
 variables:
   TASK_NR: "5"
-  BENCHMARK_TIMEOUT: "300"
+  BENCHMARK_TIMEOUT: "60"
 
 build-job:
   stage: build
@@ -58,8 +58,8 @@ verify-job:
     paths:
       - task-$TASK_NR/vc-data-students/stats-*.csv
   script:
-    - csv_file=$(find . -name "results-*.csv" | tail -n 1)
-    - log_file=$(find . -name "log-*.txt" | tail -n 1)
+    - csv_file=$(find . -name "results-*.csv" | sort | tail -n 1)
+    - log_file=$(find . -name "log-*.txt" | sort | tail -n 1)
     - bash task-$TASK_NR/vc-data-students/stats.sh $csv_file # Execute stats.sh script to collect some stats from csv-file
     - echo "[*] Verifing result in CSV file:" $csv_file
     - if [ $(grep "OK" $csv_file | wc -l) -eq 0 ]; then echo "[ERROR] No 'OK' entries found in latest CSV file. There must be something wrong!"; exit 1; fi # Check if there exists at least one 'OK' record in CSV file
