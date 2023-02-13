@@ -11,10 +11,10 @@ public class ConstrainedSolver {
     public static boolean twoDegreeRulePre = false;
     public static boolean dominationRulePre = false;
     public static boolean independentRulePre = false;
-
+    public static boolean twinRulePre = true;
     // Pre-processing 2
 
-    public static boolean twinRuleBeginning = false;
+    
     public static boolean unconfinedRuleBeginning = false;
     public static boolean highDegreeRuleBeginning = false;
     public static boolean lpReductionBeginning = false; // still not working
@@ -183,16 +183,16 @@ public class ConstrainedSolver {
         start = System.currentTimeMillis();
 
         // complete preprocessing phase 1
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre, twoDegreeRulePre, dominationRulePre, independentRulePre);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre, twoDegreeRulePre, dominationRulePre, independentRulePre, twinRulePre);
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
         Graph graph = new Graph(edges);
 
         // complete preprocessing phase 2
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-        if (twinRuleBeginning) {
+        /*if (twinRuleBeginning) {
             edgesAfterRules.putAll(graph.applyTwinRule());
-        }
+        }*/
 
         if (unconfinedRuleBeginning) {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
@@ -229,11 +229,11 @@ public class ConstrainedSolver {
             stringSolution.add(v.name);
         }
 
-        if (twinRuleBeginning) {
+        /*if (twinRuleBeginning) {
             graph.undoMerges(stringSolution);
-        }
+        }*/
 
-        if (twoDegreeRulePre) { // must be last to undo merge for all merged cases
+        if (twoDegreeRulePre || twinRulePre) { // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
         }
 

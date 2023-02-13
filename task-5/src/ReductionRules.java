@@ -5,17 +5,20 @@ public class ReductionRules {
     private final boolean twoDegreeRule;
     private final boolean dominationRule;
     private final boolean independentRule;
+    private final boolean twinRule;
     private final boolean anyRule;
     private final HashMap<String,ArrayList<String>> mergeMap;
     private final LinkedList<String> mergeOrder;
     public int remainingVertices;
+    public int twinCount = 0;
 
-    public ReductionRules(boolean oneDegreeRule, boolean twoDegreeRule, boolean dominationRule, boolean independentRule){
+    public ReductionRules(boolean oneDegreeRule, boolean twoDegreeRule, boolean dominationRule, boolean independentRule, boolean twinRule){
         this.oneDegreeRule = oneDegreeRule;
         this.twoDegreeRule = twoDegreeRule;
         this.dominationRule = dominationRule;
         this.independentRule = independentRule;
-        this.anyRule = oneDegreeRule || twoDegreeRule || dominationRule;
+        this.twinRule = twinRule;
+        this.anyRule = oneDegreeRule || twoDegreeRule || dominationRule || independentRule || twinRule;
         this.mergeMap = new HashMap<>();
         this.mergeOrder = new LinkedList<>();
     }
@@ -149,6 +152,82 @@ public class ReductionRules {
                         reduced = true;
                     }
                 }
+                else if (twinRule && neighbors.size() == 3) {
+                    HashSet<String> Nv = neighbors;
+                    for (String u : adjMap.keySet()){
+                        if (v.compareTo(u) <= 0) continue;
+                        HashSet<String> Nu = adjMap.get(u);
+                        if (Nu.size() == 3){
+                            boolean isTwin = false;
+                            
+                            HashSet<String> intersect = new HashSet<>(Nv);
+                            intersect.retainAll(Nu);
+                            
+                            // Case 1: (u,v) not in E
+                            if (intersect.size() == 3) isTwin = true;
+                            // Case 2: (u,v) in E
+                            //else if (intersect.size() == 2 && Nv.contains(u)) isTwin = true;
+                            
+                            // If twins found: u,v where N(u) = N(v) and |N(u)| = 3
+                            if (isTwin){
+                                reduced = true;
+                                // Check if G[N(u)] has edges
+                                boolean hasEdges = false;
+                                // OPTIMIZATION: Nu - {u,v} == {}
+                                for (String n : Nu){
+                                    for (String n2 : Nu){
+                                        if (n.compareTo(n2) <= 0) continue;
+                                        if (adjMap.get(n).contains(n2)) {
+                                            hasEdges = true;
+                                            break;
+                                        }
+                                    }
+                                    if (hasEdges) break;
+                                }
+                                // Case 1: G[N(u)] has edges
+                                if (hasEdges){
+                                    //System.out.println("#is-twin (has edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
+                                    // Add N(u) to solution
+                                    result.addAll(Nu);
+                                }
+                                // Case 2: G[N(u)] does not have edges
+                                else {
+                                    //System.out.println("#is-twin (no edges): "+u+" <=> "+v+" -> "+Nu+" <- "+Nv);
+                                    // Create new vertex w
+                                    String w = "twin-"+twinCount++;
+                                    // Find 2-neighborhood of vertex u
+                                    HashSet<String> twoNeighborhood = new HashSet<>();
+                                    for (String n1 : Nu){
+                                        for (String n2 : adjMap.get(n1)){
+                                            if (n2.equals(v) || n2.equals(u) || Nu.contains(n2)) continue;
+                                            if (twoNeighborhood.add(n2)){
+                                                String[] edge = {w,n2};
+                                                edges.add(edge);
+                                            }
+                                        }
+                                    }
+                                    // Make w adjacent with 2-neighborhood of vertex u
+                                    addVertex(adjMap, w, twoNeighborhood);
+                                    
+                                    // Save vertex w and {u,v} for undoing merge later
+                                    ArrayList<String> arr = new ArrayList<>();
+                                    arr.add("twin-rule");
+                                    arr.add(u);
+                                    arr.add(v);
+                                    arr.addAll(Nu);
+                                    mergeOrder.add(w);
+                                    mergeMap.put(w,arr);
+                                }
+                                // Remove v, u, N(u) and N(v) from graph
+                                removeVertex(adjMap, v);
+                                removeVertex(adjMap, u);
+                                for (String n : Nu) removeVertex(adjMap, n);
+                            }
+                            // Stop searching if twins already found
+                            if (reduced) break;
+                        }
+                    }
+                }
             }
             if (!reduced) break;
         }
@@ -225,6 +304,16 @@ public class ReductionRules {
                 else {
                     System.out.println("[ERROR] Unexpected value: inSolution="+inSolution);
                     break;
+                }
+            }
+            else if (Objects.equals(type,"twin-rule")){
+                //System.out.println("#undo: "+x+" => "+vertices);
+                if (solution.contains(x)){
+                    solution.remove(x);
+                    solution.addAll(vertices.subList(3,vertices.size()));
+                }
+                else {
+                    solution.addAll(vertices.subList(1,3));
                 }
             }
             else {
