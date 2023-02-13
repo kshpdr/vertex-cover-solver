@@ -13,7 +13,7 @@ public class ConstrainedSolver {
 
     // Pre-processing 2
 
-    public static boolean twinRuleBeginning = true;
+    public static boolean twinRuleBeginning = false;
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true; // still not working
@@ -31,7 +31,7 @@ public class ConstrainedSolver {
     public static boolean neighborsConstraint = true;
     public static boolean satelliteConstraint = true;
 
-    public static boolean cliqueBoundIteration = true;
+    public static boolean cliqueBoundIteration = false;
     public static boolean lpBoundIteration = true;
 
     // Tracking params
@@ -62,8 +62,8 @@ public class ConstrainedSolver {
         HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
         if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
         if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
+        if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
         if (recursionDepth%applyReductionDepth == 0){
-            if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
             if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
             if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
         }
@@ -159,7 +159,7 @@ public class ConstrainedSolver {
             edgesAfterRules.putAll(graph.applyLpReduction());
         }
         if (highDegreeRuleBeginning) {
-            int lowerbound = graph.getMaxLowerBound(true, true);
+            int lowerbound = graph.getMaxLowerBound(false, true);
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
         }
 
