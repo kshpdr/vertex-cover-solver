@@ -9,6 +9,7 @@ public class ConstrainedSolver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
+    public static boolean independentRulePre = true;
 
     // Pre-processing 2
     public static boolean unconfinedRuleBeginning = true;
@@ -128,7 +129,7 @@ public class ConstrainedSolver {
         HashMap<Vertex,HashSet<Vertex>> adjMap = inputParser.getAdjMap();
 
         // complete preprocessing phase 1
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre,independentRulePre);
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
         Graph graph = new Graph(edges);
 
@@ -141,7 +142,7 @@ public class ConstrainedSolver {
             reducedEdges.putAll(graph.applyLpReduction());
         }
         if (highDegreeRuleBeginning){
-            int lowerbound = graph.getMaxLowerBound(false, true);
+            int lowerbound = graph.getMaxLowerBound(true, true);
             reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
         }
 
