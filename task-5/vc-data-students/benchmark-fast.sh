@@ -48,13 +48,12 @@ run_ce_solver()
 			echo $f >> $LOG
 			
 			# start everything in a new process group such that we can kill everything if necessary
-			(setsid /usr/local/bin/gtime -f "%e" -a -o time.txt timeout --preserve-status -k 10 -s 2 $maxSecPerInstance $PROGRAMM_NAME< $f 1> prog_out.txt 2>&1) & PID=$!
+			(setsid /usr/bin/time -f "%e" -a -o time.txt timeout --preserve-status -k 10 -s 2 $maxSecPerInstance $PROGRAMM_NAME< $f 1> prog_out.txt 2>&1) & PID=$!
 
 
 			# kill processes when exiting this script
 			trap "{ kill $PID 2>/dev/null; kill -TERM -- -$(pgrep -P $PID)>/dev/null;}" TERM
 			trap "{ kill -9 -$PID 2>/dev/null; kill -9 -- -$(pgrep -P $PID)>/dev/null;}" EXIT
-
 			wait $PID
 
 			# just to be sure: if the process still is around brutally kill it
@@ -165,7 +164,7 @@ run_ce_solver()
 
 echo "file;time;n;m;solsize;recsteps;finished;VC-check;size-check;diff-to-opt;last-k-diff-to-opt" > $CSV
 ## now loop through data set directories
-for data in $(find $DIR -mindepth 1 -maxdepth 1 -type d | sort); do
+for data in $(find $DIR -mindepth 1 -maxdepth 1 -type d); do
 	FILENAME=$(basename $data)
 	echo "run $data instances with $PROGRAMM_NAME"
 	echo "(Tab-separated columns: File, Time in seconds, solution size, recursive steps, finished, VC verified, solution size verified, diff-to-opt, last-k-diff-to-opt)"
