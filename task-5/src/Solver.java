@@ -1,15 +1,14 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Solver {
     public static boolean oneDegreeRulePre = true;
     public static boolean twoDegreeRulePre = true;
     public static boolean dominationRulePre = true;
-    public static boolean twinRulePre = true;
-
-    public static boolean min2maxHeuristicPre = false;
 
     public static boolean lpBoundBeginning  = true;
     public static boolean cliqueBoundBeginning = true;
@@ -17,8 +16,8 @@ public class Solver {
     public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true;
 
-    public static boolean cliqueBoundIteration = true;
-    public static boolean lpBoundIteration = true;
+    public static boolean cliqueBoundIteration= true;
+    public static boolean lpBoundIteration= true;
     public static boolean dominationRuleIteration = true;
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
@@ -131,7 +130,7 @@ public class Solver {
             recursionDepth--;
             return solution;
         }
-        
+
         // Putting back the reduced vertices
         graph.putManyVerticesBack(reducedNeighborsMap);
         recursionDepth--;
@@ -139,7 +138,7 @@ public class Solver {
     }
 
     // main function which increases the cover vertex size k every iteration
-    public static LinkedList<String> vc(Graph graph, int lowerBound, int upperBound) {
+    public static LinkedList<String> vc(Graph graph, int lowerBound) {
         // TODO: make use of upperBound => actually not used here ... but in "other branching strategy"
 
         while (true) {
@@ -152,6 +151,12 @@ public class Solver {
     }
 
     public static void main(String[] args) throws IOException {
+        if (true){
+            ConstrainedSolver.main(args);
+            return;
+        }
+//        System.out.println("FALSE SOLVER");
+
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
 
         // Storing edges to call the graph constructor afterwards
@@ -173,17 +178,9 @@ public class Solver {
 
         // Apply reduction rules before instatiating graph (+ internally used
         // datastructure(s))
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre,twinRulePre);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre,false);
 
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
-
-        // Find initial upper-bound for (possibly reduced) graph instance (represented by edges)
-        int upperBound = preReduction.remainingVertices;
-        if (min2maxHeuristicPre){
-            upperBound = MinToMaxHeuristic.getUpperBound(edges);
-            System.out.println("#upper-bound (min2max): "+upperBound);
-        }
-        else System.out.println("#upper-bound (default): "+upperBound);
 
         // Instantiate graph
         Graph graph = new Graph(edges);
@@ -217,7 +214,7 @@ public class Solver {
 
 
 
-        LinkedList<String> result = vc(graph, lowerbound, upperBound);
+        LinkedList<String> result = vc(graph, lowerbound);
         // Putting it all together in one String to only use one I/O operation
         StringBuilder sb = new StringBuilder();
         int solutionSize = 0;
@@ -240,7 +237,7 @@ public class Solver {
             allResults.addAll(result);
         }
 
-        if (twoDegreeRulePre || twinRulePre){
+        if (twoDegreeRulePre){
             preReduction.undoMerge(allResults);
         }
 
@@ -261,3 +258,4 @@ public class Solver {
         System.out.println("#time: " + sec);
     }
 }
+

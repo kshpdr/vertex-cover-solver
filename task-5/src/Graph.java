@@ -4,18 +4,21 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Graph  {
+    private HashMap<Vertex,HashSet<Vertex>> complementGraph = new HashMap<>();
     private BipartiteGraph bipartiteGraph;
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
+    private int indexCounter, twinCounter = 0;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
 
     public int difference = 0;
     public boolean completeReduced = true;
+    private final Stack<Vertex> mergedVertices = new Stack<>();
 
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
-        int indexCounter = 0;
+        indexCounter = 0;
         for (String[] edge : edges) {
             edgesNumber++;
             Vertex vertex1 = idxMap.get(edge[0]);
@@ -47,11 +50,28 @@ public class Graph  {
             this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
         bipartiteGraph = new BipartiteGraph(this);
+        //this.getComplementGraph();
     }
 
     public Graph() {
 
     }
+
+    public Graph(HashMap<Vertex, HashSet<Vertex>> reducedGraph,HashMap<Vertex,HashSet<Vertex>> reducedComplementGraph) {
+
+        this.complementGraph = reducedComplementGraph;
+        for(Vertex vertex: reducedGraph.keySet()){
+            this.adjVertices.put(vertex,new HashSet<>(reducedGraph.get(vertex)));
+            degreeOrder.addVertex(vertex);
+            this.edgesNumber += this.adjVertices.get(vertex).size();
+        }
+        this.edgesNumber /=2;
+        this.vertices.addAll(reducedGraph.keySet());
+        this.bipartiteGraph = new BipartiteGraph(this);
+
+
+    }
+
 
     @Override
     public String toString() {
@@ -79,6 +99,52 @@ public class Graph  {
         return true;
     }
 
+    public List<Graph> getComponents(){
+        HashSet<Vertex> visited = new HashSet<>();
+
+        List<Graph> components = new ArrayList<>();
+        for (Vertex vertex : vertices){
+            if (!visited.contains(vertex)){
+                HashMap<Vertex, HashSet<Vertex>> visitedVertices = getVerticesFromDFS(vertex, visited);
+                Graph component = new Graph(visitedVertices,getReducedComplementGraph(visitedVertices.keySet()));
+
+                components.add(component);
+            }
+        }
+        return components;
+    }
+
+
+    private HashMap<Vertex, HashSet<Vertex>> getReducedComplementGraph( Set<Vertex> verticesToKeep) {
+        HashMap<Vertex,HashSet<Vertex>> reducedComplementGraph = new HashMap<>();
+        HashSet<Vertex> verticesToRemove = new HashSet<>(this.vertices);
+        verticesToRemove.removeAll(verticesToKeep);
+
+
+        for(Vertex v: verticesToKeep){
+            reducedComplementGraph.put(v, new HashSet<>(this.complementGraph.get(v)));
+            reducedComplementGraph.get(v).removeAll(verticesToRemove);
+        }
+
+        return reducedComplementGraph;
+
+
+
+    }
+
+    public HashMap<Vertex, HashSet<Vertex>> getVerticesFromDFS(Vertex vertex, HashSet<Vertex> visited){
+        HashMap<Vertex, HashSet<Vertex>> visitedVertices = new HashMap<>();
+        visited.add(vertex);
+        visitedVertices.put(vertex, getAdjVertices().get(vertex));
+        for (Vertex neighbor : getAdjVertices().get(vertex)){
+            if (!visited.contains(neighbor)) {
+                visitedVertices.putIfAbsent(neighbor, getAdjVertices().get(neighbor));
+                visitedVertices.putAll(getVerticesFromDFS(neighbor, visited));
+            }
+        }
+        return visitedVertices;
+    }
+
     public HashMap<Vertex, HashSet<Vertex>> getAdjVertices() {
         return adjVertices;
     }
@@ -94,7 +160,10 @@ public class Graph  {
                 edgesNumber--;
                 tmpVertex.degree--;
                 this.degreeOrder.decreaseDegreeOfVertex(tmpVertex, 1);
-                adjacentVertices.add(tmpVertex);
+//                if(!this.complementGraph.containsKey(tmpVertex)) this.complementGraph.put(tmpVertex, new HashSet<>());
+//                if(!this.complementGraph.containsKey(vertexToRemove)) this.complementGraph.put(vertexToRemove, new HashSet<>());
+//                this.complementGraph.get(tmpVertex).add(vertexToRemove);
+//                this.complementGraph.get(vertexToRemove).add(tmpVertex);
             }
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
@@ -121,6 +190,10 @@ public class Graph  {
         for (Vertex neighbor : neighbors) {
             edgesNumber++;
             adjVertices.get(originalVertex).add(neighbor);
+//            this.complementGraph.get(neighbor).remove(originalVertex);
+//            if(this.complementGraph.get(neighbor).isEmpty()) this.complementGraph.remove(neighbor);
+//            this.complementGraph.get(originalVertex).remove(neighbor);
+
             originalVertex.degree++;
 
             if (!adjVertices.containsKey(neighbor)) {
@@ -133,6 +206,7 @@ public class Graph  {
 
             bipartiteGraph.addEdge(originalVertex, neighbor);
         }
+//        if(this.complementGraph.get(originalVertex).isEmpty()) this.complementGraph.remove(originalVertex);
         this.degreeOrder.putBack(originalVertex, neighbors.size());
     }
 
@@ -275,9 +349,100 @@ public class Graph  {
         return edges;
     }
 
-    // public void undoMerge(LinkedList<MergeElement> mergeList, LinkedList<String> resultList){
-    //     // TODO
-    // }
+    public HashMap<Vertex, HashSet<Vertex>> applyTwinRule(){
+        boolean reduced;
+        HashMap<Vertex, HashSet<Vertex>> edges = new HashMap<>();
+        do {
+            reduced = false;
+            HashSet<Vertex> bucket = this.degreeOrder.getDegreeVertices(3);
+            if (bucket == null) break;
+            ArrayList<Vertex> degreeThreeBucket = new ArrayList<>(bucket);
+            for (int i=0;i<degreeThreeBucket.size();i++){
+                Vertex v = degreeThreeBucket.get(i);
+                HashSet<Vertex> Nv = adjVertices.get(v);
+                for (int j=i+1;j<degreeThreeBucket.size();j++){
+                    Vertex u = degreeThreeBucket.get(j);
+                    HashSet<Vertex> Nu = adjVertices.get(u);
+
+                    boolean isTwin = true;
+                    boolean hasEdges = false;
+                    for (Vertex n : Nv){
+                        if (!Nu.contains(n)) {
+                            isTwin = false;
+                            break;
+                        }
+                        HashSet<Vertex> Nn = new HashSet<>(adjVertices.get(n));
+                        for (Vertex n2 : Nv){
+                            if (n.id <= n2.id) continue;
+                            if (Nn.contains(n2)){
+                                hasEdges = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isTwin){
+                        System.out.println("#twin-rule: true");
+                        reduced = true;
+                        if (hasEdges) {
+                            // Remove v, u and N(u) from graph
+                            edges.putAll(removeSetofVertices(new HashSet<>(Nu)));
+                        }
+                        else {
+                            // Create new vertex w
+                            Vertex w = new Vertex("twin-"+twinCounter++, indexCounter++);
+                            HashSet<Vertex> twoNeighborhood = new HashSet<>();
+                            
+                            // Find 2-neighborhood from vertex u
+                            for (Vertex n1 : Nu) twoNeighborhood.addAll(adjVertices.get(n1));
+                            twoNeighborhood.remove(v);
+                            twoNeighborhood.remove(u);
+                            twoNeighborhood.removeAll(Nu);
+                            
+                            // Make vertex w adjacent to 2-neighborhood of u
+                            putVertexBack(w, twoNeighborhood);
+
+                            w.addMergeInformation(v, u, new HashSet<>(Nu));
+                            
+                            removeSetofVertices(new HashSet<>(Nu));
+
+                            // Create merge record (for later undoing ...)
+                            //MergeRecord merge = new MergeRecord(w, v, u, Nu);
+                            //mergeMap.put(w,merge);
+                            mergedVertices.push(w);
+                            
+                        }
+                        // Remove v, u and N(u) from graph
+                        removeVertex(v);
+                        removeVertex(u);
+                        break;
+                    }
+                }
+                if (reduced) break;
+            }
+        } while (reduced);
+        return edges;
+    }
+
+    public void undoMerges(LinkedList<String> solution){
+
+        System.out.println("#merged: "+mergedVertices.size());
+        while (!mergedVertices.isEmpty()){
+            Vertex w = mergedVertices.pop();
+            if (solution.contains(w.name)) {
+                solution.remove(w.name);
+                for (Vertex n : w.Nu){
+                    solution.add(n.name);
+                }
+            }
+            else {
+                solution.add(w.u.name);
+                solution.add(w.v.name);
+            }
+        }
+
+
+    }
 
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
         int newK = k;
@@ -347,12 +512,20 @@ public class Graph  {
 
                     if (this.vertices.contains(currentVertex)){
                         for (Vertex n : this.adjVertices.get(currentVertex)) {
-                            HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
-                            tmpNeighbors.add(currentVertex);
-                            if (tmpNeighbors.containsAll(this.adjVertices.get(n))) {
+//                            HashSet<Vertex> tmpNeighbors = new HashSet<>(this.adjVertices.get(currentVertex));
+//                            tmpNeighbors.add(currentVertex);
+                            this.adjVertices.get(n).remove(currentVertex);
+                            if (this.adjVertices.get(currentVertex).containsAll(this.adjVertices.get(n))) {
                                 delete = true;
                                 reduced = true;
+
+                                this.adjVertices.get(n).add(currentVertex);
+
+                                break;
+
                             }
+                            this.adjVertices.get(n).add(currentVertex);
+
                         }
                         if (delete) {
                             verticesInVertexCover.put(currentVertex, this.removeVertex(currentVertex));
@@ -361,6 +534,8 @@ public class Graph  {
 //                            }
 
                         }
+
+
                     }
             }
             if(!reduced) break;
@@ -443,32 +618,51 @@ public class Graph  {
         return verticesInVertexCover;
     }
 
-    public HashMap<Vertex,HashSet<Vertex>> getComplementGraph(){
-        HashMap<Vertex,HashSet<Vertex>> complementGraph = new HashMap<>();
-            for(Vertex vertex1: this.vertices){
-                for(Vertex vertex2:this.vertices){
-                    if(!vertex1.equals(vertex2)) {
-                        if (!complementGraph.containsKey(vertex1)) {
-                            complementGraph.put(vertex1, new HashSet<>());
+    public void getComplementGraph() {
+        for (Vertex v: vertices){
+            HashSet<Vertex> verticesToKeep = new HashSet<>(vertices);
+            verticesToKeep.removeAll(this.adjVertices.get(v));
+            this.complementGraph.put(v, verticesToKeep);
+        }
 
-                        }
-                        if (!this.adjVertices.get(vertex1).contains(vertex2)) {
-                            //Reinitializing colors in case they come from another iteration
-                            vertex1.color=-1;
-                            vertex2.color=-1;
-                            complementGraph.get(vertex1).add(vertex2);
-                        }
-                    }
-                }
-            }
-            return complementGraph;
+
+//        HashMap<Vertex, HashSet<Vertex>> complement = new HashMap<>();
+//
+//        // get all vertices in the graph
+//        Set<Vertex> vertices = this.adjVertices.keySet();
+//
+//        // loop through all vertices
+//        for (Vertex u : vertices) {
+//            // initialize an empty set for the complement edge
+//            HashSet<Vertex> complementNeighbors = new HashSet<>();
+//
+//            // loop through all vertices again
+//            for (Vertex v : vertices) {
+//                // add the vertex to the complement edge if it is not adjacent to the current vertex
+//                // and it is not equal to the current vertex
+//                if (!this.adjVertices.get(u).contains(v) && !u.equals(v)) {
+//                    complementNeighbors.add(v);
+//                }
+//            }
+//
+//            // add the complement edge to the complement graph
+//            complement.put(u, complementNeighbors);
+//        }
+//
     }
 
 
     public void getGraphColoring(HashMap<Vertex,HashSet<Vertex>> graph,ArrayList<Vertex> order){
+            this.setInitialColors();
             for(Vertex vertex: order){
                 vertex.color = this.getNextColorForColouring(graph.get(vertex));
             }
+    }
+
+    private void setInitialColors() {
+        for(Vertex vertex: this.vertices){
+            vertex.color =-1;
+        }
     }
 
     public int getNextColorForColouring(Set<Vertex> neighbors){
@@ -490,7 +684,6 @@ public class Graph  {
     }
 
     public int getHeuristicCliqueCover(){
-        HashMap<Vertex,HashSet<Vertex>> complementGraph = this.getComplementGraph();
         //ArrayList<Vertex> orderedVertices = this.getOrderForColouring(complementGraph, vertices);
         ArrayList<Vertex> orderedVertices = this.degreeOrder.getOrderedVerticesDegree();
         this.getGraphColoring(complementGraph,orderedVertices);
@@ -514,12 +707,12 @@ public class Graph  {
             tmpVertices = new ArrayList<>(this.vertices);
             for (Vertex v : tmpVertices) {
                 if(changedGraph){
-                    originalLpSolution = (int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2);
+                    originalLpSolution = this.getLpBound();
                 }
                 changedGraph = false;
                 HashSet<Vertex> removedVertices;
                 removedVertices = this.removeVertex(v);
-                int tmpLpSolution = ((int) Math.ceil((double) bipartiteGraph.findMaximumMatchingSize() / 2)) + 1;
+                int tmpLpSolution = this.getLpBound() + 1;
                 if (tmpLpSolution <= originalLpSolution) {
                     verticesInVertexCover.put(v, removedVertices);
                     reduced = true;
@@ -532,6 +725,9 @@ public class Graph  {
         this.completeReduced = true;
         return verticesInVertexCover;
     }
+
+
+
 
 
 
@@ -551,6 +747,156 @@ public class Graph  {
         System.out.println("#difference: "+ difference);
 
     }
+
+    public static ArrayList<Object> getInput() throws IOException {
+        HashSet<String[]> edges = new HashSet<>();
+        HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
+
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        //min to min Graph
+        HashMap<String,Vertex> idMap = new HashMap<>();
+        int idCounter = 0;
+        while (((line = bi.readLine()) != null)) {
+            if (!line.contains("#") && !line.isEmpty()) {
+                String[] nodes = line.split("\\s+");
+                Vertex u = idMap.get(nodes[0]);
+                if (u == null){
+                    u = new Vertex(nodes[0],idCounter++);
+                    idMap.put(nodes[0],u);
+                }
+                Vertex v = idMap.get(nodes[1]);
+                if (v == null){
+                    v = new Vertex(nodes[1],idCounter++);
+                    idMap.put(nodes[1],v);
+                }
+
+                // Add (u -> v) to graph
+                HashSet<Vertex> neighbors = adjMap.computeIfAbsent(u, k -> new HashSet<>());
+                neighbors.add(v);
+                // Add (v -> u) to graph
+                neighbors = adjMap.computeIfAbsent(v, k -> new HashSet<>());
+                neighbors.add(u);
+                edges.add(nodes);
+            }
+        }
+        ArrayList<Object> input = new ArrayList<>();
+        input.add(edges);
+        input.add(adjMap);
+        return input;
+    }
+
+//    public HashMap<Vertex,HashSet<Vertex>> applyFlowLpReduction(){
+//        HashMap<Vertex,HashSet<Vertex>> reducedEdges = new HashMap<>();
+//        ResidualGraph residualGraph = new ResidualGraph(bipartiteGraph, bipartiteGraph.findMaximumMatching());
+//        HashSet<Vertex> verticesToRemove = new HashSet<>();
+//        residualGraph.computeLp();
+//        residualGraph.applyLpReduction();
+//
+//        HashSet<Vertex> reducedVertices = residualGraph.lpOne;
+//        HashSet<Vertex> verticesToDelete = residualGraph.lpZero;
+//
+//        for (Vertex right : reducedVertices){
+//            for (Vertex vertex : vertices){
+//                if (right.name.equals(vertex.name)){
+//                    reducedEdges.put(vertex, getAdjVertices().get(vertex));
+//                    verticesToRemove.add(vertex);
+//                }
+//            }
+//        }
+//
+////        for (Vertex left : verticesToDelete){
+////            for (Vertex vertex : vertices){
+////                if (left.name.equals(vertex.name)){
+////                    verticesToRemove.add(vertex);
+////                }
+////            }
+////        }
+//
+//        removeSetofVertices(verticesToRemove);
+//        return reducedEdges;
+//    }
+
+//    public HashMap<Vertex,HashSet<Vertex>> applyTwinRule(){
+//        Vertex mergedVertex = new Vertex("merged-" + (vertices.size() + 1), (vertices.size() + 1));
+//        HashSet<Vertex> neighborsOfMerged = new HashSet<>();
+//
+//        HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
+//        HashSet<Vertex> degreeThreeVertices = this.degreeOrder.getDegreeVertices(3);
+//        if (degreeThreeVertices == null) return new HashMap<>();
+//
+//        boolean merged = false;
+//        for (Vertex u : degreeThreeVertices){
+//            HashSet<Vertex> neighbors = this.getAdjVertices().get(u);
+//            for (Vertex v : degreeThreeVertices){
+//                if (u.equals(v)) continue;
+//                if (!neighbors.equals(this.getAdjVertices().get(v))) continue;
+//
+//                boolean hasEdges = false;
+//                for (Vertex neighbor : neighbors){
+//                    for (Vertex neighbor2 : neighbors){
+//                        if (neighbor.equals(neighbor2)) continue;
+//
+//                        if (this.getAdjVertices().get(neighbor).contains(neighbor2)){
+//                            hasEdges = true;
+//                            break;
+//                        }
+//                    }
+//                    if (hasEdges) break;
+//                }
+//
+//                if (hasEdges) {
+//                    merged = true;
+//                    mergedVertex = new Vertex("merged-" + (vertices.size() + 1), (vertices.size() + 1));
+//                    mergedVertex.addMergeInfo(u, v, neighbors);
+//                    mergedVertices.add(mergedVertex);
+//                    for (Vertex vertex : neighbors) neighborsOfMerged.addAll(getAdjVertices().get(vertex));
+//                }
+//                else {
+//                    for (Vertex vertex : neighbors) reducedEdges.put(vertex, getAdjVertices().get(vertex));
+//                }
+//            }
+//        }
+//
+//        if (merged) {
+//            for (Vertex vertex : mergedVertex.commonNeighbors) this.removeVertex(vertex);
+//            this.removeVertex(mergedVertex.first);
+//            this.removeVertex(mergedVertex.second);
+//            this.putVertexBack(mergedVertex, neighborsOfMerged);
+//        }
+//        for (Vertex vertex : reducedEdges.keySet()){
+//            this.removeVertex(vertex);
+//        }
+//
+//        return reducedEdges;
+//    }
+
+//    public void undoMerges(LinkedList<String> solution){
+//        HashSet<Vertex> unfoldedVertices = new HashSet<>();
+//        while (!mergedVertices.isEmpty()){
+//            Vertex mergedVertex = mergedVertices.pop();
+//            if (solution.contains(mergedVertex.name)) {
+//                solution.remove(mergedVertex.name);
+//                for (Vertex vertex : mergedVertex.commonNeighbors) solution.add(vertex.name);
+//            }
+//            else{
+//                if (!mergedVertex.first.merged) solution.add(mergedVertex.first.name);
+//                if (!mergedVertex.second.merged) solution.add(mergedVertex.second.name);
+//            }
+//        }
+//    }
+
+//    public void undoLastMerge(int amountTwinReduced){
+//        while (amountTwinReduced != 0){
+//            System.out.println("FUCK");
+//            Vertex mergedVertex = mergedVertices.pop();
+//            removeVertex(mergedVertex);
+//            putVertexBack(mergedVertex.first, mergedVertex.commonNeighbors);
+//            putVertexBack(mergedVertex.second, mergedVertex.commonNeighbors);
+//            amountTwinReduced--;
+//        }
+//
+//    }
 
     public static void main(String[] args) throws InterruptedException, IOException {
 

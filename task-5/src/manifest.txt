@@ -1,2 +1,2 @@
-Main-Class: Solver
+Main-Class: ConstrainedSolver
 
