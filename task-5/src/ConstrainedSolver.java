@@ -84,7 +84,7 @@ public class ConstrainedSolver {
     }
 
     public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) throws Exception {
-        if ((System.currentTimeMillis() - start) / 1000F > 20) {
+        if ((System.currentTimeMillis() - start) / 1000F > 50) {
             momc = true;
             throw new Exception("Exception message");
         }
