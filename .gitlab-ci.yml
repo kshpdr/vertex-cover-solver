@@ -23,7 +23,8 @@ stages:
 
 variables:
   TASK_NR: "5"
-  BENCHMARK_TIMEOUT: "300"
+  BENCHMARK_TIMEOUT: "30"
+  BENCHMARK_RETRIES: "100"
 
 build-job:
   stage: build
@@ -44,7 +45,7 @@ run-job:
       - task-$TASK_NR/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
       - task-$TASK_NR/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
   script:
-    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUT sec timeout) ..."
+    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUT sec timeout and $BENCHMARK_RETRIES retries) ..."
     - if [ ! -d task-$TASK_NR/vc-data-students ] ; then mkdir task-$TASK_NR/vc-data-students; fi
     - cd task-$TASK_NR/vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/master/vc-data ]; then cp -r /home/master/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => private VM
@@ -52,6 +53,8 @@ run-job:
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT # Run benchmark with solver
     - echo "[*] Benchmark script done."
+    - rm -rf 1-random/* 2-social-networks/* 3-medium-sized/*
+    - echo "[*] CleanUp done!"
 
 verify-job:
   stage: verify
