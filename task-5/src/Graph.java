@@ -8,15 +8,17 @@ public class Graph  {
     private BipartiteGraph bipartiteGraph;
     private final VertexDegreeOrder degreeOrder = new VertexDegreeOrder();
     private int edgesNumber;
+    private int indexCounter, twinCounter = 0;
     private final HashMap<Vertex, HashSet<Vertex>> adjVertices = new HashMap<>();
     private final HashSet<Vertex> vertices = new HashSet<>();
 
     public int difference = 0;
     public boolean completeReduced = true;
+    private final Stack<Vertex> mergedVertices = new Stack<>();
 
     public Graph(HashSet<String[]> edges) {
         HashMap<String, Vertex> idxMap = new HashMap<>();
-        int indexCounter = 0;
+        indexCounter = 0;
         for (String[] edge : edges) {
             edgesNumber++;
             Vertex vertex1 = idxMap.get(edge[0]);
@@ -347,9 +349,100 @@ public class Graph  {
         return edges;
     }
 
-    // public void undoMerge(LinkedList<MergeElement> mergeList, LinkedList<String> resultList){
-    //     // TODO
-    // }
+    public HashMap<Vertex, HashSet<Vertex>> applyTwinRule(){
+        boolean reduced;
+        HashMap<Vertex, HashSet<Vertex>> edges = new HashMap<>();
+        do {
+            reduced = false;
+            HashSet<Vertex> bucket = this.degreeOrder.getDegreeVertices(3);
+            if (bucket == null) break;
+            ArrayList<Vertex> degreeThreeBucket = new ArrayList<>(bucket);
+            for (int i=0;i<degreeThreeBucket.size();i++){
+                Vertex v = degreeThreeBucket.get(i);
+                HashSet<Vertex> Nv = adjVertices.get(v);
+                for (int j=i+1;j<degreeThreeBucket.size();j++){
+                    Vertex u = degreeThreeBucket.get(j);
+                    HashSet<Vertex> Nu = adjVertices.get(u);
+
+                    boolean isTwin = true;
+                    boolean hasEdges = false;
+                    for (Vertex n : Nv){
+                        if (!Nu.contains(n)) {
+                            isTwin = false;
+                            break;
+                        }
+                        HashSet<Vertex> Nn = new HashSet<>(adjVertices.get(n));
+                        for (Vertex n2 : Nv){
+                            if (n.id <= n2.id) continue;
+                            if (Nn.contains(n2)){
+                                hasEdges = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isTwin){
+                        System.out.println("#twin-rule: true");
+                        reduced = true;
+                        if (hasEdges) {
+                            // Remove v, u and N(u) from graph
+                            edges.putAll(removeSetofVertices(new HashSet<>(Nu)));
+                        }
+                        else {
+                            // Create new vertex w
+                            Vertex w = new Vertex("twin-"+twinCounter++, indexCounter++);
+                            HashSet<Vertex> twoNeighborhood = new HashSet<>();
+                            
+                            // Find 2-neighborhood from vertex u
+                            for (Vertex n1 : Nu) twoNeighborhood.addAll(adjVertices.get(n1));
+                            twoNeighborhood.remove(v);
+                            twoNeighborhood.remove(u);
+                            twoNeighborhood.removeAll(Nu);
+                            
+                            // Make vertex w adjacent to 2-neighborhood of u
+                            putVertexBack(w, twoNeighborhood);
+
+                            w.addMergeInformation(v, u, new HashSet<>(Nu));
+                            
+                            removeSetofVertices(new HashSet<>(Nu));
+
+                            // Create merge record (for later undoing ...)
+                            //MergeRecord merge = new MergeRecord(w, v, u, Nu);
+                            //mergeMap.put(w,merge);
+                            mergedVertices.push(w);
+                            
+                        }
+                        // Remove v, u and N(u) from graph
+                        removeVertex(v);
+                        removeVertex(u);
+                        break;
+                    }
+                }
+                if (reduced) break;
+            }
+        } while (reduced);
+        return edges;
+    }
+
+    public void undoMerges(LinkedList<String> solution){
+
+        System.out.println("#merged: "+mergedVertices.size());
+        while (!mergedVertices.isEmpty()){
+            Vertex w = mergedVertices.pop();
+            if (solution.contains(w.name)) {
+                solution.remove(w.name);
+                for (Vertex n : w.Nu){
+                    solution.add(n.name);
+                }
+            }
+            else {
+                solution.add(w.u.name);
+                solution.add(w.v.name);
+            }
+        }
+
+
+    }
 
     public HashMap<Vertex,HashSet<Vertex>> applyHighDegreeRule(int k){
         int newK = k;

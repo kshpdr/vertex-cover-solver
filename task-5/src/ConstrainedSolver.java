@@ -12,8 +12,10 @@ public class ConstrainedSolver {
     public static boolean independentRulePre = true;
 
     // Pre-processing 2
+
+    public static boolean twinRuleBeginning = true;
     public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning =true;
+    public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true; // still not working
 
     // Reduction rules
@@ -30,14 +32,14 @@ public class ConstrainedSolver {
     public static boolean satelliteConstraint = true;
 
     public static boolean cliqueBoundIteration = true;
-    public static boolean lpBoundIteration= true;
+    public static boolean lpBoundIteration = true;
 
     // Tracking params
     public static int recursiveSteps = 0;
 
-    public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints){
-        for (Constraint constraint : constraints){
-            if (!constraint.isSatisfied(graph, solution)){
+    public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints) {
+        for (Constraint constraint : constraints) {
+            if (!constraint.isSatisfied(graph, solution)) {
                 return false;
             }
         }
@@ -45,27 +47,27 @@ public class ConstrainedSolver {
     }
 
     // Think about using SatelliteConstraint only on dense graphs (social-networks)
-    public static HashSet<Constraint> createConstraints(HashMap<Vertex, HashSet<Vertex>> initialAdjList){
+    public static HashSet<Constraint> createConstraints(HashMap<Vertex, HashSet<Vertex>> initialAdjList) {
         HashSet<Constraint> constraints = new HashSet<>();
         if (neighborsConstraint) constraints.add(new NeighborsConstraint(initialAdjList));
         if (satelliteConstraint) constraints.add(new SatelliteConstraint(initialAdjList));
         return constraints;
     }
 
-    public static HashMap<Vertex, HashSet<Vertex>> reduceGraph(Graph graph, int lowerbound){
+    public static HashMap<Vertex, HashSet<Vertex>> reduceGraph(Graph graph, int lowerbound) {
         HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
         if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
         if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
         if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
         if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
         if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
-        if(highDegreeRuleIteration) reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
+        if (highDegreeRuleIteration) reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
         return reducedEdges;
     }
 
-    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) {
 
-        if (!constraintsSatisfied(graph, solution, constraints)){
+        if (!constraintsSatisfied(graph, solution, constraints)) {
             return bestFoundSolution;
         }
 
@@ -82,9 +84,9 @@ public class ConstrainedSolver {
             return solution;
         }
 
-        if (findComponents){
+        if (findComponents) {
             List<Graph> components = graph.getComponents();
-            if (components.size() > 1){
+            if (components.size() > 1) {
                 for (Graph component : components) {
                     HashSet<Vertex> componentSolution = new HashSet<>(bestFoundSolution);
                     componentSolution.removeAll(solution);
@@ -126,24 +128,29 @@ public class ConstrainedSolver {
         // get input for the graph
         InputParser inputParser = new InputParser();
         HashSet<String[]> edges = inputParser.getEdges();
-        HashMap<Vertex,HashSet<Vertex>> adjMap = inputParser.getAdjMap();
+        HashMap<Vertex, HashSet<Vertex>> adjMap = inputParser.getAdjMap();
 
         // complete preprocessing phase 1
-        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre,independentRulePre);
+        ReductionRules preReduction = new ReductionRules(oneDegreeRulePre, twoDegreeRulePre, dominationRulePre, independentRulePre);
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
         Graph graph = new Graph(edges);
 
         // complete preprocessing phase 2
-        HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
-        if(unconfinedRuleBeginning) {
-            reducedEdges.putAll(graph.applyUnconfinedRule());
+        HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
+
+        if (twinRuleBeginning) {
+            edgesAfterRules.putAll(graph.applyTwinRule());
         }
-        if(lpReductionBeginning){
-            reducedEdges.putAll(graph.applyLpReduction());
+
+        if (unconfinedRuleBeginning) {
+            edgesAfterRules.putAll(graph.applyUnconfinedRule());
         }
-        if (highDegreeRuleBeginning){
+        if (lpReductionBeginning) {
+            edgesAfterRules.putAll(graph.applyLpReduction());
+        }
+        if (highDegreeRuleBeginning) {
             int lowerbound = graph.getMaxLowerBound(true, true);
-            reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
+            edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
         }
 
         // get params for the algorithm
@@ -157,10 +164,16 @@ public class ConstrainedSolver {
         if (!reductionResult.isEmpty()) {
             stringSolution.addAll(reductionResult);
         }
-        for (Vertex v : reducedEdges.keySet()){
+
+        for (Vertex v : edgesAfterRules.keySet()) {
             stringSolution.add(v.name);
         }
-        if (twoDegreeRulePre){ // must be last to undo merge for all merged cases
+
+        if (twinRuleBeginning) {
+            graph.undoMerges(stringSolution);
+        }
+
+        if (twoDegreeRulePre) { // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
         }
 

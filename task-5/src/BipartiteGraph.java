@@ -103,6 +103,8 @@ public class BipartiteGraph {
         Integer[] idsVertex = idMap.get(vertex.id);
         Integer[] idsNeighbors = idMap.get(neighbor.id);
 
+        // TODO: add new vertex
+
         Vertex leftFirst = new Vertex(vertex.name, idsVertex[0]);
         Vertex leftSecond = new Vertex(neighbor.name, idsNeighbors[0]);
 
