@@ -257,14 +257,14 @@ public class ResidualGraph {
     }
 
 
-    public static void main(String[] args) throws IOException {
-        InputParser inputParser = new InputParser(null);
-        HashSet<String[]> edges = inputParser.getEdges();
-        Graph graph = new Graph(edges);
-        ResidualGraph residualGraph = new ResidualGraph(graph.getBipartiteGraph(), graph.getBipartiteGraph().findMaximumMatching());
-        residualGraph.computeLp();
-//        residualGraph.updateFlow();
-        residualGraph.applyLpReduction();
-        System.out.println(residualGraph.lpOne);
-    }
+//    public static void main(String[] args) throws IOException {
+//        InputParser inputParser = new InputParser(null);
+//        HashSet<String[]> edges = inputParser.getEdges();
+//        Graph graph = new Graph(edges);
+//        ResidualGraph residualGraph = new ResidualGraph(graph.getBipartiteGraph(), graph.getBipartiteGraph().findMaximumMatching());
+//        residualGraph.computeLp();
+////        residualGraph.updateFlow();
+//        residualGraph.applyLpReduction();
+//        System.out.println(residualGraph.lpOne);
+//    }
 }

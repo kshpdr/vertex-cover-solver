@@ -15,8 +15,7 @@ public class ConstrainedSolver {
     public static boolean independentRulePre = true;
 
     // Pre-processing 2
-
-    public static boolean twinRuleBeginning = true;
+    public static boolean twinRuleBeginning = true; // false
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true; // still not working
@@ -32,10 +31,10 @@ public class ConstrainedSolver {
 
     // Solver params
     public static boolean findComponents = false; // currently slow
-    public static boolean neighborsConstraint = false;
-    public static boolean satelliteConstraint = false;
+    public static boolean neighborsConstraint = true;
+    public static boolean satelliteConstraint = true;
 
-    public static boolean cliqueBoundIteration = true;
+    public static boolean cliqueBoundIteration = false;
     public static boolean lpBoundIteration = true;
 
     // Tracking params
@@ -78,7 +77,7 @@ public class ConstrainedSolver {
         return reducedEdges;
     }
 
-    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) {
+    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) throws Exception {
         if ((System.currentTimeMillis() - start) / 1000F > 50) {
             momc = true;
             throw new Exception("Exception message");
@@ -149,7 +148,15 @@ public class ConstrainedSolver {
 
     public static void MoMC(){
         try {
-            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "../../task-5/scripts/vcFromClique.sh <<< \"" + sb + "\"");
+            File inputFile = new File("input.txt");
+            try (PrintWriter writer = new PrintWriter(inputFile)) {
+                writer.print(sb.toString());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "../../task-5/scripts/vcFromClique.sh < " + inputFile.getAbsolutePath());
+//            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "../../task-5/scripts/vcFromClique.sh <<< \"" + sb + "\"");
 //            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-5/vc-data-students/vcFromClique.sh < /Users/koselev/Desktop/AlgEng/algorithm-engineering/task-5/vc-data-students/2-social-networks/08-netscience.graph.dimacs");
             pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
             pb.redirectError(ProcessBuilder.Redirect.PIPE);
@@ -184,9 +191,9 @@ public class ConstrainedSolver {
         // complete preprocessing phase 2
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-        if (twinRuleBeginning) {
-            edgesAfterRules.putAll(graph.applyTwinRule());
-        }
+//        if (twinRuleBeginning) {
+//            edgesAfterRules.putAll(graph.applyTwinRule());
+//        }
 
         if (unconfinedRuleBeginning) {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
@@ -224,9 +231,9 @@ public class ConstrainedSolver {
             stringSolution.add(v.name);
         }
 
-        if (twinRuleBeginning) {
-            graph.undoMerges(stringSolution);
-        }
+//        if (twinRuleBeginning) {
+//            graph.undoMerges(stringSolution);
+//        }
 
         if (twoDegreeRulePre) { // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
