@@ -1,3 +1,5 @@
+import java.util.HashSet;
+
 public class Vertex {
     String name;
     int id;
@@ -8,8 +10,16 @@ public class Vertex {
     Integer loss = null;
     Integer gain = null;
 
+    boolean merged;
+    Vertex first, second;
+    HashSet<Vertex> commonNeighbors;
+
     //need color for Clique Bound
     int color =-1;
+
+    // for strongly connected components
+    int index;
+    int lowLink;
 
 //    boolean active =true;
 
@@ -17,6 +27,12 @@ public class Vertex {
     Vertex(String name, Integer id) {
         this.name = name;
         this.id = id;
+    }
+
+    public void addMergeInfo(Vertex first, Vertex second, HashSet<Vertex> commonNeighbors){
+        this.first = first;
+        this.second = second;
+        this.commonNeighbors = new HashSet<>(commonNeighbors);
     }
 
     // equals and hashCode

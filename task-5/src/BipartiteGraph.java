@@ -101,21 +101,47 @@ public class BipartiteGraph {
     }
 
     public void addEdge(Vertex vertex, Vertex neighbor){
-        Integer[] idsVertex = idMap.get(vertex.id);
-        Integer[] idsNeighbors = idMap.get(neighbor.id);
+        Vertex leftFirst, leftSecond, rightFirst, rightSecond;
+        if (!idMap.containsKey(vertex.id)) {
+            leftFirst = new Vertex(vertex.name, indexCounter++);
+            leftFirst.originalId = vertex.id;
+            left.add(leftFirst);
 
-        Vertex leftFirst = new Vertex(vertex.name, idsVertex[0]);
-        Vertex leftSecond = new Vertex(neighbor.name, idsNeighbors[0]);
+            rightFirst = new Vertex(vertex.name, indexCounter++);
+            rightFirst.originalId = vertex.id;
+            right.add(rightFirst);
 
-        Vertex rightFirst = new Vertex(vertex.name, idsVertex[1]);
-        Vertex rightSecond = new Vertex(neighbor.name, idsNeighbors[1]);
+            Integer[] indices = {indexCounter - 2, indexCounter - 1};
+            idMap.put(vertex.id, indices);
+        }
+        else {
+            Integer[] idsVertex = idMap.get(vertex.id);
+            leftFirst = new Vertex(vertex.name, idsVertex[0]);
+            rightFirst = new Vertex(vertex.name, idsVertex[1]);
+        }
 
+        if (!idMap.containsKey(neighbor.id)) {
+            leftSecond = new Vertex(neighbor.name, indexCounter++);
+            leftSecond.originalId = neighbor.id;
+            left.add(leftSecond);
+
+            rightSecond = new Vertex(neighbor.name, indexCounter++);
+            rightSecond.originalId = neighbor.id;
+            right.add(rightSecond);
+
+            Integer[] indices2 = {indexCounter-2,indexCounter-1};
+            idMap.put(neighbor.id,indices2);
+        }
+        else {
+            Integer[] idsNeighbors = idMap.get(neighbor.id);
+            leftSecond = new Vertex(neighbor.name, idsNeighbors[0]);
+            rightSecond = new Vertex(neighbor.name, idsNeighbors[1]);
+        }
         // REMOVE: vertex from left,right lists
         if (!left.contains(leftFirst)) left.add(leftFirst);
         if (!left.contains(leftSecond)) left.add(leftSecond);
         if (!right.contains(rightFirst)) right.add(rightFirst);
         if (!right.contains(rightSecond)) right.add(rightSecond);
-
         // REMOVE: vertex from adjMap
         // leftFirst -> rightSecond
         HashSet<Vertex> neighborSet = adjacentMap.computeIfAbsent(leftFirst, k -> new HashSet<>());
@@ -123,7 +149,7 @@ public class BipartiteGraph {
         // leftFirst <- rightSecond
         neighborSet = adjacentMap.computeIfAbsent(rightSecond, k -> new HashSet<>());
         neighborSet.add(leftFirst);
-        
+
         // leftSecond -> rightFirst
         neighborSet = adjacentMap.computeIfAbsent(leftSecond, k -> new HashSet<>());
         neighborSet.add(rightFirst);
@@ -228,6 +254,8 @@ public class BipartiteGraph {
                 HashSet<Vertex> neighbors = adjacentMap.get(vertex);
                 if (neighbors != null){
                     for (Vertex neighbor : neighbors){
+//                        if (!dist.containsKey(pairRight.get(neighbor)))
+//                            System.out.println(123);
                         if (dist.get(pairRight.get(neighbor)) == INF) {
                             dist.replace(pairRight.get(neighbor), dist.get(vertex) + 1);
                             queue.add(pairRight.get(neighbor));
@@ -262,7 +290,7 @@ public class BipartiteGraph {
 
 
     public static void main(String[] args) throws IOException {
-        InputParser inputParser = new InputParser();
+        InputParser inputParser = new InputParser(null);
         HashSet<String[]> edges = inputParser.getEdges();
 
         Graph graph = new Graph(edges);

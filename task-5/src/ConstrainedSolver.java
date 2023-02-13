@@ -1,41 +1,45 @@
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.io.*;
+import java.util.*;
 import java.util.List;
 
 public class ConstrainedSolver {
     // Pre-processing 1
     public static boolean oneDegreeRulePre = true;
-    public static boolean twoDegreeRulePre = true;
-    public static boolean dominationRulePre = true;
+    public static boolean twoDegreeRulePre = false;
+    public static boolean dominationRulePre = false;
 
     // Pre-processing 2
-    public static boolean unconfinedRuleBeginning = true;
-    public static boolean highDegreeRuleBeginning = true;
-    public static boolean lpReductionBeginning = true; // still not working
+    public static boolean unconfinedRuleBeginning = false;
+    public static boolean highDegreeRuleBeginning = false;
+    public static boolean twinRuleBeginning = false;
+    public static boolean lpReductionBeginning = false; // still not working
+    public static boolean flowLpReductionBeginning = false; // testing
 
     // Reduction rules
-    public static boolean dominationRuleIteration = true;
-    public static boolean unconfinedRuleIteration = true;
-    public static boolean highDegreeRuleIteration = true;
-    public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true;
+    public static boolean dominationRuleIteration = false;
+    public static boolean unconfinedRuleIteration = false;
+    public static boolean highDegreeRuleIteration = false;
+    public static boolean oneDegreeRuleIteration = false;
+    public static boolean twoDegreeRuleIteration = false;
+    public static boolean twinRuleIteration = false;
     public static boolean lpReductionIteration = false; // still not working
+    public static boolean flowLpReductionIteration = false; // not tested yet
 
     // Solver params
     public static boolean findComponents = false; // currently slow
-    public static boolean neighborsConstraint = true;
-    public static boolean satelliteConstraint = true;
+    public static boolean neighborsConstraint = false;
+    public static boolean satelliteConstraint = false;
 
-    public static boolean cliqueBoundIteration = true;
+    public static boolean cliqueBoundIteration = false;
     public static boolean lpBoundIteration= true;
 
     // Tracking params
+    public static long start;
+    public static boolean momc = false;
+    public static StringBuilder sb = new StringBuilder();
     public static int recursiveSteps = 0;
+    public static int amountTwinReduced = 0;
 
     public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints){
         for (Constraint constraint : constraints){
@@ -61,11 +65,20 @@ public class ConstrainedSolver {
         if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
         if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
         if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
-        if(highDegreeRuleIteration) reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
+        if (highDegreeRuleIteration) reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
+//        if (twinRuleIteration) {
+//            HashMap<Vertex, HashSet<Vertex>> twinReduced = graph.applyTwinRule();
+//            amountTwinReduced = twinReduced.size();
+//            reducedEdges.putAll(twinReduced);
+//        }
         return reducedEdges;
     }
 
-    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution){
+    public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) throws Exception {
+        if ((System.currentTimeMillis() - start) / 1000F > 50) {
+            momc = true;
+            throw new Exception("Exception message");
+        }
 
         if (!constraintsSatisfied(graph, solution, constraints)){
             return bestFoundSolution;
@@ -120,40 +133,73 @@ public class ConstrainedSolver {
         solution.removeAll(eliminatedNeighbors);
 
         graph.putManyVerticesBack(reducedEdges);
+//        graph.undoLastMerge(amountTwinReduced);
+//        amountTwinReduced = 0;
 
         return bestFoundSolution;
     }
 
+    public static void MoMC(){
+        try {
+            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "../../task-5/scripts/vcFromClique.sh <<< \"" + sb + "\"");
+//            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-5/vc-data-students/vcFromClique.sh < /Users/koselev/Desktop/AlgEng/algorithm-engineering/task-5/vc-data-students/2-social-networks/08-netscience.graph.dimacs");
+            pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
+            pb.redirectError(ProcessBuilder.Redirect.PIPE);
+            Process process = null;
+            process = pb.start();
+
+            String output = new String(process.getInputStream().readAllBytes());
+
+            process.getOutputStream().close();
+            System.out.println(output);
+            process.waitFor();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         // get input for the graph
-        InputParser inputParser = new InputParser();
+        InputParser inputParser = new InputParser(sb);
         HashSet<String[]> edges = inputParser.getEdges();
         HashMap<Vertex,HashSet<Vertex>> adjMap = inputParser.getAdjMap();
+        start = System.currentTimeMillis();
 
         // complete preprocessing phase 1
         ReductionRules preReduction = new ReductionRules(oneDegreeRulePre,twoDegreeRulePre,dominationRulePre);
         LinkedList<String> reductionResult = preReduction.applyReductionRules(edges);
         Graph graph = new Graph(edges);
 
-        // complete preprocessing phase 2
+        // complete preprocessing phase  2
         HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
-        if(unconfinedRuleBeginning) {
-            reducedEdges.putAll(graph.applyUnconfinedRule());
-        }
-        if(lpReductionBeginning){
-            reducedEdges.putAll(graph.applyLpReduction());
-        }
+
+//        if (twinRuleBeginning) reducedEdges.putAll(graph.applyTwinRule());
+
+        if (unconfinedRuleBeginning) reducedEdges.putAll(graph.applyUnconfinedRule());
+        if (lpReductionBeginning) reducedEdges.putAll(graph.applyLpReduction());
         if (highDegreeRuleBeginning){
             int lowerbound = graph.getMaxLowerBound(false, true);
             reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
         }
+//        if (flowLpReductionBeginning) reducedEdges.putAll(graph.applyFlowLpReduction());
 
         // get params for the algorithm
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         HashSet<Constraint> constraints = createConstraints(graph.getAdjVertices());
 
-        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
-        LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
+        HashSet<Vertex> solution = null;
+        try {
+            solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
+        } catch (Exception ignored) {}
+        LinkedList<String> stringSolution = solution != null ? FastVC.getStringSolution(solution) : null;
+
+        if (momc){
+            MoMC();
+            return;
+        }
 
         // merge all results
         if (!reductionResult.isEmpty()) {
@@ -165,6 +211,7 @@ public class ConstrainedSolver {
         if (twoDegreeRulePre){ // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
         }
+//        graph.undoMerges(stringSolution);
 
         inputParser.printResult(stringSolution, recursiveSteps);
     }
