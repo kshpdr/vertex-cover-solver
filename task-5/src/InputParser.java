@@ -10,14 +10,14 @@ public class InputParser {
     public HashSet<String[]> edges = new HashSet<>();
     public HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
 
-    public InputParser () throws IOException {
-        start = System.currentTimeMillis();
+    public InputParser (StringBuilder sb) throws IOException {
         String line;
         BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
         //min to min Graph
         HashMap<String,Vertex> idMap = new HashMap<>();
         int idCounter = 0;
         while (((line = bi.readLine()) != null)) {
+            sb.append(line).append("\n");
             if (!line.contains("#") && !line.isEmpty()) {
                 String[] nodes = line.split("\\s+");
                 Vertex u = idMap.get(nodes[0]);
@@ -40,6 +40,7 @@ public class InputParser {
                 edges.add(nodes);
             }
         }
+        start = System.currentTimeMillis();
     }
 
     public HashSet<String[]> getEdges() {

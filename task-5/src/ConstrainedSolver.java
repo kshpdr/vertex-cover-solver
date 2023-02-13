@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.awt.*;
+import java.io.*;
+import java.util.*;
 import java.util.List;
 
 public class ConstrainedSolver {
@@ -25,16 +28,20 @@ public class ConstrainedSolver {
     public static boolean oneDegreeRuleIteration = true;
     public static boolean twoDegreeRuleIteration = true; //does not work
     public static boolean lpReductionIteration = false; // still not working
+    public static boolean flowLpReductionIteration = false; // not tested yet
 
     // Solver params
     public static boolean findComponents = false; // currently slow
-    public static boolean neighborsConstraint = true;
-    public static boolean satelliteConstraint = true;
+    public static boolean neighborsConstraint = false;
+    public static boolean satelliteConstraint = false;
 
     public static boolean cliqueBoundIteration = true;
     public static boolean lpBoundIteration = true;
 
     // Tracking params
+    public static long start;
+    public static boolean momc = false;
+    public static StringBuilder sb = new StringBuilder();
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
 
@@ -72,6 +79,10 @@ public class ConstrainedSolver {
     }
 
     public static HashSet<Vertex> solve(Graph graph, HashSet<Constraint> constraints, HashSet<Vertex> solution, HashSet<Vertex> bestFoundSolution) {
+        if ((System.currentTimeMillis() - start) / 1000F > 50) {
+            momc = true;
+            throw new Exception("Exception message");
+        }
 
         if (!constraintsSatisfied(graph, solution, constraints)) {
             return bestFoundSolution;
@@ -130,15 +141,40 @@ public class ConstrainedSolver {
         solution.removeAll(eliminatedNeighbors);
 
         graph.putManyVerticesBack(reducedEdges);
+//        graph.undoLastMerge(amountTwinReduced);
+//        amountTwinReduced = 0;
 
         return bestFoundSolution;
     }
 
+    public static void MoMC(){
+        try {
+            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "../../task-5/scripts/vcFromClique.sh <<< \"" + sb + "\"");
+//            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "/Users/koselev/Desktop/AlgEng/algorithm-engineering/task-5/vc-data-students/vcFromClique.sh < /Users/koselev/Desktop/AlgEng/algorithm-engineering/task-5/vc-data-students/2-social-networks/08-netscience.graph.dimacs");
+            pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
+            pb.redirectError(ProcessBuilder.Redirect.PIPE);
+            Process process = null;
+            process = pb.start();
+
+            String output = new String(process.getInputStream().readAllBytes());
+
+            process.getOutputStream().close();
+            System.out.println(output);
+            process.waitFor();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         // get input for the graph
-        InputParser inputParser = new InputParser();
+        InputParser inputParser = new InputParser(sb);
         HashSet<String[]> edges = inputParser.getEdges();
-        HashMap<Vertex, HashSet<Vertex>> adjMap = inputParser.getAdjMap();
+        HashMap<Vertex,HashSet<Vertex>> adjMap = inputParser.getAdjMap();
+        start = System.currentTimeMillis();
 
         // complete preprocessing phase 1
         ReductionRules preReduction = new ReductionRules(oneDegreeRulePre, twoDegreeRulePre, dominationRulePre, independentRulePre);
@@ -162,13 +198,22 @@ public class ConstrainedSolver {
             int lowerbound = graph.getMaxLowerBound(true, true);
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
         }
+//        if (flowLpReductionBeginning) reducedEdges.putAll(graph.applyFlowLpReduction());
 
         // get params for the algorithm
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
         HashSet<Constraint> constraints = createConstraints(graph.getAdjVertices());
 
-        HashSet<Vertex> solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
-        LinkedList<String> stringSolution = FastVC.getStringSolution(solution);
+        HashSet<Vertex> solution = null;
+        try {
+            solution = solve(graph, constraints, new HashSet<>(), new HashSet<>(heuristicSolution));
+        } catch (Exception ignored) {}
+        LinkedList<String> stringSolution = solution != null ? FastVC.getStringSolution(solution) : null;
+
+        if (momc){
+            MoMC();
+            return;
+        }
 
         // merge all results
         if (!reductionResult.isEmpty()) {
@@ -186,6 +231,7 @@ public class ConstrainedSolver {
         if (twoDegreeRulePre) { // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
         }
+//        graph.undoMerges(stringSolution);
 
         inputParser.printResult(stringSolution, recursiveSteps);
     }
