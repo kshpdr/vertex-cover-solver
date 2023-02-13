@@ -36,6 +36,10 @@ public class ConstrainedSolver {
 
     // Tracking params
     public static int recursiveSteps = 0;
+    public static int recursionDepth = 0;
+
+    public static int applyReductionDepth = 14;
+    public static int applyBoundsDepth = 24;
 
     public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints) {
         for (Constraint constraint : constraints) {
@@ -58,9 +62,11 @@ public class ConstrainedSolver {
         HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
         if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
         if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
-        if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
-        if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
-        if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
+        if (recursionDepth%applyReductionDepth == 0){
+            if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
+            if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
+            if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
+        }
         if (highDegreeRuleIteration) reducedEdges.putAll(graph.applyHighDegreeRule(lowerbound));
         return reducedEdges;
     }
@@ -71,7 +77,7 @@ public class ConstrainedSolver {
             return bestFoundSolution;
         }
 
-        int lowerbound = graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration);
+        int lowerbound = recursionDepth%applyBoundsDepth == 0 ? graph.getMaxLowerBound(cliqueBoundIteration, lpBoundIteration) : 0;
         if (solution.size() + lowerbound >= bestFoundSolution.size()) {
             return bestFoundSolution;
         }
@@ -106,7 +112,9 @@ public class ConstrainedSolver {
         HashSet<Vertex> eliminatedNeighbors = graph.removeVertex(vertex);
 
         solution.add(vertex);
+        recursionDepth++;
         HashSet<Vertex> tempSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
+        recursionDepth--;
         bestFoundSolution = tempSolution.size() <= bestFoundSolution.size() ? tempSolution : bestFoundSolution;
         graph.putVertexBack(vertex, eliminatedNeighbors);
         solution.remove(vertex);
@@ -114,7 +122,9 @@ public class ConstrainedSolver {
         // Branch vertices N(v)
         HashMap<Vertex, HashSet<Vertex>> eliminatedNeighborsMap = graph.removeSetofVertices(eliminatedNeighbors);
         solution.addAll(eliminatedNeighbors);
+        recursionDepth++;
         tempSolution = solve(graph, constraints, new HashSet<>(solution), bestFoundSolution);
+        recursionDepth--;
         bestFoundSolution = tempSolution.size() <= bestFoundSolution.size() ? tempSolution : bestFoundSolution;
         graph.putManyVerticesBack(eliminatedNeighborsMap);
         solution.removeAll(eliminatedNeighbors);
