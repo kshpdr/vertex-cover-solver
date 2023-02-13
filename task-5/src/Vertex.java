@@ -19,6 +19,10 @@ public class Vertex {
     //need color for Clique Bound
     int color =-1;
 
+    // for strongly connected components
+    int index;
+    int lowLink;
+
 //    boolean active =true;
 
 

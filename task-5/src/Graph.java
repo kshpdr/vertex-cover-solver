@@ -748,6 +748,156 @@ public class Graph  {
 
     }
 
+    public static ArrayList<Object> getInput() throws IOException {
+        HashSet<String[]> edges = new HashSet<>();
+        HashMap<Vertex,HashSet<Vertex>> adjMap = new HashMap<>();
+
+        BufferedReader bi = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        //min to min Graph
+        HashMap<String,Vertex> idMap = new HashMap<>();
+        int idCounter = 0;
+        while (((line = bi.readLine()) != null)) {
+            if (!line.contains("#") && !line.isEmpty()) {
+                String[] nodes = line.split("\\s+");
+                Vertex u = idMap.get(nodes[0]);
+                if (u == null){
+                    u = new Vertex(nodes[0],idCounter++);
+                    idMap.put(nodes[0],u);
+                }
+                Vertex v = idMap.get(nodes[1]);
+                if (v == null){
+                    v = new Vertex(nodes[1],idCounter++);
+                    idMap.put(nodes[1],v);
+                }
+
+                // Add (u -> v) to graph
+                HashSet<Vertex> neighbors = adjMap.computeIfAbsent(u, k -> new HashSet<>());
+                neighbors.add(v);
+                // Add (v -> u) to graph
+                neighbors = adjMap.computeIfAbsent(v, k -> new HashSet<>());
+                neighbors.add(u);
+                edges.add(nodes);
+            }
+        }
+        ArrayList<Object> input = new ArrayList<>();
+        input.add(edges);
+        input.add(adjMap);
+        return input;
+    }
+
+//    public HashMap<Vertex,HashSet<Vertex>> applyFlowLpReduction(){
+//        HashMap<Vertex,HashSet<Vertex>> reducedEdges = new HashMap<>();
+//        ResidualGraph residualGraph = new ResidualGraph(bipartiteGraph, bipartiteGraph.findMaximumMatching());
+//        HashSet<Vertex> verticesToRemove = new HashSet<>();
+//        residualGraph.computeLp();
+//        residualGraph.applyLpReduction();
+//
+//        HashSet<Vertex> reducedVertices = residualGraph.lpOne;
+//        HashSet<Vertex> verticesToDelete = residualGraph.lpZero;
+//
+//        for (Vertex right : reducedVertices){
+//            for (Vertex vertex : vertices){
+//                if (right.name.equals(vertex.name)){
+//                    reducedEdges.put(vertex, getAdjVertices().get(vertex));
+//                    verticesToRemove.add(vertex);
+//                }
+//            }
+//        }
+//
+////        for (Vertex left : verticesToDelete){
+////            for (Vertex vertex : vertices){
+////                if (left.name.equals(vertex.name)){
+////                    verticesToRemove.add(vertex);
+////                }
+////            }
+////        }
+//
+//        removeSetofVertices(verticesToRemove);
+//        return reducedEdges;
+//    }
+
+//    public HashMap<Vertex,HashSet<Vertex>> applyTwinRule(){
+//        Vertex mergedVertex = new Vertex("merged-" + (vertices.size() + 1), (vertices.size() + 1));
+//        HashSet<Vertex> neighborsOfMerged = new HashSet<>();
+//
+//        HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
+//        HashSet<Vertex> degreeThreeVertices = this.degreeOrder.getDegreeVertices(3);
+//        if (degreeThreeVertices == null) return new HashMap<>();
+//
+//        boolean merged = false;
+//        for (Vertex u : degreeThreeVertices){
+//            HashSet<Vertex> neighbors = this.getAdjVertices().get(u);
+//            for (Vertex v : degreeThreeVertices){
+//                if (u.equals(v)) continue;
+//                if (!neighbors.equals(this.getAdjVertices().get(v))) continue;
+//
+//                boolean hasEdges = false;
+//                for (Vertex neighbor : neighbors){
+//                    for (Vertex neighbor2 : neighbors){
+//                        if (neighbor.equals(neighbor2)) continue;
+//
+//                        if (this.getAdjVertices().get(neighbor).contains(neighbor2)){
+//                            hasEdges = true;
+//                            break;
+//                        }
+//                    }
+//                    if (hasEdges) break;
+//                }
+//
+//                if (hasEdges) {
+//                    merged = true;
+//                    mergedVertex = new Vertex("merged-" + (vertices.size() + 1), (vertices.size() + 1));
+//                    mergedVertex.addMergeInfo(u, v, neighbors);
+//                    mergedVertices.add(mergedVertex);
+//                    for (Vertex vertex : neighbors) neighborsOfMerged.addAll(getAdjVertices().get(vertex));
+//                }
+//                else {
+//                    for (Vertex vertex : neighbors) reducedEdges.put(vertex, getAdjVertices().get(vertex));
+//                }
+//            }
+//        }
+//
+//        if (merged) {
+//            for (Vertex vertex : mergedVertex.commonNeighbors) this.removeVertex(vertex);
+//            this.removeVertex(mergedVertex.first);
+//            this.removeVertex(mergedVertex.second);
+//            this.putVertexBack(mergedVertex, neighborsOfMerged);
+//        }
+//        for (Vertex vertex : reducedEdges.keySet()){
+//            this.removeVertex(vertex);
+//        }
+//
+//        return reducedEdges;
+//    }
+
+//    public void undoMerges(LinkedList<String> solution){
+//        HashSet<Vertex> unfoldedVertices = new HashSet<>();
+//        while (!mergedVertices.isEmpty()){
+//            Vertex mergedVertex = mergedVertices.pop();
+//            if (solution.contains(mergedVertex.name)) {
+//                solution.remove(mergedVertex.name);
+//                for (Vertex vertex : mergedVertex.commonNeighbors) solution.add(vertex.name);
+//            }
+//            else{
+//                if (!mergedVertex.first.merged) solution.add(mergedVertex.first.name);
+//                if (!mergedVertex.second.merged) solution.add(mergedVertex.second.name);
+//            }
+//        }
+//    }
+
+//    public void undoLastMerge(int amountTwinReduced){
+//        while (amountTwinReduced != 0){
+//            System.out.println("FUCK");
+//            Vertex mergedVertex = mergedVertices.pop();
+//            removeVertex(mergedVertex);
+//            putVertexBack(mergedVertex.first, mergedVertex.commonNeighbors);
+//            putVertexBack(mergedVertex.second, mergedVertex.commonNeighbors);
+//            amountTwinReduced--;
+//        }
+//
+//    }
+
     public static void main(String[] args) throws InterruptedException, IOException {
 
 
