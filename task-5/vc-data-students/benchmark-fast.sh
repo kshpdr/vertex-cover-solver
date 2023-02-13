@@ -48,7 +48,7 @@ run_ce_solver()
 			echo $f >> $LOG
 			
 			# start everything in a new process group such that we can kill everything if necessary
-			(setsid /usr/bin/time -f "%e" -a -o time.txt timeout --preserve-status -k 10 -s 2 $maxSecPerInstance $PROGRAMM_NAME< $f 1> prog_out.txt 2>&1) & PID=$!
+			(setsid /usr/local/bin/gtime -f "%e" -a -o time.txt timeout --preserve-status -k 10 -s 2 $maxSecPerInstance $PROGRAMM_NAME< $f 1> prog_out.txt 2>&1) & PID=$!
 
 
 			# kill processes when exiting this script
