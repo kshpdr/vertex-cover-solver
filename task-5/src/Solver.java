@@ -128,7 +128,7 @@ public class Solver {
             recursionDepth--;
             return solution;
         }
-        
+
         // Putting back the reduced vertices
         graph.putManyVerticesBack(reducedNeighborsMap);
         recursionDepth--;
@@ -152,3 +152,4 @@ public class Solver {
         ConstrainedSolver.main(args);
     }
 }
+
