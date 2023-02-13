@@ -23,12 +23,8 @@ stages:
 
 variables:
   TASK_NR: "5"
-<<<<<<< HEAD
   BENCHMARK_TIMEOUT: "30"
   BENCHMARK_RETRIES: "100"
-=======
-  BENCHMARK_TIMEOUT: "60"
->>>>>>> b26b481472a08b873ab737fc410e689ea4d97d4f
 
 build-job:
   stage: build
