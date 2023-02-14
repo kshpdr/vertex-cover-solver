@@ -45,12 +45,12 @@ run-job:
       - task-$TASK_NR/vc-data-students/results-*.csv # Save result.csv file (for 'verify' stage)
       - task-$TASK_NR/vc-data-students/log-*.txt # Save log.txt file (for verify stage)
   script:
-    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUT sec timeout) ..."
+    - echo "[*] Executing benchmark ($BENCHMARK_TIMEOUT sec timeout and $BENCHMARK_RETRIES retries) ..."
     - cd task-$TASK_NR/vc-data-students
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/master/vc-data ]; then cp -r /home/master/vc-data/* . ; fi fi # Copy testcases to workdir (if not exist) => private VM
     - if [ ! -d 1-random ] || [ ! -d 2-social-networks ] || [ ! -d 3-medium-sized ]; then if [ -d /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data ]; then cp -r /home/tu-berlin.de/fechner-julian/irb-ubuntu/Schreibtisch/vc-data/* . ; fi fi  # Copy testcases to workdir (if not exist) => UNI-Server
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
-    - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT # Run benchmark with solver
+    - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT $BENCHMARK_RETRIES # Run benchmark with solver
     - echo "[*] Benchmark script done."
     - if [ -d 1-random ] || [ -d 2-social-networks ] || [ -d 3-medium-sized ]; then rm -rf 1-random 2-social-networks 3-medium-sized ; fi # delete testcases (keep filesystem clean)
     - echo "[*] CleanUp done."
