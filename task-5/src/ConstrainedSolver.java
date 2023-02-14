@@ -45,8 +45,8 @@ public class ConstrainedSolver {
     public static int recursiveSteps = 0;
     public static int recursionDepth = 0;
 
-    public static int applyReductionDepth = 1;
-    public static int applyBoundsDepth = 1;
+    public static int applyReductionDepth = 29;
+    public static int applyBoundsDepth = 3;
 
     public static boolean constraintsSatisfied(Graph graph, HashSet<Vertex> solution, HashSet<Constraint> constraints) {
         for (Constraint constraint : constraints) {
