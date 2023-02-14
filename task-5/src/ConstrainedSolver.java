@@ -16,7 +16,7 @@ public class ConstrainedSolver {
 
     // Pre-processing 2
 
-    public static boolean twinRuleBeginning = false;
+    public static boolean twinRuleBeginning = false; // does not work
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true; // still not working
@@ -26,7 +26,7 @@ public class ConstrainedSolver {
     public static boolean unconfinedRuleIteration = true;
     public static boolean highDegreeRuleIteration = true;
     public static boolean oneDegreeRuleIteration = true;
-    public static boolean twoDegreeRuleIteration = true; //does not work
+    public static boolean twoDegreeRuleIteration = false; //does not work
     public static boolean lpReductionIteration = false; // still not working
     public static boolean flowLpReductionIteration = false; // not tested yet
 
