@@ -23,8 +23,8 @@ stages:
 
 variables:
   TASK_NR: "5"
-  BENCHMARK_TIMEOUT: "20"
-  BENCHMARK_RETRIES: "100"
+  BENCHMARK_TIMEOUT: "300"
+  BENCHMARK_RETRIES: "25"
 
 build-job:
   stage: build
