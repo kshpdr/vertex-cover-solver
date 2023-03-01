@@ -50,7 +50,7 @@ public class Graph  {
             this.degreeOrder.increaseDegreeOfVertex(vertex2, 1);
         }
         bipartiteGraph = new BipartiteGraph(this);
-        this.getComplementGraph();
+        //this.getComplementGraph();
     }
 
     public Graph() {
@@ -160,10 +160,10 @@ public class Graph  {
                 edgesNumber--;
                 tmpVertex.degree--;
                 this.degreeOrder.decreaseDegreeOfVertex(tmpVertex, 1);
-                if(!this.complementGraph.containsKey(tmpVertex)) this.complementGraph.put(tmpVertex, new HashSet<>());
-                if(!this.complementGraph.containsKey(vertexToRemove)) this.complementGraph.put(vertexToRemove, new HashSet<>());
-                this.complementGraph.get(tmpVertex).add(vertexToRemove);
-                this.complementGraph.get(vertexToRemove).add(tmpVertex);
+//                if(!this.complementGraph.containsKey(tmpVertex)) this.complementGraph.put(tmpVertex, new HashSet<>());
+//                if(!this.complementGraph.containsKey(vertexToRemove)) this.complementGraph.put(vertexToRemove, new HashSet<>());
+//                this.complementGraph.get(tmpVertex).add(vertexToRemove);
+//                this.complementGraph.get(vertexToRemove).add(tmpVertex);
             }
             if (this.adjVertices.get(tmpVertex).isEmpty()) {
                 iterator.remove();
@@ -190,9 +190,9 @@ public class Graph  {
         for (Vertex neighbor : neighbors) {
             edgesNumber++;
             adjVertices.get(originalVertex).add(neighbor);
-            this.complementGraph.get(neighbor).remove(originalVertex);
-            if(this.complementGraph.get(neighbor).isEmpty()) this.complementGraph.remove(neighbor);
-            this.complementGraph.get(originalVertex).remove(neighbor);
+//            this.complementGraph.get(neighbor).remove(originalVertex);
+//            if(this.complementGraph.get(neighbor).isEmpty()) this.complementGraph.remove(neighbor);
+//            this.complementGraph.get(originalVertex).remove(neighbor);
 
             originalVertex.degree++;
 
@@ -206,7 +206,7 @@ public class Graph  {
 
             bipartiteGraph.addEdge(originalVertex, neighbor);
         }
-        if(this.complementGraph.get(originalVertex).isEmpty()) this.complementGraph.remove(originalVertex);
+//        if(this.complementGraph.get(originalVertex).isEmpty()) this.complementGraph.remove(originalVertex);
         this.degreeOrder.putBack(originalVertex, neighbors.size());
     }
 

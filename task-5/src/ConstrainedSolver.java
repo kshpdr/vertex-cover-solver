@@ -15,7 +15,8 @@ public class ConstrainedSolver {
     public static boolean independentRulePre = true;
 
     // Pre-processing 2
-    public static boolean twinRuleBeginning = true; // false
+
+    public static boolean twinRuleBeginning = false;
     public static boolean unconfinedRuleBeginning = true;
     public static boolean highDegreeRuleBeginning = true;
     public static boolean lpReductionBeginning = true; // still not working
@@ -68,8 +69,8 @@ public class ConstrainedSolver {
         HashMap<Vertex, HashSet<Vertex>> reducedEdges = new HashMap<>();
         if (oneDegreeRuleIteration) reducedEdges.putAll(graph.applyOneDegreeRule());
         if (twoDegreeRuleIteration) reducedEdges.putAll(graph.applyTwoDegreeRule());
+        if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
         if (recursionDepth%applyReductionDepth == 0){
-            if (dominationRuleIteration) reducedEdges.putAll(graph.applyDominationRule());
             if (unconfinedRuleIteration) reducedEdges.putAll(graph.applyUnconfinedRule());
             if (lpReductionIteration) reducedEdges.putAll(graph.applyLpReduction());
         }
@@ -191,9 +192,9 @@ public class ConstrainedSolver {
         // complete preprocessing phase 2
         HashMap<Vertex, HashSet<Vertex>> edgesAfterRules = new HashMap<>();
 
-//        if (twinRuleBeginning) {
-//            edgesAfterRules.putAll(graph.applyTwinRule());
-//        }
+        if (twinRuleBeginning) {
+            edgesAfterRules.putAll(graph.applyTwinRule());
+        }
 
         if (unconfinedRuleBeginning) {
             edgesAfterRules.putAll(graph.applyUnconfinedRule());
@@ -202,10 +203,9 @@ public class ConstrainedSolver {
             edgesAfterRules.putAll(graph.applyLpReduction());
         }
         if (highDegreeRuleBeginning) {
-            int lowerbound = graph.getMaxLowerBound(true, true);
+            int lowerbound = graph.getMaxLowerBound(false, true);
             edgesAfterRules.putAll(graph.applyHighDegreeRule(lowerbound));
         }
-//        if (flowLpReductionBeginning) reducedEdges.putAll(graph.applyFlowLpReduction());
 
         // get params for the algorithm
         HashSet<Vertex> heuristicSolution = MinToMinHeuristic.getUpperBoundMinToMin(adjMap);
@@ -231,14 +231,13 @@ public class ConstrainedSolver {
             stringSolution.add(v.name);
         }
 
-//        if (twinRuleBeginning) {
-//            graph.undoMerges(stringSolution);
-//        }
+        if (twinRuleBeginning) {
+            graph.undoMerges(stringSolution);
+        }
 
         if (twoDegreeRulePre) { // must be last to undo merge for all merged cases
             preReduction.undoMerge(stringSolution);
         }
-//        graph.undoMerges(stringSolution);
 
         inputParser.printResult(stringSolution, recursiveSteps);
     }

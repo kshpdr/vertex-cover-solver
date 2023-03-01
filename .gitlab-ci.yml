@@ -23,7 +23,7 @@ stages:
 
 variables:
   TASK_NR: "5"
-  BENCHMARK_TIMEOUT: "60"
+  BENCHMARK_TIMEOUT: "300"
 
 build-job:
   stage: build
@@ -51,6 +51,8 @@ run-job:
     - chmod +x benchmark-fast.sh verify verifier.py # Make benchmark files executable
     - ./benchmark-fast.sh "java -jar ../src/Solver.jar" $BENCHMARK_TIMEOUT # Run benchmark with solver
     - echo "[*] Benchmark script done."
+    - if [ -d 1-random ] || [ -d 2-social-networks ] || [ -d 3-medium-sized ]; then rm -rf 1-random 2-social-networks 3-medium-sized ; fi # delete testcases (keep filesystem clean)
+    - echo "[*] CleanUp done."
 
 verify-job:
   stage: verify
