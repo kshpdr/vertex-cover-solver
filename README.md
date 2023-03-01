@@ -1,26 +1,25 @@
-# Algorithm-Engineering
+# Vertex Cover Solver
+This project is a collection of algorithms and heuristics for solving the vertex cover problem. The project consists of five iterations, each containing a task-X folder with handouts, READMEs, and presentations describing the features implemented in that iteration.
 
-## Course Workflow:  
-Participants will program and present a solver for the problem Vertex Cover (defined in the first lecture slides).
-In regular intervals (approx. 3 weeks) the participants have to submit their program for testing (and for a small informal competition for the fastest program). Additionally, for each submission the participants will submit a short PDF ([here](https://isis.tu-berlin.de/mod/resource/view.php?id=1396815) is a template the pdf should consist of at most one page of text, but any number of figures---all of which are referenced in the text) and present their program in a short (max. 10 minutes) talk followed by a question round (in presence!). For each submission, there will be slides + screencasts explaining more and more algorithmic ideas and an exercise sheet specifying the implementation and presentation tasks.
+## Features
+### Iteration 1
 
-### Members (Team-02):
-- Julian Fechner
-- Julio Cesar Perez Duran
-- Denis Koshelev
+The first iteration of the project implemented a basic local search algorithm for solving the vertex cover problem. The algorithm starts with an arbitrary solution and iteratively improves it by making small changes to the solution until no further improvements can be made.
 
-**HINT**: *Every user has it's own branch.  
-Let's use the `main` branch for final submissions!*
+### Iteration 2
+The second iteration focused on improving the lower bounds of the vertex cover problem. Two lower bounds were implemented: the clique bound and the linear programming (LP) bound using bipartite graph. In addition, the branching strategy was modified to extract the vertex with the highest degree first.
 
-### Server Access (via SSH):
-- Host: `aba06.akt.tu-berlin.de`
-- Port: 22 (Standard SSH-Port)
-- Login Credentials:
-    - User: `algeng-ws2223-team2`
-    - Pwd: `xkcNqnUMG6`
-- Example SSH-Call: `ssh algeng-ws2223-team2@aba06.akt.tu-berlin.de`
-- Every user has it's own subdirectory `/home/algeng-ws2223-team2/<USER>` with it's own copy of this GIT-Repo `algorithm-engineering`
+### Iteration 3
+The third iteration introduced multiple reduction rules to reduce the size of the problem instance. These rules included the zero-, one-, and two-degree rules, the high-degree and buzz rule, the domination rule, the unconfined rule, and the LP relaxation.
 
-### Usefull Links:
-- [ISIS Course](https://isis.tu-berlin.de/mod/forum/discuss.php?d=484841)
-- [Overleaf Project](https://de.overleaf.com/1429599153kdvjrdsrfzdp)
+### Iteration 4
+The fourth iteration implemented multiple heuristics for solving the vertex cover problem. These included the Clever Steady Strategy algorithm and Savage’s Vertex Cover Algorithm, among others. These heuristics were designed to quickly find good solutions to the problem, although they may not always produce an optimal solution.
+
+### Iteration 5
+The fifth and final iteration introduced a new branch-and-reduce algorithm with packing constraints. This algorithm added a new way to prune the search tree by using packing constraints to eliminate parts of the search space that cannot contain a feasible solution. In addition, new reduction rules were implemented to further reduce the size of the problem instance. Finally, a Maximum Clique Solver was integrated to solve some specific instances of the vertex cover problem.
+
+## How to Run
+Each task-X folder contains a README file with instructions on how to run the implementation for that iteration. Please refer to the appropriate README file for instructions on how to run the algorithm or heuristic for that iteration.
+
+## Credits
+This project was developed by Denis Koshelev, Julio Cesar Perez Duran, and Julian Fechner as part of the course 'Algorithm Engineering' at the Technical University of Berlin. Big thanks to André Nichterlein and Niclas Boehmer, who guided us through this course and made it really joyful. If you have any questions or suggestions, please feel free to contact us.
