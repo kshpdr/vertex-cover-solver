@@ -1,5 +1,5 @@
 # Vertex Cover Solver
-This project is a collection of algorithms and heuristics for solving the vertex cover problem. The project consists of five iterations, each containing a task-X folder with handouts, > READMEs, and presentations describing the features implemented in that iteration.
+This project is a collection of algorithms and heuristics for solving the vertex cover problem. The project consists of five iterations, each containing a task-X folder with handouts, READMEs, and presentations describing the features implemented in that iteration.
 
 ## Features
 ### Iteration 1
